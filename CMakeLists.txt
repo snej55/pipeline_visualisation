@@ -22,18 +22,40 @@ elseif (CMAKE_SYSTEM MATCHES Linux)
     set(GL_LIBS GL GLU glfw3 assimp)
 endif()
 
-set(SOURCES main.cpp)
+set(SOURCES main.cpp
+        src/app.cpp
+        src/app.h
+        src/extern/glad.c
+        src/shader.cpp
+        src/shader.h
+        src/texture.cpp
+        src/texture.h
+        src/shapes.h
+        src/objectShapes3D.h
+        src/objects.h
+        src/camera.h
+        src/mesh.cpp
+        src/mesh.h
+        src/model.cpp
+        src/model.h
+        src/postprocessing.h
+        src/cubemap.h
+        src/skybox.h
+        src/terrain.h
+        src/terrain.cpp
+        src/util.h
+)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_link_libraries(${PROJECT_NAME} ${GL_LIBS})
 
-# add_custom_target(copy_assets
-#         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/data ${CMAKE_CURRENT_BINARY_DIR}/data
-# )
-# add_dependencies(${PROJECT_NAME} copy_assets)
+add_custom_target(copy_assets
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/data ${CMAKE_CURRENT_BINARY_DIR}/data
+)
+add_dependencies(${PROJECT_NAME} copy_assets)
 
-# add_custom_target(copy_shaders
-#         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/src/shaders ${CMAKE_CURRENT_BINARY_DIR}/shaders
-# )
-# add_dependencies(${PROJECT_NAME} copy_shaders)
+add_custom_target(copy_shaders
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/src/shaders ${CMAKE_CURRENT_BINARY_DIR}/shaders
+)
+add_dependencies(${PROJECT_NAME} copy_shaders)
