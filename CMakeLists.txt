@@ -22,6 +22,8 @@ elseif (CMAKE_SYSTEM MATCHES Linux)
     set(GL_LIBS GL GLU glfw3 assimp)
 endif()
 
+find_package(Arrow REQUIRED)
+
 set(SOURCES main.cpp
         src/app.cpp
         src/app.h
@@ -48,7 +50,7 @@ set(SOURCES main.cpp
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-target_link_libraries(${PROJECT_NAME} ${GL_LIBS})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${GL_LIBS} Arrow::arrow_shared)
 
 add_custom_target(copy_assets
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/data ${CMAKE_CURRENT_BINARY_DIR}/data
