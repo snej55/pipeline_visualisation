@@ -1,3 +1,3 @@
 #!/usr/bin/bash
 cmake --build build/ -j14
-./build/main
+cd build; ./main # run from binary directory

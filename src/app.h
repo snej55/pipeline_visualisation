@@ -19,7 +19,7 @@
 class App
 {
 public:
-    App(int width, int height, const char *title);
+    App(int width, int height, const char* title);
 
     ~App();
 
@@ -29,7 +29,7 @@ public:
 
     [[nodiscard]] bool shouldClose() const;
 
-    [[nodiscard]] GLFWwindow *getWindow() const;
+    [[nodiscard]] GLFWwindow* getWindow() const;
 
     [[nodiscard]] int getWidth() const;
 
