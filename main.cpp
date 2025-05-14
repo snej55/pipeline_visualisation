@@ -83,18 +83,8 @@ int main()
     std::cout << "Successfully created record batch reader!\n";
 
     int row{0};
-    while (true)
-    {
-        std::shared_ptr<arrow::RecordBatch> batch;
-        arrow::Status status = recordBatchReader->ReadNext(&batch);
-        if (!status.ok())
-        {
-            std::cerr << "Error: failed to read next batch!" << std::endl;
-        }
-        if (!batch) {
-            break;
-        }
-        std::cout << row++ << '\n';
+    for (arrow::Result<std::shared_ptr<arrow::RecordBatch>> maybe_batch : *recordBatchReader) {
+        std::cout << row++ << std::endl;
     }
 
     // arrow::fs::LocalFileSystem fileSystem;
