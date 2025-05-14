@@ -1,102 +1,110 @@
-#include "src/app.h"
+#include <memory>
+#include <sstream>
+#include <iostream>
+#include <string>
+#include <cstdlib>
 
-#include "src/model.h"
-#include "src/util.h"
+#include <arrow/io/api.h>
+#include <arrow/filesystem/localfs.h>
+#include <parquet/arrow/reader.h>
+#include <parquet/stream_reader.h>
+#include <arrow/table.h>
 
-int main() {
-    // initialization
-    App app{640, 640, "OpenGL window"};
-    app.enableDepthTesting();
-    app.setCameraEnabled(true);
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+struct Element
+{
+    // paper title
+    std::string title;
+    // whether the study is included or not
+    uint64_t included;
+    // 2d position
+    float pos2Dx;
+    float pos2Dy;
+    // 3d position
+    float pos3Dx;
+    float pos3Dy;
+    float pos3Dz;
+    uint16_t cluster_2_2d;
+    uint16_t cluster_2_3d;
+    uint16_t cluster_3_2d;
+    uint16_t cluster_3_3d;
+    uint16_t cluster_4_2d;
+    uint16_t cluster_4_3d;
+    uint16_t cluster_5_2d;
+    uint16_t cluster_5_3d;
+    uint16_t cluster_6_2d;
+    uint16_t cluster_6_3d;
+    std::string cluster_2_2d_label;
+    std::string cluster_3_2d_label;
+    std::string cluster_4_2d_label;
+    std::string cluster_5_2d_label;
+    std::string cluster_6_2d_label;
+    std::string cluster_2_3d_label;
+    std::string cluster_3_3d_label;
+    std::string cluster_4_3d_label;
+    std::string cluster_5_3d_label;
+    std::string cluster_6_3d_label;
+};
 
-    float planeVertices[] = {
-        5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
-       -5.0f, -0.5f,  5.0f,  0.0f, 0.0f,
-       -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
+int main()
+{
+    arrow::MemoryPool* pool {arrow::default_memory_pool()};
+    arrow::fs::LocalFileSystem fileSystem;
+    // get input file
+    std::shared_ptr<arrow::io::RandomAccessFile> input {fileSystem.OpenInputFile("data/papers_with_labels.parquet").ValueOrDie()};
 
-        5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
-       -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
-        5.0f, -0.5f, -5.0f,  2.0f, 2.0f
-    };
-
-    unsigned int planeVAO, planeVBO;
-    glGenVertexArrays(1, &planeVAO);
-    glGenBuffers(1, &planeVBO);
-
-    glBindVertexArray(planeVAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void*>(0));
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glBindVertexArray(0);
-
-    Texture* floorTex {app.loadTexture("data/images/floor.png")};
-
-    Texture* tomato {app.loadTexture("data/images/tomato.png")};
-    tomato->activate(0);
-
-    Objects::Cube cube1 {glm::vec3{-1.0f, 0.0f, -1.0f}, {1.0f, 1.0f, 1.0f}};
-    Objects::Cube cube2 {glm::vec3{2.0f, 1.0f, 0.0f}, glm::vec3{1.0f, 1.0f, 1.0f}};
-    Objects::Cube cube3 {glm::vec3{1.0f, 2.0f, 1.0f}, {0.9f, 0.9f, 0.9f}};
-
-    Shader cubeShader{"shaders/builtin/texCube.vert", "shaders/builtin/texCube.frag"};
-
-    // configure framebuffers
-    unsigned int depthFBO;
-    glGenFramebuffers(1, &depthFBO);
-
-    const unsigned int SHADOW_WIDTH {1024}, SHADOW_HEIGHT {1024};
-    unsigned int depthMap;
-    glGenTextures(1, &depthMap);
-    glBindTexture(GL_TEXTURE_2D, depthMap);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, depthFBO);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
-    glDrawBuffer(GL_NONE);
-    glReadBuffer(GL_NONE);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    // main loop
-    while (!app.shouldClose()) {
-        app.handleInput();
-        app.clear();
-
-        floorTex->activate(0);
-        cubeShader.use();
-        cubeShader.setInt("tex", 0);
-
-        cubeShader.setMat4("projection", app.getPerspectiveMatrix());
-        cubeShader.setMat4("view", app.getViewMatrix());
-        cubeShader.setMat4("model", glm::mat4(1.0f));
-        glBindVertexArray(planeVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-        glBindVertexArray(0);
-
-        tomato->activate(0);
-        cubeShader.use();
-        cubeShader.setInt("tex", 0);
-
-        app.drawCube(cube1, cubeShader, CUBE_TEXCOORDS);
-        app.drawCube(cube2, cubeShader, CUBE_TEXCOORDS);
-        app.drawCube(cube3, cubeShader, CUBE_TEXCOORDS);
-
-        app.tick();
+    // open parquet file reader
+    std::unique_ptr<parquet::arrow::FileReader> arrowReader;
+    arrow::Status status {parquet::arrow::OpenFile(input, pool, &arrowReader)};
+    if (!status.ok())
+    {
+        std::cerr << "Error opening input!" << std::endl;
+        return 1;
     }
 
-    // clean up
-    app.freeTexture(tomato);
-    app.close();
+    // read file as a single arrow table
+    std::shared_ptr<arrow::Table> table;
+    status = arrowReader->ReadTable(&table);
+    if (!status.ok())
+    {
+        std::cerr << "Error reading table!" << std::endl;
+        return 1;
+    }
+
+    std::cout << "Successfully read parquet table!\n";
+
+    arrow::TableBatchReader reader {*table};
+
+    // just to check mem. usage
+    int x{0};
+    std::cin >> x;
+    // std::shared_ptr<arrow::io::ReadableFile> infile;
+
+    // PARQUET_ASSIGN_OR_THROW(
+    //     infile, arrow::io::ReadableFile::Open("data/papers_with_labels.parquet")
+    // );
+
+    // parquet::StreamReader stream {parquet::ParquetFileReader::Open(infile)};
+
+    // Element study;
+
+    // bool first{true};
+    // int count{0};
+    // while (!stream.eof())
+    // {
+    //     std::cout << "row: " << count++ << '\n';
+    //     if (!first)
+    //     {
+    //         stream.SkipRows(1);
+    //         stream >> study.title;
+    //         stream.SkipColumns(1);
+    //         stream >> study.pos2Dx >> study.pos2Dy >> study.pos3Dx >> study.pos3Dy >> study.pos3Dz >> study.cluster_2_2d >> study.cluster_2_3d >> study.cluster_3_2d >> study.cluster_3_3d >> study.cluster_4_2d >> study.cluster_4_3d >> study.cluster_5_2d >> study.cluster_5_3d >> study.cluster_6_2d >> study.cluster_6_3d
+    //         >> study.cluster_2_2d_label >> study.cluster_3_2d_label >> study.cluster_4_2d_label >> study.cluster_5_2d_label >> study.cluster_6_2d_label >> study.cluster_2_3d_label >> study.cluster_3_3d_label >> study.cluster_4_3d_label >> study.cluster_5_3d_label >> study.cluster_6_3d_label >> parquet::EndRow; 
+    //         std::cout << study.title << std::endl;;
+    //     }
+    //     first = false;
+    //     // break;
+    // }
+
 
     return 0;
 }
