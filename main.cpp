@@ -48,35 +48,84 @@ struct Element
 int main()
 {
     arrow::MemoryPool* pool {arrow::default_memory_pool()};
-    arrow::fs::LocalFileSystem fileSystem;
-    // get input file
-    std::shared_ptr<arrow::io::RandomAccessFile> input {fileSystem.OpenInputFile("data/papers_with_labels.parquet").ValueOrDie()};
+    // Configure general Parquet reader settings
+    auto readerProperties = parquet::ReaderProperties(pool);
+    readerProperties.set_buffer_size(4096 * 4);
+    readerProperties.enable_buffered_stream();
 
-    // open parquet file reader
+    // Configure Arrow-specific Parquet reader settings
+    auto arrowReaderProps = parquet::ArrowReaderProperties();
+    arrowReaderProps.set_batch_size(128 * 1024);  // default 64 * 1024
+
+    std::cout << "Configured parquet reader\n";
+
+    parquet::arrow::FileReaderBuilder readerBuilder;
+    arrow::Status status {readerBuilder.OpenFile("data/papers_with_labels.parquet", /*memory_map=*/false, readerProperties)};
+    readerBuilder.memory_pool(pool);
+    readerBuilder.properties(arrowReaderProps);
+
+    std::cout << "Created reader builder\n";
+
     std::unique_ptr<parquet::arrow::FileReader> arrowReader;
-    arrow::Status status {parquet::arrow::OpenFile(input, pool, &arrowReader)};
-    if (!status.ok())
+    PARQUET_ASSIGN_OR_THROW(arrowReader, readerBuilder.Build());
+
+    std::cout << "Successfully opened file!\n";
+
+    // create record batch reader
+    std::shared_ptr<arrow::RecordBatchReader> recordBatchReader;
+    arrow::Result<std::shared_ptr<arrow::RecordBatchReader>> result = arrowReader->GetRecordBatchReader();
+    if (!result.ok())
     {
-        std::cerr << "Error opening input!" << std::endl;
+        std::cerr << "Error: failed to create record batch reader!" << std::endl;;
         return 1;
     }
+    
+    std::cout << "Successfully created record batch reader!\n";
 
-    // read file as a single arrow table
-    std::shared_ptr<arrow::Table> table;
-    status = arrowReader->ReadTable(&table);
-    if (!status.ok())
+    int row{0};
+    while (true)
     {
-        std::cerr << "Error reading table!" << std::endl;
-        return 1;
+        std::shared_ptr<arrow::RecordBatch> batch;
+        arrow::Status status = recordBatchReader->ReadNext(&batch);
+        if (!status.ok())
+        {
+            std::cerr << "Error: failed to read next batch!" << std::endl;
+        }
+        if (!batch) {
+            break;
+        }
+        std::cout << row++ << '\n';
     }
 
-    std::cout << "Successfully read parquet table!\n";
+    // arrow::fs::LocalFileSystem fileSystem;
+    // // get input file
+    // std::shared_ptr<arrow::io::RandomAccessFile> input {fileSystem.OpenInputFile("data/papers_with_labels.parquet").ValueOrDie()};
 
-    arrow::TableBatchReader reader {*table};
+    // // open parquet file reader
+    // std::unique_ptr<parquet::arrow::FileReader> arrowReader;
+    // arrow::Status status {parquet::arrow::OpenFile(input, pool, &arrowReader)};
+    // if (!status.ok())
+    // {
+    //     std::cerr << "Error opening input!" << std::endl;
+    //     return 1;
+    // }
 
-    // just to check mem. usage
-    int x{0};
-    std::cin >> x;
+    // // read file as a single arrow table
+    // std::shared_ptr<arrow::Table> table;
+    // status = arrowReader->ReadTable(&table);
+    // if (!status.ok())
+    // {
+    //     std::cerr << "Error reading table!" << std::endl;
+    //     return 1;
+    // }
+
+    // std::cout << "Successfully read parquet table!\n";
+
+    // arrow::TableBatchReader reader {*table};
+
+    // // just to check mem. usage
+    // int x{0};
+    // std::cin >> x;
     // std::shared_ptr<arrow::io::ReadableFile> infile;
 
     // PARQUET_ASSIGN_OR_THROW(
