@@ -3,9 +3,6 @@
 #include "src/model.h"
 #include "src/util.h"
 
-#include <arrow/io/api.h>
-#include <parquet/arrow/reader.h>
-
 int main() {
     // initialization
     App app{640, 640, "OpenGL window"};
