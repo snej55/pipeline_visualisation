@@ -23,6 +23,7 @@ elseif (CMAKE_SYSTEM MATCHES Linux)
 endif()
 
 find_package(Arrow REQUIRED)
+find_package(Parquet REQUIRED)
 
 set(SOURCES main.cpp
         src/app.cpp
@@ -50,7 +51,7 @@ set(SOURCES main.cpp
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ${GL_LIBS} Arrow::arrow_shared)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${GL_LIBS} Arrow::arrow_shared Parquet::parquet_shared)
 
 add_custom_target(copy_assets
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/data ${CMAKE_CURRENT_BINARY_DIR}/data
