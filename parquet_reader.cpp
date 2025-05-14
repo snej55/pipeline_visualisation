@@ -87,6 +87,45 @@ int main()
         std::cout << row++ << std::endl;
     }
 
+    // arrow::fs::LocalFileSystem fileSystem;
+    // // get input file
+    // std::shared_ptr<arrow::io::RandomAccessFile> input {fileSystem.OpenInputFile("data/papers_with_labels.parquet").ValueOrDie()};
+
+    // // open parquet file reader
+    // std::unique_ptr<parquet::arrow::FileReader> arrowReader;
+    // arrow::Status status {parquet::arrow::OpenFile(input, pool, &arrowReader)};
+    // if (!status.ok())
+    // {
+    //     std::cerr << "Error opening input!" << std::endl;
+    //     return 1;
+    // }
+
+    // // read file as a single arrow table
+    // std::shared_ptr<arrow::Table> table;
+    // status = arrowReader->ReadTable(&table);
+    // if (!status.ok())
+    // {
+    //     std::cerr << "Error reading table!" << std::endl;
+    //     return 1;
+    // }
+
+    // std::cout << "Successfully read parquet table!\n";
+
+    // arrow::TableBatchReader reader {*table};
+
+    // // just to check mem. usage
+    // int x{0};
+    // std::cin >> x;
+    // std::shared_ptr<arrow::io::ReadableFile> infile;
+
+    // PARQUET_ASSIGN_OR_THROW(
+    //     infile, arrow::io::ReadableFile::Open("data/papers_with_labels.parquet")
+    // );
+
+    // parquet::StreamReader stream {parquet::ParquetFileReader::Open(infile)};
+
+    // Element study;
+
     // bool first{true};
     // int count{0};
     // while (!stream.eof())
