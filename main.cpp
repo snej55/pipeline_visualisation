@@ -1,9 +1,14 @@
 #include "src/opengl/app.h"
 
-#include "src/opengl/model.h"
-#include "src/opengl/util.h"
+#include "src/paper_loader.h"
 
-int main() {
+int main() 
+{
+    // load papers
+    PaperLoader paperLoader{};
+    paperLoader.loadFromFile("data/papers_with_labels.csv");
+
+    // ---- OpenGL ---- //
     // initialization
     App app{640, 640, "OpenGL window"};
     app.enableDepthTesting();
