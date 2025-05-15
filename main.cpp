@@ -3,6 +3,7 @@
 #include <sstream>
 #include <vector>
 #include <string>
+#include <locale>
 
 struct Element
 {
@@ -42,7 +43,8 @@ struct Element
 std::vector<Element> getElements(const std::string& filename)
 {
     std::vector<Element> data;
-    std::ifstream file;
+    std::wifstream file;
+    file.imbue(std::locale("en_GB.UTF-8"));
 
     // handle exceptions
     file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -50,12 +52,12 @@ std::vector<Element> getElements(const std::string& filename)
     {
         file.open(filename);
         int count{0};
-        std::string line;
+        std::wstring line;
         while (file.peek() != EOF)
         {
             std::getline(file, line);
             Element element;
-            std::vector<std::string> fields;
+            std::vector<std::wstring> fields;
             std::size_t start {0};
             bool quote{false};
             for (std::size_t i{0}; i < line.length(); ++i)
@@ -69,6 +71,7 @@ std::vector<Element> getElements(const std::string& filename)
                     start = i + 1;
                 }
             }
+            std::cout << count << '\n';
             // get final field
             fields.push_back(line.substr(start));
             ++count;
@@ -77,6 +80,7 @@ std::vector<Element> getElements(const std::string& filename)
     } catch ([[maybe_unused]] std::ifstream::failure& e)
     {
         // clear data and return it (nothing)
+        std::cout << "Error: " << e.what() << '\n';
         std::cerr << "Error: Failed to read file from path: `" << filename << "`" << std::endl;
         data.clear();
         return data;
