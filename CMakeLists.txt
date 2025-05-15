@@ -17,7 +17,7 @@ elseif (CMAKE_SYSTEM MATCHES Linux)
     # link/include for linux x86
     # required packages:
     # mesa-libGL-devel mesa-libGLU-devel minizip
-    include_directories(${CMAKE_SOURCE_DIR}/include/linux ${CMAKE_SOURCE_DIR}/src/glad)
+    include_directories(${CMAKE_SOURCE_DIR}/include/linux ${CMAKE_SOURCE_DIR}/src/extern/glad)
     link_directories(${CMAKE_SOURCE_DIR}/lib/linux)
     set(GL_LIBS GL GLU glfw3 assimp)
 endif()
@@ -26,27 +26,27 @@ find_package(Arrow REQUIRED)
 find_package(Parquet REQUIRED)
 
 set(SOURCES main.cpp
-        src/app.cpp
-        src/app.h
+        src/opengl/app.cpp
+        src/opengl/app.h
         src/extern/glad.c
-        src/shader.cpp
-        src/shader.h
-        src/texture.cpp
-        src/texture.h
-        src/shapes.h
-        src/objectShapes3D.h
-        src/objects.h
-        src/camera.h
-        src/mesh.cpp
-        src/mesh.h
-        src/model.cpp
-        src/model.h
-        src/postprocessing.h
-        src/cubemap.h
-        src/skybox.h
-        src/terrain.h
-        src/terrain.cpp
-        src/util.h
+        src/opengl/shader.cpp
+        src/opengl/shader.h
+        src/opengl/texture.cpp
+        src/opengl/texture.h
+        src/opengl/shapes.h
+        src/opengl/objectShapes3D.h
+        src/opengl/objects.h
+        src/opengl/camera.h
+        src/opengl/mesh.cpp
+        src/opengl/mesh.h
+        src/opengl/model.cpp
+        src/opengl/model.h
+        src/opengl/postprocessing.h
+        src/opengl/cubemap.h
+        src/opengl/skybox.h
+        src/opengl/terrain.h
+        src/opengl/terrain.cpp
+        src/opengl/util.h
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
