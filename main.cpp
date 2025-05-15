@@ -101,7 +101,7 @@ std::vector<Element> getElements(const std::string& filename)
         file.open(filename);
         int count{0};
         std::wstring line;
-        while (file.peek() != EOF) // loop until we reach end of file
+        do
         {
             // read the next line from the file
             std::getline(file, line);
@@ -140,7 +140,7 @@ std::vector<Element> getElements(const std::string& filename)
             // // for testing
             // if (count > 20)
             //     break;
-        }
+        } while (file.peek() != EOF); // loop until we reach end of file
         std::cout << std::endl;
         std::cout << "Loaded csv from `" << filename << "`. Rows: " << count << '\n';
     } catch ([[maybe_unused]] std::ifstream::failure& e)
@@ -167,7 +167,7 @@ int main() {
     //     std::cout << std::endl;
     // }
 
-    getElements("data/papers_with_labels.csv");
+    std::vector<Element> elements {getElements("data/papers_with_labels.csv")};
 
     return 0;
 }
