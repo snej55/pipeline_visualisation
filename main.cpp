@@ -12,12 +12,12 @@ struct Element
     // whether the study is included or not
     int included;
     // 2d position
-    float pos2Dx;
-    float pos2Dy;
+    double pos2Dx;
+    double pos2Dy;
     // 3d position
-    float pos3Dx;
-    float pos3Dy;
-    float pos3Dz;
+    double pos3Dx;
+    double pos3Dy;
+    double pos3Dz;
     int cluster_2_2d;
     int cluster_2_3d;
     int cluster_3_2d;
@@ -53,8 +53,36 @@ Element createElement(const std::vector<std::wstring>& fields)
     Element element;
 
     element.title = fields[0]; // paper title
-    wstringconv<int>(fields[1], &element.included);
-
+    wstringconv<int>(fields[1], &element.included); // whether the study is included or not
+    // element 2D space coordinates
+    wstringconv<double>(fields[2], &element.pos2Dx);
+    wstringconv<double>(fields[3], &element.pos2Dy);
+    // element 3D space coordinates
+    wstringconv<double>(fields[4], &element.pos3Dx);
+    wstringconv<double>(fields[5], &element.pos3Dy);
+    wstringconv<double>(fields[6], &element.pos3Dz);
+    // cluster coordinates
+    wstringconv<int>(fields[7], &element.cluster_2_2d); // cluster 2
+    wstringconv<int>(fields[8], &element.cluster_2_3d);
+    wstringconv<int>(fields[9], &element.cluster_3_2d); // cluster 3
+    wstringconv<int>(fields[10], &element.cluster_3_3d);
+    wstringconv<int>(fields[11], &element.cluster_4_2d); // cluster 4
+    wstringconv<int>(fields[12], &element.cluster_4_3d);
+    wstringconv<int>(fields[13], &element.cluster_5_2d); // cluster 5
+    wstringconv<int>(fields[14], &element.cluster_5_3d);
+    wstringconv<int>(fields[15], &element.cluster_6_2d); // cluster 6
+    wstringconv<int>(fields[16], &element.cluster_6_3d);
+    // cluster labels
+    element.cluster_2_2d_label = fields[17]; // 2D labels
+    element.cluster_3_2d_label = fields[18];
+    element.cluster_4_2d_label = fields[19];
+    element.cluster_5_2d_label = fields[20];
+    element.cluster_6_2d_label = fields[21];
+    element.cluster_2_3d_label = fields[22]; // 3D labels
+    element.cluster_2_3d_label = fields[23];
+    element.cluster_2_3d_label = fields[24];
+    element.cluster_2_3d_label = fields[25];
+    element.cluster_2_3d_label = fields[26];
     return element;
 }
 
