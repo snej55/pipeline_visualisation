@@ -49,6 +49,33 @@ std::vector<Element> getElements(const std::string& filename)
     try
     {
         file.open(filename);
+        int count{0};
+        std::string line;
+        while (std::getline(file, line))
+        {
+            Element element;
+            std::vector<std::string> fields;
+            std::size_t start {0};
+            bool quote{false};
+            for (std::size_t i{0}; i < line.length(); ++i)
+            {
+                if (line[i] == '"') {
+                    quote = !quote; // toggle quote
+                }
+                if (!quote && line[i] == ',')
+                {
+                    fields.push_back(line.substr(start, i - start));
+                    start = i + 1;
+                }
+            }
+    
+            for (const std::string_view& f : fields) {
+                std::cout << f << '\n';
+            }
+            ++count;
+            // if (count > 3)
+            //     break;
+        }
     } catch ([[maybe_unused]] std::ifstream::failure& e)
     {
         // clear data and return it (nothing)
@@ -57,16 +84,32 @@ std::vector<Element> getElements(const std::string& filename)
         return data;
     }
 
-    std::string line;
-    while (std::getline(file, line))
-    {
-        Element element;
-        
-    }
+
+    file.close();
+
+    return data;
 }
 
-std::vector<std::vector<std::string>> readCSV(const std::string& filename) {
-    std::vector<std::vector<std::string>> data;
+std::vector<std::string_view> parseCSVRow(std::string_view row) {
+    std::vector<std::string_view> fields;
+    size_t start = 0;
+    bool inQuotes = false;
+    
+    for (size_t i = 0; i < row.length(); ++i) {
+        if (!inQuotes && row[i] == ',') {
+            fields.emplace_back(row.substr(start, i - start));
+            start = i + 1;
+        } else if (row[i] == '"') {
+            inQuotes = !inQuotes;
+        }
+    }
+    fields.emplace_back(row.substr(start));
+    
+    return fields;
+}
+
+std::vector<std::vector<std::string_view>> readCSV(const std::string& filename) {
+    std::vector<std::vector<std::string_view>> data;
     std::ifstream file(filename);
     
     if (!file.is_open()) {
@@ -76,15 +119,7 @@ std::vector<std::vector<std::string>> readCSV(const std::string& filename) {
 
     std::string line;
     while (std::getline(file, line)) {
-        std::vector<std::string> row;
-        std::stringstream ss(line);
-        std::string cell;
-
-        while (std::getline(ss, cell, ',')) {
-            row.push_back(cell);
-        }
-
-        data.push_back(row);
+        data.push_back(parseCSVRow(line));
     }
 
     file.close();
@@ -92,14 +127,16 @@ std::vector<std::vector<std::string>> readCSV(const std::string& filename) {
 }
 
 int main() {
-    auto data = readCSV("data/papers_with_labels.csv");
+    // auto data = readCSV("data/papers_with_labels.csv");
     
-    for (const auto& row : data) {
-        for (const auto& cell : row) {
-            std::cout << cell << "\n";
-        }
-        std::cout << std::endl;
-    }
+    // for (const auto& row : data) {
+    //     for (const auto& cell : row) {
+    //         std::cout << cell << "\n";
+    //     }
+    //     std::cout << std::endl;
+    // }
+
+    getElements("data/papers_with_labels.csv");
 
     return 0;
 }
