@@ -92,11 +92,12 @@ std::vector<Element> getElements(const std::string& filename)
                 // Create the element
                 // Element element {createElement(fields)};
                 // data.push_back(element);
-                std::cout << count << '\r';
+                std::cout << "Element No." << count << '\r';
                 ++count; // update row counter
             }
 
         }
+        std::cout << std::endl;
         std::cout << "Loaded csv from `" << filename << "`. Rows: " << count << '\n';
     } catch ([[maybe_unused]] std::ifstream::failure& e)
     {
