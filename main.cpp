@@ -2,7 +2,7 @@
 
 #include "src/paper_loader.h"
 
-int main() 
+int main()
 {
     // load papers
     PaperLoader paperLoader{};
