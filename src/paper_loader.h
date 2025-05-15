@@ -1,3 +1,7 @@
+/*
+ * Object to load paper data from csv file.
+ */
+
 #ifndef PAPER_LOADER_H
 #define PAPER_LOADER_H
 

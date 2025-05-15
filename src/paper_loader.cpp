@@ -1,5 +1,6 @@
 #include "paper_loader.h"
 
+// load papers from csv file
 void PaperLoader::loadFromFile(const std::string& filename)
 {
     // clear previous papers
@@ -75,6 +76,7 @@ void PaperLoader::loadFromFile(const std::string& filename)
     file.close();
 }
 
+// create paper from list of fields
 void PaperLoader::createPaper(const std::vector<std::wstring>& fields, Paper& paper) const
 {
     paper.title = fields[0]; // paper title
