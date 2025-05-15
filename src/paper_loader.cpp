@@ -111,3 +111,16 @@ void PaperLoader::createPaper(const std::vector<std::wstring>& fields, Paper& pa
     paper.cluster_2_3d_label = fields[25];
     paper.cluster_2_3d_label = fields[26];
 }
+
+// scale is double because paper coordinates are double
+void PaperLoader::getVertices(std::vector<float>& vertices, const double scale) const {
+    vertices.clear();
+    for (const Paper& paper : m_papers)
+    {
+        vertices.push_back(static_cast<float>(paper.pos3Dx * scale)); // x
+        vertices.push_back(static_cast<float>(paper.pos3Dy * scale)); // y
+        vertices.push_back(static_cast<float>(paper.pos3Dz * scale)); // z
+    }
+    // get info
+    std::cout << "Loaded " << m_papers.size() << " vertices (" << vertices.size() * sizeof(float) << " bytes)" << '\n';
+}

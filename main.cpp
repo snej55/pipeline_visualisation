@@ -8,6 +8,9 @@ int main()
     PaperLoader paperLoader{};
     paperLoader.loadFromFile("data/papers_with_labels.csv");
 
+    std::vector<float> vertices;
+    paperLoader.getVertices(vertices);
+
     // ---- OpenGL ---- //
     // initialization
     App app{640, 640, "OpenGL window"};

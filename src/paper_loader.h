@@ -53,10 +53,13 @@ public:
     PaperLoader() = default;
     ~PaperLoader() = default;
 
+    // load papers data from csv file
     void loadFromFile(const std::string& filename);
 
+    // create paper from list of fields
     void createPaper(const std::vector<std::wstring>& fields, Paper& paper) const;
 
+    // convert from std::wstring to template type
     template <typename T>
     static void wstrconv(const std::wstring& wstr, T* x)
     {
@@ -64,9 +67,14 @@ public:
         wss >> *x;
     }
 
+    // gets list of 3D vertices from paper list
+    void getVertices(std::vector<float>& vertices, double scale = 1.0f) const;
+
+    // papers getter
     [[nodiscard]] const std::vector<Paper>& getPapers() const {return m_papers;}
 
 private:
+    // papers data
     std::vector<Paper> m_papers{};
 };
 
