@@ -32,7 +32,7 @@ void PaperLoader::loadFromFile(const std::string& filename)
                 if (line[i] == '"') { // we either started or hit a quote
                     quote = !quote; // toggle quote
                 }
-                // if we hit a comment and we're not in a quote
+                // if we hit a comma and we're not in a quote
                 if (!quote && line[i] == ',')
                 {
                     // get substring from (start -> i)

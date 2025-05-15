@@ -60,6 +60,8 @@ public:
         wss >> *x;
     }
 
+    [[nodiscard]] const std::vector<Paper>& getPapers() const {return m_papers;}
+
 private:
     std::vector<Paper> m_papers{};
 };
