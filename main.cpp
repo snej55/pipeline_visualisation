@@ -71,11 +71,9 @@ std::vector<Element> getElements(const std::string& filename)
             }
             // get final field
             fields.push_back(line.substr(start));
-
-            for (const std::string_view& f : fields) {
-                std::cout << f << '\n';
-            }
+            ++count;
         }
+        std::cout << "Loaded csv from `" << filename << "`. Rows: " << count << '\n';
     } catch ([[maybe_unused]] std::ifstream::failure& e)
     {
         // clear data and return it (nothing)
