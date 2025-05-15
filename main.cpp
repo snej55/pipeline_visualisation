@@ -39,6 +39,32 @@ struct Element
     std::string cluster_6_3d_label;
 };
 
+std::vector<Element> getElements(const std::string& filename)
+{
+    std::vector<Element> data;
+    std::ifstream file;
+
+    // handle exceptions
+    file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    try
+    {
+        file.open(filename);
+    } catch ([[maybe_unused]] std::ifstream::failure& e)
+    {
+        // clear data and return it (nothing)
+        std::cerr << "Error: Failed to read file from path: `" << filename << "`" << std::endl;
+        data.clear();
+        return data;
+    }
+
+    std::string line;
+    while (std::getline(file, line))
+    {
+        Element element;
+        
+    }
+}
+
 std::vector<std::vector<std::string>> readCSV(const std::string& filename) {
     std::vector<std::vector<std::string>> data;
     std::ifstream file(filename);
