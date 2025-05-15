@@ -41,7 +41,7 @@ struct Element
 };
 
 template <typename T>
-void wstringconv(const std::wstring& wstr, T* x)
+void wstrconv(const std::wstring& wstr, T* x)
 {
     std::wstringstream wss{wstr};
     wss >> *x;
@@ -53,25 +53,25 @@ Element createElement(const std::vector<std::wstring>& fields)
     Element element;
 
     element.title = fields[0]; // paper title
-    wstringconv<int>(fields[1], &element.included); // whether the study is included or not
+    wstrconv<int>(fields[1], &element.included); // whether the study is included or not
     // element 2D space coordinates
-    wstringconv<double>(fields[2], &element.pos2Dx);
-    wstringconv<double>(fields[3], &element.pos2Dy);
+    wstrconv<double>(fields[2], &element.pos2Dx);
+    wstrconv<double>(fields[3], &element.pos2Dy);
     // element 3D space coordinates
-    wstringconv<double>(fields[4], &element.pos3Dx);
-    wstringconv<double>(fields[5], &element.pos3Dy);
-    wstringconv<double>(fields[6], &element.pos3Dz);
+    wstrconv<double>(fields[4], &element.pos3Dx);
+    wstrconv<double>(fields[5], &element.pos3Dy);
+    wstrconv<double>(fields[6], &element.pos3Dz);
     // cluster coordinates
-    wstringconv<int>(fields[7], &element.cluster_2_2d); // cluster 2
-    wstringconv<int>(fields[8], &element.cluster_2_3d);
-    wstringconv<int>(fields[9], &element.cluster_3_2d); // cluster 3
-    wstringconv<int>(fields[10], &element.cluster_3_3d);
-    wstringconv<int>(fields[11], &element.cluster_4_2d); // cluster 4
-    wstringconv<int>(fields[12], &element.cluster_4_3d);
-    wstringconv<int>(fields[13], &element.cluster_5_2d); // cluster 5
-    wstringconv<int>(fields[14], &element.cluster_5_3d);
-    wstringconv<int>(fields[15], &element.cluster_6_2d); // cluster 6
-    wstringconv<int>(fields[16], &element.cluster_6_3d);
+    wstrconv<int>(fields[7], &element.cluster_2_2d); // cluster 2
+    wstrconv<int>(fields[8], &element.cluster_2_3d);
+    wstrconv<int>(fields[9], &element.cluster_3_2d); // cluster 3
+    wstrconv<int>(fields[10], &element.cluster_3_3d);
+    wstrconv<int>(fields[11], &element.cluster_4_2d); // cluster 4
+    wstrconv<int>(fields[12], &element.cluster_4_3d);
+    wstrconv<int>(fields[13], &element.cluster_5_2d); // cluster 5
+    wstrconv<int>(fields[14], &element.cluster_5_3d);
+    wstrconv<int>(fields[15], &element.cluster_6_2d); // cluster 6
+    wstrconv<int>(fields[16], &element.cluster_6_3d);
     // cluster labels
     element.cluster_2_2d_label = fields[17]; // 2D labels
     element.cluster_3_2d_label = fields[18];
