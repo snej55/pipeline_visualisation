@@ -51,8 +51,9 @@ std::vector<Element> getElements(const std::string& filename)
         file.open(filename);
         int count{0};
         std::string line;
-        while (std::getline(file, line))
+        while (file.peek() != EOF)
         {
+            std::getline(file, line);
             Element element;
             std::vector<std::string> fields;
             std::size_t start {0};
@@ -68,13 +69,12 @@ std::vector<Element> getElements(const std::string& filename)
                     start = i + 1;
                 }
             }
-    
+            // get final field
+            fields.push_back(line.substr(start));
+
             for (const std::string_view& f : fields) {
                 std::cout << f << '\n';
             }
-            ++count;
-            // if (count > 3)
-            //     break;
         }
     } catch ([[maybe_unused]] std::ifstream::failure& e)
     {
@@ -87,42 +87,6 @@ std::vector<Element> getElements(const std::string& filename)
 
     file.close();
 
-    return data;
-}
-
-std::vector<std::string_view> parseCSVRow(std::string_view row) {
-    std::vector<std::string_view> fields;
-    size_t start = 0;
-    bool inQuotes = false;
-    
-    for (size_t i = 0; i < row.length(); ++i) {
-        if (!inQuotes && row[i] == ',') {
-            fields.emplace_back(row.substr(start, i - start));
-            start = i + 1;
-        } else if (row[i] == '"') {
-            inQuotes = !inQuotes;
-        }
-    }
-    fields.emplace_back(row.substr(start));
-    
-    return fields;
-}
-
-std::vector<std::vector<std::string_view>> readCSV(const std::string& filename) {
-    std::vector<std::vector<std::string_view>> data;
-    std::ifstream file(filename);
-    
-    if (!file.is_open()) {
-        std::cerr << "Failed to open file: " << filename << std::endl;
-        return data;
-    }
-
-    std::string line;
-    while (std::getline(file, line)) {
-        data.push_back(parseCSVRow(line));
-    }
-
-    file.close();
     return data;
 }
 
