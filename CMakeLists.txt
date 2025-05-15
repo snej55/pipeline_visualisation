@@ -26,6 +26,7 @@ find_package(Arrow REQUIRED)
 find_package(Parquet REQUIRED)
 
 set(SOURCES main.cpp
+        # opengl
         src/opengl/app.cpp
         src/opengl/app.h
         src/extern/glad.c
@@ -47,6 +48,9 @@ set(SOURCES main.cpp
         src/opengl/terrain.h
         src/opengl/terrain.cpp
         src/opengl/util.h
+        
+        src/paper_loader.h
+        src/paper_loader.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
