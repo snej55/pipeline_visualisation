@@ -8,7 +8,7 @@
 struct Element
 {
     // paper title
-    std::string title;
+    std::wstring title;
     // whether the study is included or not
     int included;
     // 2d position
@@ -28,21 +28,33 @@ struct Element
     int cluster_5_3d;
     int cluster_6_2d;
     int cluster_6_3d;
-    std::string cluster_2_2d_label;
-    std::string cluster_3_2d_label;
-    std::string cluster_4_2d_label;
-    std::string cluster_5_2d_label;
-    std::string cluster_6_2d_label;
-    std::string cluster_2_3d_label;
-    std::string cluster_3_3d_label;
-    std::string cluster_4_3d_label;
-    std::string cluster_5_3d_label;
-    std::string cluster_6_3d_label;
+    std::wstring cluster_2_2d_label;
+    std::wstring cluster_3_2d_label;
+    std::wstring cluster_4_2d_label;
+    std::wstring cluster_5_2d_label;
+    std::wstring cluster_6_2d_label;
+    std::wstring cluster_2_3d_label;
+    std::wstring cluster_3_3d_label;
+    std::wstring cluster_4_3d_label;
+    std::wstring cluster_5_3d_label;
+    std::wstring cluster_6_3d_label;
 };
 
-Element createElement(const std::vector<std::wstring> fields)
+void wstring2int(const std::wstring& wstr, int* x)
 {
+    std::wstringstream wss{wstr};
+    wss >> *x;
+}
 
+Element createElement(const std::vector<std::wstring>& fields)
+{
+    // element to create
+    Element element;
+
+    element.title = fields[0]; // paper title
+    wstring2int(fields[1], &element.included);
+
+    return element;
 }
 
 std::vector<Element> getElements(const std::string& filename)
@@ -90,12 +102,15 @@ std::vector<Element> getElements(const std::string& filename)
             if (std::size(fields) == 27)
             {
                 // Create the element
-                // Element element {createElement(fields)};
-                // data.push_back(element);
-                std::cout << "Element No." << count << '\r';
+                Element element {createElement(fields)};
+                data.push_back(element);
                 ++count; // update row counter
+                std::cout << "Element No." << count << '\r';
             }
 
+            // // for testing
+            // if (count > 20)
+            //     break;
         }
         std::cout << std::endl;
         std::cout << "Loaded csv from `" << filename << "`. Rows: " << count << '\n';
