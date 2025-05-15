@@ -40,7 +40,8 @@ struct Element
     std::wstring cluster_6_3d_label;
 };
 
-void wstring2int(const std::wstring& wstr, int* x)
+template <typename T>
+void wstringconv(const std::wstring& wstr, T* x)
 {
     std::wstringstream wss{wstr};
     wss >> *x;
@@ -52,7 +53,7 @@ Element createElement(const std::vector<std::wstring>& fields)
     Element element;
 
     element.title = fields[0]; // paper title
-    wstring2int(fields[1], &element.included);
+    wstringconv<int>(fields[1], &element.included);
 
     return element;
 }
