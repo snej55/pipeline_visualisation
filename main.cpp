@@ -40,10 +40,17 @@ struct Element
     std::string cluster_6_3d_label;
 };
 
+Element createElement(const std::vector<std::wstring> fields)
+{
+
+}
+
 std::vector<Element> getElements(const std::string& filename)
 {
     std::vector<Element> data;
+    // wifstream for "wide" character encoding
     std::wifstream file;
+    // set locale
     file.imbue(std::locale("en_GB.UTF-8"));
 
     // handle exceptions
@@ -53,28 +60,42 @@ std::vector<Element> getElements(const std::string& filename)
         file.open(filename);
         int count{0};
         std::wstring line;
-        while (file.peek() != EOF)
+        while (file.peek() != EOF) // loop until we reach end of file
         {
+            // read the next line from the file
             std::getline(file, line);
-            Element element;
+            // store the fields
             std::vector<std::wstring> fields;
+            
+            // load fields from row
             std::size_t start {0};
             bool quote{false};
             for (std::size_t i{0}; i < line.length(); ++i)
             {
-                if (line[i] == '"') {
+                if (line[i] == '"') { // we either started or hit a quote
                     quote = !quote; // toggle quote
                 }
+                // if we hit a comment and we're not in a quote
                 if (!quote && line[i] == ',')
                 {
+                    // get substring from (start -> i)
                     fields.push_back(line.substr(start, i - start));
-                    start = i + 1;
+                    start = i + 1; // update start
                 }
             }
-            std::cout << count << '\n';
             // get final field
             fields.push_back(line.substr(start));
-            ++count;
+            
+            // each element needs exactly 27 fields
+            if (std::size(fields) == 27)
+            {
+                // Create the element
+                // Element element {createElement(fields)};
+                // data.push_back(element);
+                std::cout << count << '\r';
+                ++count; // update row counter
+            }
+
         }
         std::cout << "Loaded csv from `" << filename << "`. Rows: " << count << '\n';
     } catch ([[maybe_unused]] std::ifstream::failure& e)
@@ -85,7 +106,6 @@ std::vector<Element> getElements(const std::string& filename)
         data.clear();
         return data;
     }
-
 
     file.close();
 
