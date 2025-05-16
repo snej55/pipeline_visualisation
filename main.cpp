@@ -54,6 +54,8 @@ int main()
         shader.setMat4("projection", app.getPerspectiveMatrix());
         shader.setMat4("view", app.getViewMatrix());
         shader.setMat4("model", glm::mat4(1.0f));
+        shader.setVec3("camerapos", app.getCameraPosition());
+        shader.setFloat("time", static_cast<float>(glfwGetTime()));
         glBindVertexArray(VAO);
         glDrawArrays(GL_POINTS, 0, vertices.size());
 

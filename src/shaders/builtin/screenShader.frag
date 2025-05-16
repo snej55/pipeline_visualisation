@@ -6,7 +6,7 @@ in vec2 TexCoords;
 
 uniform sampler2D screenTexture;
 
-const float offset = 1.0 / 2200.0;
+const float offset = 1.0 / 1000.0;
 const float gamma = 2.2;
 
 void main() {
@@ -38,7 +38,7 @@ void main() {
         col += sampleTex[i] * kernel[i];
     }
 
-    vec3 color = col * 0.2 + vec3(texture(screenTexture, TexCoords));
+    vec3 color = col + vec3(texture(screenTexture, TexCoords));
 
     // exposure tone mapping (hdr)
     vec3 mapped = vec3(1.0) - exp(-color * 5.0);
