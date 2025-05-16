@@ -1,6 +1,6 @@
 #version 410 core
 layout (points) in;
-layout (line_strip, max_vertices = 2) out;
+layout (points, max_vertices = 1) out;
 
 in VS_OUT {
     float Included;
@@ -20,9 +20,6 @@ void main() {
     fFragPos = gs_in[0].FragPos;
 
     gl_Position = gl_in[0].gl_Position;
-    EmitVertex();
-
-    gl_Position = gl_in[0].gl_Position + vec4(vec3(normalize(vec3(gl_in[0].gl_Position))) * gs_in[0].Time, 0.0);
     EmitVertex();
 
     EndPrimitive();
