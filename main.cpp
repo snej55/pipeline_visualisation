@@ -33,16 +33,24 @@ int main()
     glEnableVertexAttribArray(0);
 
     // load shader
-    Shader shader{"shaders/points.vert", "shaders/points.frag"};
+    const Shader shader{"shaders/points.vert", "shaders/points.frag"};
+
+    const Shader screenShader{"shaders/builtin/screenShader.vert", "shaders/builtin/screenShader.frag"};
+    app.initPostProcessing();
 
     // main loop
     while (!app.shouldClose()) {
         app.handleInput();
+        app.enablePostProcessing();
         app.clear();
 
         shader.use();
         glBindVertexArray(VAO);
         glDrawArrays(GL_POINTS, 0, vertices.size());
+
+        app.disablePostProcessing();
+
+        app.getPostProcessor()->render(screenShader);
 
         app.tick();
     }
