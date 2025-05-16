@@ -20,7 +20,7 @@ int main()
 
     // load vertices from paper
     std::vector<float> vertices;
-    paperLoader.getVertices(vertices, 0.1);
+    paperLoader.getVertices(vertices, 1.0);
 
     // create vertex array and vertex buffer for vertices
     unsigned int VAO, VBO;
