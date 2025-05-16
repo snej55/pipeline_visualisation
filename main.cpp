@@ -16,15 +16,18 @@ int main()
     app.enableDepthTesting();
     app.setCameraEnabled(true);
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glEnable(GL_PROGRAM_POINT_SIZE);
 
     // load vertices from paper
     std::vector<float> vertices;
-    paperLoader.getVertices(vertices);
+    paperLoader.getVertices(vertices, 0.1);
 
     // create vertex array and vertex buffer for vertices
     unsigned int VAO, VBO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
+
+    glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vertices.size() * sizeof(vertices[0])), vertices.data(), GL_STATIC_DRAW);
@@ -45,6 +48,9 @@ int main()
         app.clear();
 
         shader.use();
+        shader.setMat4("projection", app.getPerspectiveMatrix());
+        shader.setMat4("view", app.getViewMatrix());
+        shader.setMat4("model", glm::mat4(1.0f));
         glBindVertexArray(VAO);
         glDrawArrays(GL_POINTS, 0, vertices.size());
 
