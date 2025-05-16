@@ -120,7 +120,7 @@ void PaperLoader::getVertices(std::vector<float>& vertices, const double scale) 
         vertices.push_back(static_cast<float>(paper.pos3Dx * scale)); // x
         vertices.push_back(static_cast<float>(paper.pos3Dy * scale)); // y
         vertices.push_back(static_cast<float>(paper.pos3Dz * scale)); // z
-        std::cout << static_cast<float>(paper.pos3Dx * scale) << " " << static_cast<float>(paper.pos3Dy * scale) << " " << static_cast<float>(paper.pos3Dz * scale) << '\n';
+        vertices.push_back(static_cast<float>(paper.included));
     }
     // get info
     std::cout << "Loaded " << m_papers.size() << " vertices (" << vertices.size() * sizeof(float) << " bytes)" << '\n';
