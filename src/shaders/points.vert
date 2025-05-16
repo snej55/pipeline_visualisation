@@ -6,11 +6,12 @@ uniform mat4 projection;
 uniform mat4 view;
 uniform mat4 model;
 
-out float Included;
+out VS_OUT {
+    float Included;
+} vs_out;
 
 void main()
 {
-    Included = aIncluded;
-    gl_PointSize = 2.0;
+    vs_out.Included = aIncluded;
     gl_Position = projection * view * model * vec4(aPos, 1.0);
 }

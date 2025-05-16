@@ -39,6 +39,7 @@ int main()
 
     // load shader
     const Shader shader{"shaders/points.vert", "shaders/points.frag"};
+    shader.addGeometryShader("shaders/points.geom");
 
     const Shader screenShader{"shaders/builtin/screenShader.vert", "shaders/builtin/screenShader.frag"};
     app.initPostProcessing();

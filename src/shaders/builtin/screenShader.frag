@@ -6,7 +6,7 @@ in vec2 TexCoords;
 
 uniform sampler2D screenTexture;
 
-const float offset = 1.0 / 300.0;
+const float offset = 1.0 / 1000.0;
 
 void main() {
     vec2 offsets[9] = vec2[](
@@ -37,6 +37,5 @@ void main() {
         col += sampleTex[i] * kernel[i];
     }
 
-    vec3 fragColor = texture(screenTexture, TexCoords).rgb;
-    FragColor = vec4(pow(fragColor, vec3(1.0/2.2)), 1.0);
+    FragColor = vec4(col * 2.0 + vec3(texture(screenTexture, TexCoords)) * 0.5, 1.0);
 }
