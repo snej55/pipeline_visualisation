@@ -22,6 +22,6 @@ void main()
         color = green;
     else
         color = red;
-    // color *= attenuation;
+    color *= attenuation;
     FragColor = vec4(color, 1.0);
 }
