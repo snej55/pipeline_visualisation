@@ -23,6 +23,7 @@ int main()
         }
     }
 
+    // create vertex buffer object for translations
     unsigned int instanceVBO;
     glGenBuffers(1, &instanceVBO);
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
@@ -42,6 +43,7 @@ int main()
     };
 
 
+    // regular vao & vbo
     unsigned int VAO, VBO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -61,8 +63,7 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), reinterpret_cast<void*>(0));
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glVertexAttribDivisor(2, 1);
-
+    glVertexAttribDivisor(2, 1); // update vertex object every 1th instance (at index 2 (the offset))
 
     const Shader shader{"shaders/quad.vert", "shaders/quad.frag"};
     shader.use();
@@ -74,6 +75,7 @@ int main()
 
         shader.use();
         glBindVertexArray(VAO);
+        // draw instanced array
         glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 100);  
 
         app.tick();
