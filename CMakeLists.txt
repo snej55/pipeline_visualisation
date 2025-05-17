@@ -22,7 +22,7 @@ elseif (CMAKE_SYSTEM MATCHES Linux)
     set(GL_LIBS GL GLU glfw3 assimp)
 endif()
 
-set(SOURCES main.cpp
+set(SOURCES instancing_test.cpp
         # opengl
         src/opengl/app.cpp
         src/opengl/app.h
