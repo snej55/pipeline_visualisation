@@ -1,5 +1,4 @@
 #include "src/opengl/app.h"
-#include "src/opengl/objectShapes3D.h"
 
 #include "src/paper_loader.h"
 
@@ -21,7 +20,10 @@ int main()
 
     // load coordinates from paper
     std::vector<float> paperData;
-    paperLoader.getVertices(paperData, 8.0);
+    paperLoader.getVertices(paperData, 1.0);
+
+    // actual model vertices
+    std::vector<float> vertices {0.0f, 0.0f, 0.0f};
 
     // generate vbo for paper instances
     unsigned int instanceVBO;
@@ -38,24 +40,22 @@ int main()
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(Shapes3D::cubeVerticesNormals)), Shapes3D::cubeVerticesNormals, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vertices.size() * sizeof(vertices[0])), vertices.data(), GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(0));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), reinterpret_cast<void*>(0));
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
     // set instance data
-    glEnableVertexAttribArray(2);
+    glEnableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 4 * sizeof(float), reinterpret_cast<void*>(0));
-    glEnableVertexAttribArray(3);
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 4 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
-    glVertexAttribDivisor(2, 1); // update this index every 1th instance
-    glVertexAttribDivisor(3, 1); // "" ""
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 4 * sizeof(float), reinterpret_cast<void*>(0));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 4 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+    glVertexAttribDivisor(1, 1); // update this index every 1th instance
+    glVertexAttribDivisor(2, 1); // "" ""
 
     // load shader
     const Shader shader{"shaders/points.vert", "shaders/points.frag"};
-    // shader.addGeometryShader("shaders/points.geom");
+    shader.addGeometryShader("shaders/points.geom");
 
     const Shader screenShader{"shaders/builtin/screenShader.vert", "shaders/builtin/screenShader.frag"};
     app.initPostProcessing();
@@ -73,7 +73,7 @@ int main()
         shader.setVec3("camerapos", app.getCameraPosition());
         shader.setFloat("time", static_cast<float>(glfwGetTime()));
         glBindVertexArray(VAO);
-        glDrawArraysInstanced(GL_TRIANGLES, 0, 36, paperData.size());
+        glDrawArraysInstanced(GL_POINTS, 0, vertices.size(), paperData.size());
 
         app.disablePostProcessing();
 
