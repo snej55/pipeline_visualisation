@@ -11,10 +11,13 @@ in VS_OUT {
 
 const vec3 notIncluded = vec3(0.15, 0.1, 0.514);
 const vec3 included = vec3(1.0, 0.5, 0.1);
+const vec3 lightColor = vec3(1.0);
 
 const float lightConstant = 1.0;
 const float lightLinear = 0.009;
 const float lightQuadratic = 0.0032;
+
+const float ambientStrength = 0.01;
 
 void main()
 {
@@ -26,6 +29,20 @@ void main()
         color = included;
     else
         color = notIncluded;
-    color *= attenuation;
-    FragColor = vec4(color, 1.0);
+    
+    // ambient lighting
+    vec3 ambient = ambientStrength * lightColor;
+
+    // diffuse
+    vec3 norm = normalize(vs_in.Normal);
+    vec3 lightDir = normalize(vec3(0.0) - vs_in.FragPos);
+
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = diff * lightColor;
+
+    diffuse *= attenuation;
+
+    vec3 result = (ambient + diffuse) * color;
+
+    FragColor = vec4(result, 1.0);
 }

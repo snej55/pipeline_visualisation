@@ -59,11 +59,11 @@ void PaperLoader::loadFromFile(const std::string& filename)
                     ++included;
                 }
 
-                if (count > 1000)
-                {
-                    file.close();
-                    return;
-                }
+                // if (count > 1000)
+                // {
+                //     file.close();
+                //     return;
+                // }
             }
 
             // // for testing
