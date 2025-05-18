@@ -38,7 +38,7 @@ void main() {
         col += sampleTex[i] * kernel[i];
     }
 
-    vec3 color = vec3(texture(screenTexture, TexCoords));
+    vec3 color = col * 0.2 + vec3(texture(screenTexture, TexCoords));
 
     // exposure tone mapping (hdr)
     vec3 mapped = vec3(1.0) - exp(-color * 5.0);

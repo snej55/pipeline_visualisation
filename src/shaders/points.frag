@@ -18,10 +18,13 @@ void main()
     float attenuation = 1.0 / (lightConstant + lightLinear * dist + lightQuadratic * (dist * dist));
 
     vec3 color;
-    if (fIncluded > 0.0)
+    if (fIncluded > 0.0) {
         color = included;
-    else
+        color *= attenuation * 1.5;
+    } else{
         color = notIncluded;
-    color *= attenuation;
+        color *= attenuation;
+    }
+
     FragColor = vec4(color, 1.0);
 }

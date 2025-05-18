@@ -20,7 +20,7 @@ int main()
 
     // load coordinates from paper
     std::vector<float> paperData;
-    paperLoader.getVertices(paperData, 1.0);
+    paperLoader.getVertices(paperData, 2.0);
 
     // actual model vertices
     std::vector<float> vertices {0.0f, 0.0f, 0.0f};
