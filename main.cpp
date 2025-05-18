@@ -18,10 +18,12 @@ int main()
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glEnable(GL_PROGRAM_POINT_SIZE);
 
-    // load vertices from paper
-    std::vector<float> vertices {0.0f, 0.0f, 0.0f};
+    // load coordinates from paper
     std::vector<float> paperData;
     paperLoader.getVertices(paperData, 1.0);
+
+    // actual model vertices
+    std::vector<float> vertices {0.0f, 0.0f, 0.0f};
 
     // generate vbo for paper instances
     unsigned int instanceVBO;
