@@ -5,8 +5,8 @@ in float fIncluded;
 in vec3 fCameraPos;
 in vec3 fFragPos;
 
-const vec3 red = vec3(0.8, 0.322, 0.314);
-const vec3 green = vec3(0.13, 0.537, 0.431);
+const vec3 notIncluded = vec3(0.15, 0.1, 0.514);
+const vec3 included = vec3(1.0, 0.5, 0.1);
 
 const float lightConstant = 1.0;
 const float lightLinear = 0.009;
@@ -19,9 +19,9 @@ void main()
 
     vec3 color;
     if (fIncluded > 0.0)
-        color = green;
+        color = included;
     else
-        color = red;
+        color = notIncluded;
     color *= attenuation;
     FragColor = vec4(color, 1.0);
 }

@@ -17,6 +17,7 @@ void PaperLoader::loadFromFile(const std::string& filename)
         file.open(filename);
 
         int count{0}; // row counter
+        int included{0}; // num papers included
         std::wstring line; // the current row
         do
         {
@@ -52,7 +53,11 @@ void PaperLoader::loadFromFile(const std::string& filename)
                 createPaper(fields, paper);
                 m_papers.push_back(paper);
                 ++count; // update row counter
-                std::cout << "Paper No." << count << '\r';
+                std::cout << "Paper No." << count << " | " << included << " included" << '\r';
+
+                if (paper.included) {
+                    ++included;
+                }
             }
 
             // // for testing
@@ -115,13 +120,20 @@ void PaperLoader::createPaper(const std::vector<std::wstring>& fields, Paper& pa
 // scale is double because paper coordinates are double
 void PaperLoader::getVertices(std::vector<float>& vertices, const double scale) const {
     vertices.clear();
+    int included{0};
+    int not_included{0};
     for (const Paper& paper : m_papers)
     {
         vertices.push_back(static_cast<float>(paper.pos3Dx * scale)); // x
         vertices.push_back(static_cast<float>(paper.pos3Dy * scale)); // y
         vertices.push_back(static_cast<float>(paper.pos3Dz * scale)); // z
         vertices.push_back(static_cast<float>(paper.included));
+        if (paper.included)
+            ++included;
+        else
+            not_included++;
     }
     // get info
     std::cout << "Loaded " << m_papers.size() << " vertices (" << vertices.size() * sizeof(float) << " bytes)" << '\n';
+    std::cout << included << " papers included, " << not_included << " papers not included\n";
 }
