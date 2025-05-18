@@ -2,6 +2,9 @@
 
 #include "src/paper_loader.h"
 
+#include <ft2build.h>
+#include FT_FREETYPE_H  
+
 int main()
 {
     // load papers

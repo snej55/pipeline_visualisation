@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 set(CMAKE_SYSTEM_NAME Windows)
 
-set(GL_LIBS glfw3 assimp)
+set(GL_LIBS glfw3 assimp freetype)
 
 if (CMAKE_SYSTEM MATCHES Windows)
     message(STATUS "Target system is Windows")
@@ -19,7 +19,7 @@ elseif (CMAKE_SYSTEM MATCHES Linux)
     # mesa-libGL-devel mesa-libGLU-devel minizip
     include_directories(${CMAKE_SOURCE_DIR}/include/linux ${CMAKE_SOURCE_DIR}/src/extern/glad)
     link_directories(${CMAKE_SOURCE_DIR}/lib/linux)
-    set(GL_LIBS GL GLU glfw3 assimp)
+    set(GL_LIBS GL GLU glfw3 assimp freetype)
 endif()
 
 set(SOURCES main.cpp
