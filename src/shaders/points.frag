@@ -35,7 +35,7 @@ void main()
 
     // diffuse
     vec3 norm = normalize(vs_in.Normal);
-    vec3 lightDir = normalize(vec3(0.0) - vs_in.FragPos);
+    vec3 lightDir = normalize(vs_in.CameraPos - vs_in.FragPos);
 
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = diff * lightColor;

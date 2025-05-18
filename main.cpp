@@ -21,7 +21,7 @@ int main()
 
     // load coordinates from paper
     std::vector<float> paperData;
-    paperLoader.getVertices(paperData, 2.0);
+    paperLoader.getVertices(paperData, 8.0);
 
     // generate vbo for paper instances
     unsigned int instanceVBO;
