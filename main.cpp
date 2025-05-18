@@ -21,7 +21,7 @@ int main()
 
     // load coordinates from paper
     std::vector<float> paperData;
-    paperLoader.getVertices(paperData, 1.0);
+    paperLoader.getVertices(paperData, 2.0);
 
     // generate vbo for paper instances
     unsigned int instanceVBO;
@@ -55,7 +55,7 @@ int main()
 
     // load shader
     const Shader shader{"shaders/points.vert", "shaders/points.frag"};
-    shader.addGeometryShader("shaders/points.geom");
+    // shader.addGeometryShader("shaders/points.geom");
 
     const Shader screenShader{"shaders/builtin/screenShader.vert", "shaders/builtin/screenShader.frag"};
     app.initPostProcessing();

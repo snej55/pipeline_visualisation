@@ -24,6 +24,7 @@ void main() {
     fIncluded = gs_in[1].Included;
     fCameraPos = gs_in[1].CameraPos;
     fFragPos = gs_in[1].FragPos;
+
     gl_Position = gl_in[1].gl_Position;
     EmitVertex();
 

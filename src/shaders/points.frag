@@ -1,9 +1,13 @@
 #version 330 core
 out vec4 FragColor;
 
-in float fIncluded;
-in vec3 fCameraPos;
-in vec3 fFragPos;
+in VS_OUT {
+    float Included;
+    vec3 CameraPos;
+    vec3 FragPos;
+    vec3 Normal;
+    float Time;
+} vs_in;
 
 const vec3 notIncluded = vec3(0.15, 0.1, 0.514);
 const vec3 included = vec3(1.0, 0.5, 0.1);
@@ -14,11 +18,11 @@ const float lightQuadratic = 0.0032;
 
 void main()
 {
-    float dist = length(fCameraPos - fFragPos);
+    float dist = length(vs_in.CameraPos - vs_in.FragPos);
     float attenuation = 1.0 / (lightConstant + lightLinear * dist + lightQuadratic * (dist * dist));
 
     vec3 color;
-    if (fIncluded > 0.0)
+    if (vs_in.Included > 0.0)
         color = included;
     else
         color = notIncluded;
