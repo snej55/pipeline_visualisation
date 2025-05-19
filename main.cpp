@@ -88,6 +88,9 @@ int main()
         glBindVertexArray(VAO);
         glDrawArraysInstanced(GL_TRIANGLES, 0, 36, paperData.size());
 
+        fontManager.updateProjection(app.getWidth(), app.getHeight());
+        fontManager.renderText(fontShader, "Hi there!", 25.0f, 25.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+
         app.disablePostProcessing();
 
         app.getPostProcessor()->render(screenShader);

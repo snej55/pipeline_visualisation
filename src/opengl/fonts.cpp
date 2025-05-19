@@ -89,6 +89,52 @@ void FontManager::free()
     }
 }
 
+void FontManager::renderText(const Shader& shader, const std::string& text, float x, float y, const float scale, const glm::vec3&& color)
+{
+    // use shader
+    shader.use();
+    shader.setVec3("textColor", color);
+    shader.setMat4("projection", m_projection);
+    glActiveTexture(GL_TEXTURE0);
+    glBindVertexArray(m_VAO);
+
+    // go through all the characters
+    std::string::const_iterator chr;
+    for (chr = {text.begin()}; chr != text.end(); ++chr)
+    {
+        Character c {m_characters[*chr]};
+
+        const float xpos {x + c.bearing.x * scale};
+        const float ypos {(c.size.y - c.bearing.y) * scale};
+
+        const float w {c.size.x * scale};
+        const float h {c.size.y * scale};
+        // update vbo for each character
+        float vertices[6][4] = {
+            // first triangle
+            {xpos, ypos + h, 0.0f, 0.0f },            
+            {xpos, ypos, 0.0f, 1.0f},
+            {xpos + w, ypos, 1.0f, 1.0f},
+            // second triangle
+            {xpos, ypos + h, 0.0f, 0.0f},
+            {xpos + w, ypos, 1.0f, 1.0f},
+            {xpos + w, ypos + h, 1.0f, 0.0f}           
+        };
+        // render glyph texture on quad
+        glBindTexture(GL_TEXTURE_2D, c.textureID);
+        // update VBO memory
+        glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        // render quad
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        // advance cursor for next glyph
+        x += (c.advance >> 6) * scale; // black magic (bitshift by 6 gives value in pixels (2^6 = 64))
+    }
+    glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 void FontManager::updateProjection(const float width, const float height)
 {
     // update projection matrix with new framebuffer dimensions

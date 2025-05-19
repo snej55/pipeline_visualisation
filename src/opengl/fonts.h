@@ -13,6 +13,8 @@
 #include <string>
 #include <map>
 
+#include "shader.h"
+
 struct Character 
 {
     unsigned int textureID;
@@ -30,6 +32,10 @@ public:
     bool init(const std::string& font, int height);
     void free();
 
+    // render text
+    void renderText(const Shader& shader, const std::string& text, float x, float y, float scale, const glm::vec3&& color);
+
+    // update projection matrix with framebuffer dimensions on resize
     void updateProjection(float width, float height);
 
     // getters & setters for font face and library
