@@ -128,13 +128,16 @@ void PaperLoader::getVertices(std::vector<float>& vertices, const double scale) 
     vertices.clear();
     int included{0};
     int not_included{0};
-    for (const Paper& paper : m_papers)
+    for (std::size_t i{0}; i < std::size(m_papers); ++i)
     {
-        vertices.push_back(static_cast<float>(paper.pos3Dx * scale)); // x
-        vertices.push_back(static_cast<float>(paper.pos3Dy * scale)); // y
-        vertices.push_back(static_cast<float>(paper.pos3Dz * scale)); // z
-        vertices.push_back(static_cast<float>(paper.included));
-        if (paper.included)
+        const Paper* paper {&m_papers[i]};
+        vertices.push_back(static_cast<float>(paper->pos3Dx * scale)); // x
+        vertices.push_back(static_cast<float>(paper->pos3Dy * scale)); // y
+        vertices.push_back(static_cast<float>(paper->pos3Dz * scale)); // z
+        vertices.push_back(static_cast<float>(paper->included));
+        vertices.push_back(static_cast<float>(i)); // counter
+        // for debug info
+        if (paper->included)
             ++included;
         else
             not_included++;

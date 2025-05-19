@@ -31,7 +31,7 @@ int main()
 
     // load coordinates from paper
     std::vector<float> paperData;
-    paperLoader.getVertices(paperData, 8.0);
+    paperLoader.getVertices(paperData, 4.0);
 
     // actual model vertices
     std::vector<float> vertices {0.0f, 0.0f, 0.0f};
@@ -60,11 +60,14 @@ int main()
     // set instance data
     glEnableVertexAttribArray(2);
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 4 * sizeof(float), reinterpret_cast<void*>(0));
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void*>(0));
     glEnableVertexAttribArray(3);
-    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 4 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void*>(4 * sizeof(float)));
     glVertexAttribDivisor(2, 1); // update this index every 1th instance
     glVertexAttribDivisor(3, 1); // "" ""
+    glVertexAttribDivisor(4, 1); // "" ""
 
     // load shader
     const Shader shader{"shaders/pointsLighting.vert", "shaders/pointsLighting.frag"};

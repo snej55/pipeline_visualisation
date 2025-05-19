@@ -3,6 +3,7 @@ layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec3 aOffset;
 layout (location = 3) in float aIncluded;
+layout (location = 4) in float aCounter;
 
 uniform mat4 projection;
 uniform mat4 view;
@@ -18,14 +19,17 @@ out VS_OUT {
     vec3 FragPos;
     vec3 Normal;
     float Time;
+    float Counter;
 } vs_out;
 
 void main()
 {
+    vs_out.Counter = aCounter;
     vs_out.Included = aIncluded;
     vs_out.CameraPos = camerapos;
     vs_out.Normal = aNormal;
-    vs_out.FragPos = vec3(model * vec4(aPos + aOffset, 1.0));
+    vec3 uv = aPos; // can be modified
+    vs_out.FragPos = vec3(model * vec4(uv + aOffset, 1.0));
     vs_out.Time = time;
-    gl_Position = projection * view * model * vec4(aPos + aOffset, 1.0);
+    gl_Position = projection * view * model * vec4(uv + aOffset, 1.0);
 }

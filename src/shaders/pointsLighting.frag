@@ -7,6 +7,7 @@ in VS_OUT {
     vec3 FragPos;
     vec3 Normal;
     float Time;
+    float Counter;
 } vs_in;
 
 const vec3 notIncluded = vec3(0.15, 0.1, 0.514);
@@ -29,6 +30,14 @@ void main()
         color = included;
     else
         color = notIncluded;
+
+    float explored = 0.0;
+    float progress = vs_in.Time * 1500.0;
+    if (progress > vs_in.Counter)
+        explored = 1.0;
+    
+    if (explored < 1.0)
+        color = vec3(0.3);
     
     // ambient lighting
     vec3 ambient = ambientStrength * lightColor;
@@ -42,6 +51,7 @@ void main()
 
     diffuse *= attenuation;
 
+    float intensity = vs_in.Counter / 149945.0;
     vec3 result = (ambient + diffuse) * color;
 
     FragColor = vec4(result, 1.0);
