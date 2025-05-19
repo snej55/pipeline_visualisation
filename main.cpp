@@ -63,6 +63,9 @@ int main()
     const Shader screenShader{"shaders/builtin/screenShader.vert", "shaders/builtin/screenShader.frag"};
     app.initPostProcessing();
 
+    const Shader fontShader{"shaders/builtin/fonts.vert", "shaders/builtin/fonts.frag"};
+    
+
     // main loop
     while (!app.shouldClose()) {
         app.handleInput();
