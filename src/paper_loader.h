@@ -50,12 +50,14 @@ struct Paper
 
 struct Cluster
 {
+    int num_papers{0};
+    std::wstring label;
 };
 
 class PaperLoader
 {
 public:
-    PaperLoader() = default;
+    PaperLoader();
     ~PaperLoader() = default;
 
     // load papers data from csv file
@@ -74,9 +76,14 @@ public:
 
     // gets list of 3D vertices from paper list
     void getVertices(std::vector<float>& vertices, double scale = 1.0f);
+    void generateClusters();
+    // generate single cluster
+    void generateClusterLevel(int idx);
 
     // papers getter
     [[nodiscard]] const std::vector<Paper>& getPapers() const {return m_papers;}
+    // clusters getter
+    [[nodiscard]] const std::map<int, Cluster>& getClusters(int depth) const;
     // stats getters
     [[nodiscard]] unsigned int getNumPapers() const {return std::size(m_papers);}
     [[nodiscard]] unsigned int getNumIncluded() const {return m_numIncluded;}
@@ -87,6 +94,8 @@ public:
 private:
     // papers data
     std::vector<Paper> m_papers{};
+    // cluster data
+    std::vector<std::map<int, Cluster>> m_clusters{};
 
     // stats
     unsigned int m_numIncluded{0}; // number of included papers

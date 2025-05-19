@@ -1,5 +1,10 @@
 #include "paper_loader.h"
 
+PaperLoader::PaperLoader()
+{
+    m_clusters.resize(5);
+}
+
 // load papers from csv file
 void PaperLoader::loadFromFile(const std::string& filename)
 {
@@ -15,7 +20,8 @@ void PaperLoader::loadFromFile(const std::string& filename)
     try
     {
         file.open(filename);
-
+        
+        bool firstRow{true};
         int count{0}; // row counter
         int included{0}; // num papers included
         int lastIncluded{0}; // index of last paper included
@@ -24,6 +30,11 @@ void PaperLoader::loadFromFile(const std::string& filename)
         {
             // read the next line from the file
             std::getline(file, line);
+            if (firstRow)
+            {
+                firstRow = false;
+                continue;
+            }
             // store the fields
             std::vector<std::wstring> fields;
             
@@ -145,4 +156,41 @@ void PaperLoader::getVertices(std::vector<float>& vertices, const double scale) 
     std::cout << included << " papers included, " << not_included << " papers not included\n";
     // update stats
     m_verticesSize = vertices.size() * sizeof(vertices[0]);
+}
+
+void PaperLoader::generateClusters()
+{
+    std::cout << "Generating clusters...\n";
+    for (int i{0}; i < 5; ++i)
+    {
+        generateClusterLevel(i);
+    }
+    std::cout << "Generated clusters!\n";
+}
+
+void PaperLoader::generateClusterLevel(const int idx)
+{
+    for (const Paper& paper : m_papers)
+    {
+        if (!m_clusters[idx].contains(paper.cluster_2_2d))
+        {
+            m_clusters[idx].insert(std::pair<int, Cluster>{paper.cluster_2_2d, Cluster{}});
+            m_clusters[idx][paper.cluster_2_2d].label = paper.cluster_2_2d_label;
+        }
+        ++m_clusters[idx][paper.cluster_2_2d].num_papers;
+    }
+    // print clusters at level idx + 2
+    std::cout << "--- Level " << idx + 2 << " Clusters---:\n";
+    for (const std::pair<int, Cluster>& cluster : m_clusters[idx])
+    {
+        std::wcout << "\tCluster No." << cluster.first << " (" << cluster.second.num_papers << " papers, under `" << cluster.second.label << "`)\n";
+    }
+    std::cout << "-----------------------\n";
+}
+
+// return map of clusters for given depth (2-6)
+const std::map<int, Cluster>& PaperLoader::getClusters(const int depth) const
+{
+    const std::size_t index {std::max(2, std::min(6, depth))};
+    return m_clusters[index - 2];
 }

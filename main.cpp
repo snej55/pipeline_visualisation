@@ -17,6 +17,7 @@ int main()
     // load papers
     PaperLoader paperLoader{};
     paperLoader.loadFromFile("data/papers_with_labels.csv");
+    paperLoader.generateClusters(); // group papers into clusters
 
     std::cout << "Loaded papers!\n";
 
