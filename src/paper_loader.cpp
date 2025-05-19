@@ -165,6 +165,7 @@ void PaperLoader::generateClusters()
     {
         generateClusterLevel(i);
     }
+    std::cout << "-----------------------\n";
     std::cout << "Generated clusters!\n";
 }
 
@@ -172,20 +173,66 @@ void PaperLoader::generateClusterLevel(const int idx)
 {
     for (const Paper& paper : m_papers)
     {
-        if (!m_clusters[idx].contains(paper.cluster_2_2d))
+        int clusterID {getClusterID(paper, idx + 2)};
+        // if cluster doesn't exist yet create it
+        if (!m_clusters[idx].contains(clusterID))
         {
-            m_clusters[idx].insert(std::pair<int, Cluster>{paper.cluster_2_2d, Cluster{}});
-            m_clusters[idx][paper.cluster_2_2d].label = paper.cluster_2_2d_label;
+            // create new cluster
+            m_clusters[idx].insert(std::pair<int, Cluster>{clusterID, Cluster{}});
+            // set correct label
+            m_clusters[idx][getClusterID(paper, idx + 2)].label = getClusterLabel(paper, idx + 2);
         }
-        ++m_clusters[idx][paper.cluster_2_2d].num_papers;
+        // add another paper to cluster
+        ++m_clusters[idx][clusterID].num_papers;
     }
     // print clusters at level idx + 2
-    std::cout << "--- Level " << idx + 2 << " Clusters---:\n";
+    std::cout << "--- Level " << idx + 2 << " Clusters ---\n";
     for (const std::pair<int, Cluster>& cluster : m_clusters[idx])
     {
         std::wcout << "\tCluster No." << cluster.first << " (" << cluster.second.num_papers << " papers, under `" << cluster.second.label << "`)\n";
     }
-    std::cout << "-----------------------\n";
+}
+
+// return cluster id for paper at given depth (2-6) default depth is 2
+int PaperLoader::getClusterID(const Paper& paper, int depth) const
+{
+    depth = std::max(2, std::min(6, depth));
+    switch (depth)
+    {
+        case 2:
+            return paper.cluster_2_2d;
+        case 3:
+            return paper.cluster_3_2d;
+        case 4:
+            return paper.cluster_4_2d;
+        case 5:
+            return paper.cluster_5_2d;
+        case 6:
+            return paper.cluster_6_2d;
+        default:
+            return paper.cluster_2_2d;
+    }
+}
+
+// return cluster label for paper at given depth (2-6) default depth is 2
+std::wstring PaperLoader::getClusterLabel(const Paper& paper, int depth) const
+{
+    depth = std::max(2, std::min(6, depth));
+    switch (depth)
+    {
+        case 2:
+            return paper.cluster_2_2d_label;
+        case 3:
+            return paper.cluster_3_2d_label;
+        case 4:
+            return paper.cluster_4_2d_label;
+        case 5:
+            return paper.cluster_5_2d_label;
+        case 6:
+            return paper.cluster_6_2d_label;
+        default:
+            return paper.cluster_2_2d_label;
+    }
 }
 
 // return map of clusters for given depth (2-6)

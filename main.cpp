@@ -10,7 +10,7 @@
 constexpr unsigned int FONT_SIZE {12};
 constexpr bool DEBUG_INFO_ENABLED {true};
 // animation tweaks
-constexpr float ANIMATION_SPEED {70.f};
+constexpr float ANIMATION_SPEED {700.f};
 
 int main()
 {
