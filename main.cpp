@@ -94,7 +94,7 @@ int main()
 
         std::stringstream dimensions;
         dimensions << "Framebuffer size: " << app.getWidth() << " * " << app.getHeight();
-        fontManager.renderText(fontShader, dimensions.str(), 10.0f, 50.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+        fontManager.renderText(fontShader, dimensions.str(), 10.0f, 10.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 
         app.disablePostProcessing();
 

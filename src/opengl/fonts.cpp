@@ -105,7 +105,7 @@ void FontManager::renderText(const Shader& shader, const std::string& text, floa
         Character c {m_characters[*chr]};
 
         const float xpos {x + c.bearing.x * scale};
-        const float ypos {(c.size.y - c.bearing.y) * scale};
+        const float ypos {y - (c.size.y - c.bearing.y) * scale};
 
         const float w {c.size.x * scale};
         const float h {c.size.y * scale};
