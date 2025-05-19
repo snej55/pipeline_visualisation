@@ -69,6 +69,7 @@ void PaperLoader::loadFromFile(const std::string& filename)
         // update stats
         m_numIncluded = included;
         m_lastIndex = lastIncluded;
+        m_papersSize = std::size(m_papers) * sizeof(Paper);
     } catch ([[maybe_unused]] std::ifstream::failure& e)
     {
         // clear data and return it (nothing)
@@ -121,7 +122,7 @@ void PaperLoader::createPaper(const std::vector<std::wstring>& fields, Paper& pa
 }
 
 // scale is double because paper coordinates are double
-void PaperLoader::getVertices(std::vector<float>& vertices, const double scale) const {
+void PaperLoader::getVertices(std::vector<float>& vertices, const double scale) {
     vertices.clear();
     int included{0};
     int not_included{0};
@@ -142,4 +143,6 @@ void PaperLoader::getVertices(std::vector<float>& vertices, const double scale) 
     // get info
     std::cout << "Loaded " << m_papers.size() << " vertices (" << vertices.size() * sizeof(float) / 1000 << " KB)" << '\n';
     std::cout << included << " papers included, " << not_included << " papers not included\n";
+    // update stats
+    m_verticesSize = vertices.size() * sizeof(vertices[0]);
 }

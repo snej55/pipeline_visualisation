@@ -73,7 +73,7 @@ public:
     }
 
     // gets list of 3D vertices from paper list
-    void getVertices(std::vector<float>& vertices, double scale = 1.0f) const;
+    void getVertices(std::vector<float>& vertices, double scale = 1.0f);
 
     // papers getter
     [[nodiscard]] const std::vector<Paper>& getPapers() const {return m_papers;}
@@ -81,6 +81,8 @@ public:
     [[nodiscard]] unsigned int getNumPapers() const {return std::size(m_papers);}
     [[nodiscard]] unsigned int getNumIncluded() const {return m_numIncluded;}
     [[nodiscard]] unsigned int getLastIndex() const {return m_lastIndex;}
+    [[nodiscard]] unsigned int getPapersSize() const {return m_papersSize;}
+    [[nodiscard]] unsigned int getVerticesSize() const {return m_verticesSize;}
 
 private:
     // papers data
@@ -89,6 +91,8 @@ private:
     // stats
     unsigned int m_numIncluded{0}; // number of included papers
     unsigned int m_lastIndex{0}; // last index explored
+    unsigned int m_papersSize{0}; // size of papers vector in bytes
+    unsigned int m_verticesSize{0}; // size of vertices in bytes
 };
 
 #endif

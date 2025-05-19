@@ -10,7 +10,7 @@
 constexpr unsigned int FONT_SIZE {12};
 constexpr bool DEBUG_INFO_ENABLED {true};
 // animation tweaks
-constexpr float ANIMATION_SPEED {1500.f};
+constexpr float ANIMATION_SPEED {700.f};
 
 int main()
 {
@@ -34,9 +34,6 @@ int main()
     // load coordinates from paper
     std::vector<float> paperData;
     paperLoader.getVertices(paperData, 5.0);
-
-    // actual model vertices
-    std::vector<float> vertices {0.0f, 0.0f, 0.0f};
 
     // generate vbo for paper instances
     unsigned int instanceVBO;
@@ -117,9 +114,21 @@ int main()
             // progress
             int progress {std::min(static_cast<int>(paperLoader.getNumPapers()), static_cast<int>(glfwGetTime() * ANIMATION_SPEED))};
             float percentage {static_cast<float>(glfwGetTime()) * ANIMATION_SPEED / static_cast<float>(paperLoader.getNumPapers())}; // progress as percentage
-            percentage = static_cast<float>(static_cast<int>(percentage * 1000.f)) / 1000.f;
+            percentage = std::min(100.0f, static_cast<float>(static_cast<int>(percentage * 1000.f)) / 10.f); // (n / 10.f = n / 1000.f * 100.f)
             text << "Progress: " << progress << "/" << paperLoader.getNumPapers() << " (" << percentage << "%)";
             fontManager.renderText(fontShader, text.str(), 10.0f, app.getHeight() - 50.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+            text.str("");
+            // animation speed
+            text << "Animation speed: " << ANIMATION_SPEED;
+            fontManager.renderText(fontShader, text.str(), 10.0f, app.getHeight() - 65.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+            text.str("");
+            // papers size & vertices size
+            text << "Paper data size (MB): " << static_cast<int>(paperLoader.getPapersSize()) / 1000000;
+            fontManager.renderText(fontShader, text.str(), 10.0f, app.getHeight() - 80.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+            text.str("");
+            text << "Vertex data size (KB): " << static_cast<int>(paperLoader.getVerticesSize() + sizeof(Shapes3D::cubeVerticesNormals)) / 1000;
+            fontManager.renderText(fontShader, text.str(), 10.0f, app.getHeight() - 95.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+            text.str("");
         }
 
         app.disablePostProcessing();
