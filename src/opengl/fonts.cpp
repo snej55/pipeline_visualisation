@@ -61,6 +61,19 @@ bool FontManager::init(const std::string& path, const int height)
         m_characters.insert(std::pair<char, Character>{c, character});
     }
 
+    // generate vertex arrays & vbo
+    glGenVertexArrays(1, &m_VAO);
+    glGenBuffers(1, &m_VBO);
+    glBindVertexArray(m_VAO);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+    // enough memory for rendering characters
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, nullptr, GL_DYNAMIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), reinterpret_cast<void*>(0));
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
     // all good
     m_loaded = true;
     std::cout << "Successfully loaded font from `" << path << "`\n";
@@ -74,4 +87,10 @@ void FontManager::free()
         FT_Done_Face(m_face);
         FT_Done_FreeType(m_FT);
     }
+}
+
+void FontManager::updateProjection(const float width, const float height)
+{
+    // update projection matrix with new framebuffer dimensions
+    m_projection = glm::ortho(0.0f, width, 0.0f, height);
 }
