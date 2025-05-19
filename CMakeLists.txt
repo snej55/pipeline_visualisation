@@ -46,6 +46,7 @@ set(SOURCES main.cpp
         src/opengl/terrain.cpp
         src/opengl/util.h
         src/opengl/fonts.h
+        src/opengl/fonts.cpp
         
         src/paper_loader.h
         src/paper_loader.cpp
