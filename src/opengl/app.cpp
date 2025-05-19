@@ -5,6 +5,7 @@
 #include "app.h"
 
 #include <iostream>
+#include <numeric>
 
 App::App(const int width, const int height, const char *title)
 // vertex & fragment paths don't matter for default shader
@@ -134,6 +135,14 @@ void App::tick()
     const float currentFrame{static_cast<float>(glfwGetTime())};
     _deltaTime = currentFrame - _lastFrame;
     _lastFrame = currentFrame;
+
+    // update deltaTimes
+    m_deltaTimes.push_back(_deltaTime);
+    if (m_deltaTimes.size() > numTimeSamples)
+    {
+        // remove first element
+        m_deltaTimes.erase(m_deltaTimes.begin());
+    }
 }
 
 bool App::shouldClose() const
@@ -164,6 +173,12 @@ void App::setTitle(const char *title) const
 float App::getDeltaTime() const
 {
     return _deltaTime;
+}
+
+float App::getAvgFrameTime() const
+{
+    const float sum{std::accumulate(m_deltaTimes.begin(), m_deltaTimes.end(), 0.0f)};
+    return sum / static_cast<float>(m_deltaTimes.size());
 }
 
 void App::setCameraEnabled(const bool val)

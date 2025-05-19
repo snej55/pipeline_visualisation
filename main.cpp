@@ -5,6 +5,10 @@
 
 #include <string>
 #include <sstream>
+#include <iomanip>
+
+constexpr unsigned int FONT_SIZE {12};
+constexpr bool DEBUG_INFO_ENABLED {true};
 
 int main()
 {
@@ -71,7 +75,7 @@ int main()
 
     // initialize font manager
     FontManager fontManager{};
-    fontManager.init("data/fonts/opensans/OpenSans-Light.ttf", 16);
+    fontManager.init("data/fonts/opensans/OpenSans-Light.ttf", FONT_SIZE);
     // load fonts shader
     const Shader fontShader{"shaders/builtin/fonts.vert", "shaders/builtin/fonts.frag"};
 
@@ -92,9 +96,16 @@ int main()
 
         fontManager.updateProjection(app.getWidth(), app.getHeight());
 
-        std::stringstream dimensions;
-        dimensions << "Framebuffer size: " << app.getWidth() << " * " << app.getHeight();
-        fontManager.renderText(fontShader, dimensions.str(), 10.0f, 10.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+        if (DEBUG_INFO_ENABLED)
+        {
+            std::stringstream text;
+            text << "Framebuffer size: " << app.getWidth() << " * " << app.getHeight();
+            fontManager.renderText(fontShader, text.str(), 10.0f, app.getHeight() - 35.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+            text.str(""); // clear string stream
+            float avgTime {static_cast<int>(app.getAvgFrameTime() * 1000) / 1000.0f};
+            text << "Avg. frame time: " << avgTime * 1000.0f<< " ms";
+            fontManager.renderText(fontShader, text.str(), 10.0f, app.getHeight() - 20.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+        }
 
         app.disablePostProcessing();
 

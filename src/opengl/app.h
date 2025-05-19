@@ -38,6 +38,7 @@ public:
     void setTitle(const char *title) const;
 
     [[nodiscard]] float getDeltaTime() const;
+    [[nodiscard]] float getAvgFrameTime() const;
 
     void setCameraEnabled(bool val);
 
@@ -162,6 +163,9 @@ private:
     bool _faceCullingEnabled{false};
     bool _postProcessingEnabled{false};
 
+    // list of delta times to calculate average
+    std::vector<float> m_deltaTimes{};
+    static constexpr unsigned int numTimeSamples{5};
     // ----------------------------------------------------------- //
 
     bool init(int width, int height, const char *title);
