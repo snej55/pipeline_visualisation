@@ -54,7 +54,7 @@ void PaperLoader::loadFromFile(const std::string& filename)
                 createPaper(fields, paper);
                 m_papers.push_back(paper);
                 ++count; // update row counter
-                std::cout << "Paper No." << count << " | " << included << " included | " << lastIncluded << " last included index" << '\r';
+                std::cout << "Paper No." << count << " | " << included << " included | " << lastIncluded << " LII" << '\r';
 
                 if (paper.included) {
                     ++included;
