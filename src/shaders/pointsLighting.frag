@@ -10,8 +10,8 @@ in VS_OUT {
     float Counter;
 } vs_in;
 
-const vec3 notIncluded = vec3(0.0, 1.0, 0.0);
-const vec3 included = vec3(1.0, 0.0, 0.0);
+const vec3 notIncluded = vec3(1.0, 0.0, 0.0);
+const vec3 included = vec3(0.0, 1.0, 0.0);
 const vec3 lightColor = vec3(1.0);
 
 const float lightConstant = 1.0;
@@ -43,7 +43,7 @@ void main()
         explored = 0.0;
 
     if (explored < 1.0)
-        color = vec3(0.3);
+        color = vec3(0.05);
     
     // ambient lighting
     vec3 ambient = ambientStrength * lightColor;

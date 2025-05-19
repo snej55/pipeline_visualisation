@@ -79,6 +79,8 @@ public:
     void generateClusters();
     // generate single cluster
     void generateClusterLevel(int idx);
+    void getClusterID(const Paper& paper) const;
+    void getClusterLabel(const Paper& paper) const;
 
     // papers getter
     [[nodiscard]] const std::vector<Paper>& getPapers() const {return m_papers;}
