@@ -76,12 +76,17 @@ public:
 
     // gets list of 3D vertices from paper list
     void getVertices(std::vector<float>& vertices, double scale = 1.0f);
+
+    // loads cluster levels from papers
     void generateClusters();
-    // generate single cluster
+    // generate single cluster level
     void generateClusterLevel(int idx);
+
     // get cluster info from papers at a specific depth
     int getClusterID(const Paper& paper, int depth) const;
     std::wstring getClusterLabel(const Paper& paper, int depth) const;
+
+    Cluster* getCluster(int id, int depth);
 
     // papers getter
     [[nodiscard]] const std::vector<Paper>& getPapers() const {return m_papers;}

@@ -169,6 +169,7 @@ void PaperLoader::generateClusters()
     std::cout << "Generated clusters!\n";
 }
 
+// generates clusters for a given level from papers
 void PaperLoader::generateClusterLevel(const int idx)
 {
     for (const Paper& paper : m_papers)
@@ -233,6 +234,14 @@ std::wstring PaperLoader::getClusterLabel(const Paper& paper, int depth) const
         default:
             return paper.cluster_2_2d_label;
     }
+}
+
+Cluster* PaperLoader::getCluster(int id, int depth)
+{
+    depth = std::max(2, std::min(6, depth));
+    // avoid copying large cluster
+    std::map<int, Cluster>* cluster {&m_clusters[depth]};
+    return &(*cluster)[id];
 }
 
 // return map of clusters for given depth (2-6)
