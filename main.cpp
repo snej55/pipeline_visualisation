@@ -1,9 +1,7 @@
 #include "src/opengl/app.h"
+#include "src/opengl/fonts.h"
 
 #include "src/paper_loader.h"
-
-#include <ft2build.h>
-#include FT_FREETYPE_H  
 
 int main()
 {
@@ -68,6 +66,9 @@ int main()
     const Shader screenShader{"shaders/builtin/screenShader.vert", "shaders/builtin/screenShader.frag"};
     app.initPostProcessing();
 
+    // initialize font manager
+    FontManager fontManager{};
+    fontManager.init("data/fonts/opensans/OpenSans-Regular.ttf", 48);
     // load fonts shader
     const Shader fontShader{"shaders/builtin/fonts.vert", "shaders/builtin/fonts.frag"};
     

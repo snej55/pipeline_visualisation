@@ -63,6 +63,7 @@ bool FontManager::init(const std::string& path, const int height)
 
     // all good
     m_loaded = true;
+    std::cout << "Successfully loaded font from `" << path << "`\n";
     return 0;
 }
 
