@@ -3,6 +3,9 @@
 
 #include "src/paper_loader.h"
 
+#include <string>
+#include <sstream>
+
 int main()
 {
     // load papers
@@ -68,10 +71,9 @@ int main()
 
     // initialize font manager
     FontManager fontManager{};
-    fontManager.init("data/fonts/opensans/OpenSans-Regular.ttf", 48);
+    fontManager.init("data/fonts/opensans/OpenSans-Light.ttf", 16);
     // load fonts shader
     const Shader fontShader{"shaders/builtin/fonts.vert", "shaders/builtin/fonts.frag"};
-    
 
     // main loop
     while (!app.shouldClose()) {
@@ -89,7 +91,10 @@ int main()
         glDrawArraysInstanced(GL_TRIANGLES, 0, 36, paperData.size());
 
         fontManager.updateProjection(app.getWidth(), app.getHeight());
-        fontManager.renderText(fontShader, "Hi there!", 25.0f, 25.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+        std::stringstream dimensions;
+        dimensions << "Framebuffer size: " << app.getWidth() << " * " << app.getHeight();
+        fontManager.renderText(fontShader, dimensions.str(), 10.0f, 50.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 
         app.disablePostProcessing();
 
