@@ -33,7 +33,7 @@ int main()
 
     // load coordinates from paper
     std::vector<float> paperData;
-    paperLoader.getVertices(paperData, 8.0);
+    paperLoader.getVertices(paperData, 5.0);
 
     // actual model vertices
     std::vector<float> vertices {0.0f, 0.0f, 0.0f};

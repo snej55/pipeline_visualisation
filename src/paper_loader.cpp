@@ -64,7 +64,7 @@ void PaperLoader::loadFromFile(const std::string& filename)
         } while (file.peek() != EOF); // loop until we reach end of file
 
         std::cout << std::endl;
-        std::cout << "Loaded csv from `" << filename << "`. Rows: " << count << '\n';
+        std::cout << "Loaded csv from `" << filename << "`. Rows: " << count << " (" << std::size(m_papers) * sizeof(Paper) / 1000000 << " MB)" << '\n';
 
         // update stats
         m_numIncluded = included;
@@ -140,6 +140,6 @@ void PaperLoader::getVertices(std::vector<float>& vertices, const double scale) 
             not_included++;
     }
     // get info
-    std::cout << "Loaded " << m_papers.size() << " vertices (" << vertices.size() * sizeof(float) << " bytes)" << '\n';
+    std::cout << "Loaded " << m_papers.size() << " vertices (" << vertices.size() * sizeof(float) / 1000 << " KB)" << '\n';
     std::cout << included << " papers included, " << not_included << " papers not included\n";
 }

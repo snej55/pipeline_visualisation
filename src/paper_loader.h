@@ -11,6 +11,7 @@
 #include <vector>
 #include <string>
 #include <locale>
+#include <map>
 
 struct Paper
 {
@@ -45,6 +46,10 @@ struct Paper
     std::wstring cluster_4_3d_label;
     std::wstring cluster_5_3d_label;
     std::wstring cluster_6_3d_label;
+};
+
+struct Cluster
+{
 };
 
 class PaperLoader
