@@ -9,6 +9,8 @@
 
 constexpr unsigned int FONT_SIZE {12};
 constexpr bool DEBUG_INFO_ENABLED {true};
+// animation tweaks
+constexpr float ANIMATION_SPEED {1500.f};
 
 int main()
 {
@@ -31,7 +33,7 @@ int main()
 
     // load coordinates from paper
     std::vector<float> paperData;
-    paperLoader.getVertices(paperData, 4.0);
+    paperLoader.getVertices(paperData, 8.0);
 
     // actual model vertices
     std::vector<float> vertices {0.0f, 0.0f, 0.0f};
@@ -72,28 +74,29 @@ int main()
     // load shader
     const Shader shader{"shaders/pointsLighting.vert", "shaders/pointsLighting.frag"};
     // shader.addGeometryShader("shaders/points.geom");
-
+    
     const Shader screenShader{"shaders/builtin/screenShader.vert", "shaders/builtin/screenShader.frag"};
     app.initPostProcessing();
-
+    
     // initialize font manager
     FontManager fontManager{};
     fontManager.init("data/fonts/opensans/OpenSans-Light.ttf", FONT_SIZE);
     // load fonts shader
     const Shader fontShader{"shaders/builtin/fonts.vert", "shaders/builtin/fonts.frag"};
-
+    
     // main loop
     while (!app.shouldClose()) {
         app.handleInput();
         app.enablePostProcessing();
         app.clear();
-
+        
         shader.use();
         shader.setMat4("projection", app.getPerspectiveMatrix());
         shader.setMat4("view", app.getViewMatrix());
         shader.setMat4("model", glm::mat4(1.0f));
         shader.setVec3("camerapos", app.getCameraPosition());
-        shader.setFloat("time", static_cast<float>(glfwGetTime()));
+        shader.setFloat("time", static_cast<float>(glfwGetTime() * ANIMATION_SPEED));
+        shader.setInt("lastIndex", static_cast<int>(paperLoader.getLastIndex()));
         glBindVertexArray(VAO);
         glDrawArraysInstanced(GL_TRIANGLES, 0, 36, paperData.size());
 
@@ -102,12 +105,21 @@ int main()
         if (DEBUG_INFO_ENABLED)
         {
             std::stringstream text;
-            text << "Framebuffer size: " << app.getWidth() << " * " << app.getHeight();
-            fontManager.renderText(fontShader, text.str(), 10.0f, app.getHeight() - 35.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
-            text.str(""); // clear string stream
+            // average frame time
             float avgTime {static_cast<int>(app.getAvgFrameTime() * 1000) / 1000.0f};
             text << "Avg. frame time: " << avgTime * 1000.0f<< " ms";
             fontManager.renderText(fontShader, text.str(), 10.0f, app.getHeight() - 20.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+            text.str(""); // clear string stream
+            // framebuffer size
+            text << "Framebuffer size: " << app.getWidth() << " * " << app.getHeight();
+            fontManager.renderText(fontShader, text.str(), 10.0f, app.getHeight() - 35.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+            text.str(""); // clear string stream
+            // progress
+            int progress {std::min(static_cast<int>(paperLoader.getNumPapers()), static_cast<int>(glfwGetTime() * ANIMATION_SPEED))};
+            float percentage {static_cast<float>(glfwGetTime()) * ANIMATION_SPEED / static_cast<float>(paperLoader.getNumPapers())}; // progress as percentage
+            percentage = static_cast<float>(static_cast<int>(percentage * 1000.f)) / 1000.f;
+            text << "Progress: " << progress << "/" << paperLoader.getNumPapers() << " (" << percentage << "%)";
+            fontManager.renderText(fontShader, text.str(), 10.0f, app.getHeight() - 50.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
         }
 
         app.disablePostProcessing();

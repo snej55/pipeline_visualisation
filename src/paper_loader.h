@@ -72,10 +72,18 @@ public:
 
     // papers getter
     [[nodiscard]] const std::vector<Paper>& getPapers() const {return m_papers;}
+    // stats getters
+    [[nodiscard]] unsigned int getNumPapers() const {return std::size(m_papers);}
+    [[nodiscard]] unsigned int getNumIncluded() const {return m_numIncluded;}
+    [[nodiscard]] unsigned int getLastIndex() const {return m_lastIndex;}
 
 private:
     // papers data
     std::vector<Paper> m_papers{};
+
+    // stats
+    unsigned int m_numIncluded{0}; // number of included papers
+    unsigned int m_lastIndex{0}; // last index explored
 };
 
 #endif

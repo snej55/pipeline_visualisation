@@ -10,8 +10,8 @@ in VS_OUT {
     float Counter;
 } vs_in;
 
-const vec3 notIncluded = vec3(0.15, 0.1, 0.514);
-const vec3 included = vec3(1.0, 0.5, 0.1);
+const vec3 notIncluded = vec3(0.0, 1.0, 0.0);
+const vec3 included = vec3(1.0, 0.0, 0.0);
 const vec3 lightColor = vec3(1.0);
 
 const float lightConstant = 1.0;
@@ -19,6 +19,8 @@ const float lightLinear = 0.0009;
 const float lightQuadratic = 0.00032;
 
 const float ambientStrength = 0.01;
+
+uniform int lastIndex;
 
 void main()
 {
@@ -32,10 +34,14 @@ void main()
         color = notIncluded;
 
     float explored = 0.0;
-    float progress = vs_in.Time * 1500.0;
+    float progress = vs_in.Time;
     if (progress > vs_in.Counter)
         explored = 1.0;
     
+    // check if this paper was explored
+    if (vs_in.Counter > lastIndex)
+        explored = 0.0;
+
     if (explored < 1.0)
         color = vec3(0.3);
     

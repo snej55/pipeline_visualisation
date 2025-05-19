@@ -18,6 +18,7 @@ void PaperLoader::loadFromFile(const std::string& filename)
 
         int count{0}; // row counter
         int included{0}; // num papers included
+        int lastIncluded{0}; // index of last paper included
         std::wstring line; // the current row
         do
         {
@@ -53,25 +54,21 @@ void PaperLoader::loadFromFile(const std::string& filename)
                 createPaper(fields, paper);
                 m_papers.push_back(paper);
                 ++count; // update row counter
-                std::cout << "Paper No." << count << " | " << included << " included" << '\r';
+                std::cout << "Paper No." << count << " | " << included << " included | " << lastIncluded << " last included index" << '\r';
 
                 if (paper.included) {
                     ++included;
+                    lastIncluded = count;
                 }
-
-                // if (count > 1000)
-                // {
-                //     file.close();
-                //     return;
-                // }
             }
-
-            // // for testing
-            // if (count > 20)
-            //     break;
         } while (file.peek() != EOF); // loop until we reach end of file
+
         std::cout << std::endl;
         std::cout << "Loaded csv from `" << filename << "`. Rows: " << count << '\n';
+
+        // update stats
+        m_numIncluded = included;
+        m_lastIndex = lastIncluded;
     } catch ([[maybe_unused]] std::ifstream::failure& e)
     {
         // clear data and return it (nothing)
