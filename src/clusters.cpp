@@ -10,8 +10,10 @@ Clusters::ClusterRenderer::~ClusterRenderer()
     free();
 }
 
+// load convex hull for each cluster
 int Clusters::ClusterRenderer::init(const std::vector<std::map<int, Cluster>>& clusters)
 {
+    m_loaded = false;
     // iterate over each cluster depth
     for (std::size_t i{0}; i < clusters.size(); ++i)
     {
@@ -86,5 +88,29 @@ int Clusters::ClusterRenderer::init(const std::vector<std::map<int, Cluster>>& c
     }
 
     // all good
+    m_loaded = true;
     return 0;
+}
+
+// free memory from cluster data
+void Clusters::ClusterRenderer::free()
+{
+    if (m_loaded)
+    {
+        for (std::size_t i{0}; i < m_clusters.size(); ++i)
+        {
+            for (const auto&[idx, cluster] : m_clusters[i])
+            {
+                delete[] cluster.hull->vertices;
+                delete[] cluster.hull->faceIndices;
+                delete cluster.hull;
+                glDeleteVertexArrays(1, &cluster.VAO);
+                glDeleteBuffers(1, &cluster.VBO);
+                glDeleteBuffers(1, &cluster.EBO);
+            }
+            m_clusters[i].clear();
+        }
+        m_clusters.clear();
+        m_loaded = false;
+    }
 }
