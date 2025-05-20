@@ -199,7 +199,7 @@ void Clusters::ClusterModel::processNode(aiNode* node, const aiScene* scene)
     {
         // get mesh from scene
         aiMesh* mesh {scene->mMeshes[node->mMeshes[i]]};
-        m_meshes.push_back(processMesh(mesh, scene));
+        m_meshes.push_back(processMesh(mesh));
     }
 
     // repeat for child nodes
