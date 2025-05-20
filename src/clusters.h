@@ -33,6 +33,8 @@ namespace Clusters
     
         int init(const std::vector<std::map<int, Cluster>>& clusters);
         void free();
+
+        ClusterData* getClusterData(int depth, int idx);
     
     private:
         // flag to know if we need to free or not

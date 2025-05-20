@@ -126,3 +126,8 @@ void Clusters::ClusterRenderer::free()
         m_loaded = false;
     }
 }
+
+Clusters::ClusterData* Clusters::ClusterRenderer::getClusterData(int depth, int idx)
+{
+    return &m_clusters[depth][idx];
+}

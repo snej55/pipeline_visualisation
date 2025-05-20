@@ -12,6 +12,8 @@ constexpr unsigned int FONT_SIZE {12};
 constexpr bool DEBUG_INFO_ENABLED {true};
 // animation tweaks
 constexpr float ANIMATION_SPEED {700.f};
+// cluster depth for rendering
+constexpr int CLUSTER_DEPTH {4};
 
 int main()
 {
