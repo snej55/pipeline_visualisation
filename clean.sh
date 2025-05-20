@@ -1,1 +1,1 @@
-rm -f ./*.obj
+rm -f ./cluster_models/*.obj

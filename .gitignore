@@ -7,3 +7,4 @@ test
 german.txt
 data/.~lock.papers_with_labels.csv#
 *.kdev4
+/cluster_models/
