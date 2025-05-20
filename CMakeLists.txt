@@ -51,6 +51,7 @@ set(SOURCES main.cpp
         src/paper_loader.h
         src/paper_loader.cpp
         src/clusters.h
+        src/clusters.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

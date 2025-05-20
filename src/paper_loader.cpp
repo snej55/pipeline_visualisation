@@ -185,6 +185,8 @@ void PaperLoader::generateClusterLevel(const int idx)
         }
         // add another paper to cluster
         ++m_clusters[idx][clusterID].num_papers;
+        // add paper vertices
+        m_clusters[idx][clusterID].vertices.push_back(glm::vec3(paper.pos3Dx, paper.pos3Dy, paper.pos3Dz));
     }
     // print clusters at level idx + 2
     std::cout << "--- Level " << idx + 2 << " Clusters ---\n";

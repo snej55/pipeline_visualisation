@@ -13,6 +13,8 @@
 #include <locale>
 #include <map>
 
+#include <glm/glm.hpp>
+
 struct Paper
 {
     // paper title
@@ -52,6 +54,7 @@ struct Cluster
 {
     int num_papers{0};
     std::wstring label;
+    std::vector<glm::vec3> vertices;
 };
 
 class PaperLoader

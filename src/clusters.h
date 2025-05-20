@@ -2,6 +2,8 @@
 #ifndef CLUSTERS_H
 #define CLUSTERS_H
 
+#include <glad/glad.h>
+
 #define CONVHULL_3D_ENABLE
 #include "convhull_3d.h"
 
@@ -14,7 +16,7 @@ namespace Clusters
     {
         ch_vertex* vertices;
         int numVertices;
-        int* faceIndices;
+        int* faceIndices{nullptr};
         int numFaces;
     };
 
@@ -33,7 +35,7 @@ namespace Clusters
         ClusterRenderer();
         ~ClusterRenderer();
     
-        void init(const std::vector<std::map<int, Cluster>>& clusters, const std::vector<Paper>& papers);
+        int init(const std::vector<std::map<int, Cluster>>& clusters);
         void free();
     
     private:
