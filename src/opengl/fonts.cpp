@@ -86,6 +86,8 @@ void FontManager::free()
     {
         FT_Done_Face(m_face);
         FT_Done_FreeType(m_FT);
+        glDeleteVertexArrays(1, &m_VAO);
+        glDeleteBuffers(1, &m_VBO);
     }
 }
 

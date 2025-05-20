@@ -142,6 +142,7 @@ int main()
     // clean up
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &instanceVBO);
     app.close();
 
     return 0;
