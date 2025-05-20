@@ -4,8 +4,6 @@
 #define CONVHULL_3D_ENABLE
 #include <convhull_3d.h>
 
-#include <QuickHull/QuickHull.hpp>
-
 Clusters::ClusterRenderer::ClusterRenderer()
 {
     m_clusters.resize(5);
@@ -45,6 +43,11 @@ int Clusters::ClusterRenderer::init(const std::vector<std::map<int, Cluster>>& c
 
             // build convex hull
             convhull_3d_build(chVertices, hull->numVertices, &hull->faceIndices, &hull->numFaces);
+            // export for testing
+            std::stringstream filename;
+            filename << "../cluster_models/cluster_" << i + 2 << "_" << idx;
+            std::string name {filename.str()};
+            convhull_3d_export_obj(chVertices, hull->numVertices, hull->faceIndices, hull->numFaces, 1, (char*)name.c_str());
             // success check
             if (hull->faceIndices == nullptr)
             {
@@ -66,6 +69,16 @@ int Clusters::ClusterRenderer::init(const std::vector<std::map<int, Cluster>>& c
             for (std::size_t f{0}; f < hull->numFaces; ++f)
             {
                 indices.push_back(hull->faceIndices[f]);
+            }
+
+            for (std::size_t vi{0}; vi < vertices.size(); ++vi)
+            {
+                std::cout << vertices[vi] << " ";
+            }
+            std::cout << '\n';
+            for (std::size_t ii{0}; ii < indices.size(); ++ii)
+            {
+                std::cout << indices[ii] << " ";
             }
 
             {
@@ -97,6 +110,7 @@ int Clusters::ClusterRenderer::init(const std::vector<std::map<int, Cluster>>& c
 
             m_clusters[i].insert(std::pair{idx, clusterData});
             delete[] chVertices;
+            return 0;
         }
         std::cout << "Loaded cluster level " << i + 2 << std::endl;
     }
