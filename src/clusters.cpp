@@ -229,5 +229,12 @@ Clusters::ClusterMesh Clusters::ClusterModel::processMesh(aiMesh* mesh, const ai
     for (std::size_t i{0}; i < mesh->mNumFaces; ++i)
     {
         aiFace face {mesh->mFaces[i]};
+        // each face usually has like 3 indices or something
+        for (unsigned int j{0}; j < face.mNumIndices; ++j)
+        {
+            indices.push_back(face.mIndices[j]);
+        }
     }
+
+    return ClusterMesh{vertices, indices};
 }
