@@ -30,10 +30,10 @@ namespace Clusters
     class ClusterRenderer
     {
     public:
-        ClusterRenderer() = default;
+        ClusterRenderer();
         ~ClusterRenderer();
     
-        void init(const std::vector<std::map<int, Cluster>>& clusters);
+        void init(const std::vector<std::map<int, Cluster>>& clusters, const std::vector<Paper>& papers);
         void free();
     
     private:
