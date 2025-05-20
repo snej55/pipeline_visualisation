@@ -4,6 +4,8 @@
 #define CONVHULL_3D_ENABLE
 #include <convhull_3d.h>
 
+#include <utility>
+
 Clusters::ClusterRenderer::ClusterRenderer()
 {
     m_clusters.resize(5);
@@ -122,6 +124,7 @@ void Clusters::ClusterRenderer::renderCluster(const Shader& shader, const glm::m
 
 // ------------ Model Loading ------------ //
 
+// Convex Hull mesh
 // get vertices & vertex indices and set up the mesh
 Clusters::ClusterMesh::ClusterMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices)
     : m_vertices{vertices}, m_indices{indices}
@@ -156,4 +159,75 @@ void Clusters::ClusterMesh::render(const Shader& shader) const
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(m_indices.size()), GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
+}
+
+// Convex Hull model
+// use assimp to load model meshes from path
+Clusters::ClusterModel::ClusterModel(std::string path)
+    : m_path{std::move(path)}
+{
+    loadModel(path);
+}
+
+// render all the model meshes
+void Clusters::ClusterModel::render(const Shader& shader)
+{
+    for (const ClusterMesh& mesh : m_meshes)
+    {
+        mesh.render(shader);
+    }
+}
+
+// load meshes from path
+void Clusters::ClusterModel::loadModel(const std::string& path)
+{
+    Assimp::Importer importer;
+    const aiScene* scene {importer.ReadFile(path.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace)};
+    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+    {
+        std::cout << "ERROR::ASSIMP:" << importer.GetErrorString() << std::endl;
+        return;
+    }
+    m_directory = path.substr(0, path.find_last_of('/'));
+    processNode(scene->mRootNode, scene);
+}
+
+// recursively load meshes from root node and children
+void Clusters::ClusterModel::processNode(aiNode* node, const aiScene* scene)
+{
+    for (std::size_t i {0}; i < node->mNumMeshes; ++i)
+    {
+        // get mesh from scene
+        aiMesh* mesh {scene->mMeshes[node->mMeshes[i]]};
+        m_meshes.push_back(processMesh(mesh, scene));
+    }
+
+    // repeat for child nodes
+    for (std::size_t n {0}; n < node->mNumChildren; ++n)
+    {
+        processNode(node->mChildren[n], scene);
+    }
+}
+
+Clusters::ClusterMesh Clusters::ClusterModel::processMesh(aiMesh* mesh, const aiScene* scene)
+{
+    std::vector<Vertex> vertices{};
+    std::vector<unsigned int> indices{};
+
+    for (std::size_t v {0}; v < mesh->mNumVertices; ++v)
+    {
+        // process vertex
+        Vertex vertex {
+            glm::vec3 {mesh->mVertices[v].x, mesh->mVertices[v].y, mesh->mVertices[v].z},
+            glm::vec3 {mesh->mNormals[v].x, mesh->mNormals[v].y, mesh->mNormals[v].z},
+        };
+
+        vertices.push_back(vertex);
+    }
+
+    // same idea for indices
+    for (std::size_t i{0}; i < mesh->mNumFaces; ++i)
+    {
+        aiFace face {mesh->mFaces[i]};
+    }
 }

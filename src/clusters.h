@@ -2,7 +2,13 @@
 #ifndef CLUSTERS_H
 #define CLUSTERS_H
 
+// opengl rendering
 #include <glad/glad.h>
+
+// for assimp model loading
+#include <assimp/scene.h>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
 
 #include "paper_loader.h"
 #include "opengl/shader.h"
@@ -66,6 +72,23 @@ namespace Clusters
 
         void setupMesh();
     };;
+
+    class ClusterModel
+    {
+    public:
+        explicit ClusterModel(std::string  path);
+
+        void render(const Shader& shader);
+
+    private:
+        std::string m_path;
+        std::vector<ClusterMesh> m_meshes{};
+        std::string m_directory{};
+
+        void loadModel(const std::string& path);
+        void processNode(aiNode* node, const aiScene* scene);
+        ClusterMesh processMesh(aiMesh* mesh, const aiScene* scene);
+    };
 };
 
 #endif
