@@ -32,7 +32,7 @@ namespace Clusters
         ClusterRenderer();
         ~ClusterRenderer();
     
-        int init(const std::vector<std::map<int, Cluster>>& clusters, float scale);
+        int generateClusters(const std::vector<std::map<int, Cluster>>& clusters, float scale);
         void free();
 
         // not const because std::map[] isn't const

@@ -42,7 +42,7 @@ int main()
 
     // load clusters from papers
     Clusters::ClusterRenderer clusterRenderer{};
-    clusterRenderer.init(paperLoader.getClustersFull(), 5.0);
+    clusterRenderer.generateClusters(paperLoader.getClustersFull(), 1.0);
 
     // generate vbo for paper instances
     unsigned int instanceVBO;
@@ -97,6 +97,7 @@ int main()
         app.handleInput();
         app.enablePostProcessing();
         app.clear();
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         
         shader.use();
         shader.setMat4("projection", app.getPerspectiveMatrix());
@@ -105,13 +106,13 @@ int main()
         shader.setVec3("camerapos", app.getCameraPosition());
         shader.setFloat("time", static_cast<float>(glfwGetTime() * ANIMATION_SPEED));
         shader.setInt("lastIndex", static_cast<int>(paperLoader.getLastIndex()));
-        glBindVertexArray(VAO);
-        glDrawArraysInstanced(GL_TRIANGLES, 0, 36, paperData.size());
+        // glBindVertexArray(VAO);
+        // glDrawArraysInstanced(GL_TRIANGLES, 0, 36, paperData.size());
 
-        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3{1.0, 0.5, 0.0}, CLUSTER_DEPTH, 0);
-        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3{1.0, 0.0, 0.0}, CLUSTER_DEPTH, 1);
-        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3{0.0, 1.0, 0.0}, CLUSTER_DEPTH, 2);
-        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3{0.0, 0.0, 1.0}, CLUSTER_DEPTH, 3);
+        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3{0.7, 0.7, 0.7}, CLUSTER_DEPTH, 63);
+        // clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3{1.0, 0.0, 0.0}, CLUSTER_DEPTH, 1);
+        // clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3{0.0, 1.0, 0.0}, CLUSTER_DEPTH, 2);
+        // clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3{0.0, 0.0, 1.0}, CLUSTER_DEPTH, 3);
 
         fontManager.updateProjection(app.getWidth(), app.getHeight());
 
@@ -147,6 +148,7 @@ int main()
             text.str("");
         }
 
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         app.disablePostProcessing();
 
         app.getPostProcessor()->render(screenShader);
