@@ -3,8 +3,8 @@
 out vec4 FragColor;
 
 in VERTEX_DATA {
-    out vec3 FragPos;
-    out vec3 Normal;
+    vec3 FragPos;
+    vec3 Normal;
 } vs_in;
 
 uniform vec3 color;

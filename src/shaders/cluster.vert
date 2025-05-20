@@ -7,8 +7,8 @@ uniform mat4 view;
 uniform mat4 model;
 
 out VERTEX_DATA {
-    out vec3 FragPos;
-    out vec3 Normal;
+    vec3 FragPos;
+    vec3 Normal;
 } vs_out;
 
 void main()

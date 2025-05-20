@@ -1,5 +1,7 @@
-cmake_minimum_required(VERSION 3.30)
-project(main)
+cmake_minimum_required(VERSION 3.10...3.31)
+project(main VERSION 0.2 
+        DESCRIPTION "AI Pipeline Visualisation"
+        LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 

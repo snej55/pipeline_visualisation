@@ -3,7 +3,6 @@
 #define CLUSTERS_H
 
 // opengl rendering
-#include <glad/glad.h>
 
 // for assimp model loading
 #include <assimp/scene.h>
@@ -12,6 +11,7 @@
 
 #include "paper_loader.h"
 #include "opengl/shader.h"
+#include <glad/glad.h>
 
 // namespace for rendering clusters
 namespace Clusters
