@@ -71,35 +71,6 @@ int Clusters::ClusterRenderer::generateClusters(const std::vector<std::map<int, 
                 indices.push_back(hull->faceIndices[f]);
             }
 
-            std::cout << vertices.size() << " " << hull->numVertices << " " << indices.size() << " " << hull->numFaces << std::endl;
-
-            {
-                // generate VAO, VBO & EBO
-                unsigned int VAO, VBO, EBO;
-                glGenVertexArrays(1, &VAO);
-                glGenBuffers(1, &VBO);
-                // glGenBuffers(1, &EBO);
-                glBindVertexArray(VAO);
-                // buffer vertex data
-                glBindBuffer(GL_ARRAY_BUFFER, VBO);
-                glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vertices.size() * sizeof(float)), vertices.data(), GL_STATIC_DRAW);
-                // buffer indices data
-                // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-                // glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(indices.size() * sizeof(unsigned int)), indices.data(), GL_STATIC_DRAW);
-
-                glEnableVertexAttribArray(0);
-                glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), reinterpret_cast<void*>(0));
-
-                // unbind
-                // don't unbind EBO, it's stored in VAO
-                glBindBuffer(GL_ARRAY_BUFFER, 0);
-                glBindVertexArray(0);
-
-                clusterData.VAO = VAO;
-                clusterData.VBO = VBO;
-                clusterData.EBO = EBO;
-            }
-
             m_clusters[i].insert(std::pair{idx, clusterData});
             delete[] chVertices;
         }
@@ -123,9 +94,6 @@ void Clusters::ClusterRenderer::free()
             {
                 delete[] cluster.hull->faceIndices;
                 delete cluster.hull;
-                glDeleteVertexArrays(1, &cluster.VAO);
-                glDeleteBuffers(1, &cluster.VBO);
-                glDeleteBuffers(1, &cluster.EBO);
             }
             m_clusters[i].clear();
         }
@@ -148,9 +116,6 @@ void Clusters::ClusterRenderer::renderCluster(const Shader& shader, const glm::m
     shader.setVec3("color", color);
 
     // get cluster at index idx from depth level
-    const ClusterData* cluster {getClusterData(depth, idx)};
-    
-    glBindVertexArray(cluster->VAO);
-    glDrawArrays(GL_TRIANGLES, 0, cluster->hull->numVertices);
+    // const ClusterData* cluster {getClusterData(depth, idx)};
     // glDrawElements(GL_TRIANGLES, cluster->hull->numFaces, GL_UNSIGNED_INT, nullptr);
 }

@@ -20,9 +20,6 @@ namespace Clusters
     struct ClusterData
     {
         ConvexHull* hull{nullptr};
-        unsigned int VBO{0};
-        unsigned int EBO{0};
-        unsigned int VAO{0};
     };
 
     // loads convex hull for clusters and generates EBO, VBO & VAO
