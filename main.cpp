@@ -2,6 +2,7 @@
 #include "src/opengl/fonts.h"
 
 #include "src/paper_loader.h"
+#include "src/clusters.h"
 
 #include <string>
 #include <sstream>
@@ -32,9 +33,13 @@ int main()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     // glEnable(GL_CULL_FACE);
 
-    // load coordinates from paper
+    // load coordinates from papers
     std::vector<float> paperData;
     paperLoader.getVertices(paperData, 5.0);
+
+    // load clusters from papers
+    Clusters::ClusterRenderer renderer{};
+    renderer.init(paperLoader.getClustersFull());
 
     // generate vbo for paper instances
     unsigned int instanceVBO;

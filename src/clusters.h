@@ -4,9 +4,6 @@
 
 #include <glad/glad.h>
 
-#define CONVHULL_3D_ENABLE
-#include "convhull_3d.h"
-
 #include "paper_loader.h"
 
 // namespace for rendering clusters
@@ -14,7 +11,6 @@ namespace Clusters
 {
     struct ConvexHull
     {
-        ch_vertex* vertices;
         int numVertices;
         int* faceIndices{nullptr};
         int numFaces;

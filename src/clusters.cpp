@@ -1,5 +1,9 @@
 #include "clusters.h"
 
+// convex hull library
+#define CONVHULL_3D_ENABLE
+#include <convhull_3d.h>
+
 Clusters::ClusterRenderer::ClusterRenderer()
 {
     m_clusters.resize(5);
@@ -26,19 +30,19 @@ int Clusters::ClusterRenderer::init(const std::vector<std::map<int, Cluster>>& c
             clusterData.hull = hull;
 
             // allocate memory for papers
-            hull->vertices = new ch_vertex[cluster.num_papers];
+            auto* chVertices = new ch_vertex[cluster.num_papers];
             hull->numVertices = cluster.num_papers;
 
             // get vertices from cluster
             for (std::size_t v{0}; v < cluster.num_papers; ++v)
             {
-                hull->vertices[v].x = cluster.vertices[v].x;
-                hull->vertices[v].y = cluster.vertices[v].y;
-                hull->vertices[v].z = cluster.vertices[v].z;
+                chVertices[v].x = cluster.vertices[v].x;
+                chVertices[v].y = cluster.vertices[v].y;
+                chVertices[v].z = cluster.vertices[v].z;
             }
 
             // build convex hull
-            convhull_3d_build(hull->vertices, hull->numVertices, &hull->faceIndices, &hull->numFaces);
+            convhull_3d_build(chVertices, hull->numVertices, &hull->faceIndices, &hull->numFaces);
             // success check
             if (hull->faceIndices == nullptr)
             {
@@ -51,9 +55,9 @@ int Clusters::ClusterRenderer::init(const std::vector<std::map<int, Cluster>>& c
             for (std::size_t j{0}; j < hull->numVertices; ++j)
             {
                 // CH_FLOAT -> float
-                vertices.push_back(static_cast<float>(hull->vertices[j].x));
-                vertices.push_back(static_cast<float>(hull->vertices[j].y));
-                vertices.push_back(static_cast<float>(hull->vertices[j].z));
+                vertices.push_back(static_cast<float>(chVertices[j].x));
+                vertices.push_back(static_cast<float>(chVertices[j].y));
+                vertices.push_back(static_cast<float>(chVertices[j].z));
             }
 
             std::vector<unsigned int> indices;
@@ -62,33 +66,42 @@ int Clusters::ClusterRenderer::init(const std::vector<std::map<int, Cluster>>& c
                 indices.push_back(hull->faceIndices[f]);
             }
 
-            // generate VAO, VBO & EBO
-            glGenVertexArrays(1, &clusterData.VAO);
-            glGenBuffers(1, &clusterData.VBO);
-            glGenBuffers(1, &clusterData.EBO);
-            glGenBuffers(1, &clusterData.VBO);
-            glBindVertexArray(clusterData.VAO);
-            // buffer vertex data
-            glBindBuffer(GL_ARRAY_BUFFER, clusterData.VBO);
-            glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vertices.size() * sizeof(float)), vertices.data(), GL_STATIC_DRAW);
-            // buffer indices data
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, clusterData.EBO);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(indices.size() * sizeof(unsigned int)), indices.data(), GL_STATIC_DRAW);
+            {
+                // generate VAO, VBO & EBO
+                unsigned int VAO, VBO, EBO;
+                glGenVertexArrays(1, &VAO);
+                glGenBuffers(1, &VBO);
+                glGenBuffers(1, &EBO);
+                glBindVertexArray(VAO);
+                // buffer vertex data
+                glBindBuffer(GL_ARRAY_BUFFER, VBO);
+                glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vertices.size() * sizeof(float)), vertices.data(), GL_STATIC_DRAW);
+                // buffer indices data
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(indices.size() * sizeof(unsigned int)), indices.data(), GL_STATIC_DRAW);
 
-            glEnableVertexAttribArray(0);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), reinterpret_cast<void*>(0));
+                glEnableVertexAttribArray(0);
+                glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), reinterpret_cast<void*>(0));
 
-            // unbind
-            // don't unbind EBO, it's stored in VAO
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-            glBindVertexArray(0);
+                // unbind
+                // don't unbind EBO, it's stored in VAO
+                glBindBuffer(GL_ARRAY_BUFFER, 0);
+                glBindVertexArray(0);
+
+                clusterData.VAO = VAO;
+                clusterData.VBO = VBO;
+                clusterData.EBO = EBO;
+            }
 
             m_clusters[i].insert(std::pair{idx, clusterData});
+            delete[] chVertices;
         }
+        std::cout << "Loaded cluster level " << i + 2 << std::endl;
     }
 
     // all good
     m_loaded = true;
+    std::cout << "Clusters loaded!" << std::endl;
     return 0;
 }
 
@@ -101,7 +114,6 @@ void Clusters::ClusterRenderer::free()
         {
             for (const auto&[idx, cluster] : m_clusters[i])
             {
-                delete[] cluster.hull->vertices;
                 delete[] cluster.hull->faceIndices;
                 delete cluster.hull;
                 glDeleteVertexArrays(1, &cluster.VAO);

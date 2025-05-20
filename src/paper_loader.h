@@ -86,8 +86,8 @@ public:
     void generateClusterLevel(int idx);
 
     // get cluster info from papers at a specific depth
-    int getClusterID(const Paper& paper, int depth) const;
-    std::wstring getClusterLabel(const Paper& paper, int depth) const;
+    [[nodiscard]] int getClusterID(const Paper& paper, int depth) const;
+    [[nodiscard]] std::wstring getClusterLabel(const Paper& paper, int depth) const;
 
     Cluster* getCluster(int id, int depth);
 
@@ -95,6 +95,7 @@ public:
     [[nodiscard]] const std::vector<Paper>& getPapers() const {return m_papers;}
     // clusters getter
     [[nodiscard]] const std::map<int, Cluster>& getClusters(int depth) const;
+    [[nodiscard]] const std::vector<std::map<int, Cluster>>& getClustersFull() const {return m_clusters;}
     // stats getters
     [[nodiscard]] unsigned int getNumPapers() const {return std::size(m_papers);}
     [[nodiscard]] unsigned int getNumIncluded() const {return m_numIncluded;}
