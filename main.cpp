@@ -41,8 +41,8 @@ int main()
     paperLoader.getVertices(paperData, 5.0);
 
     // load clusters from papers
-    Clusters::ClusterRenderer clusterRenderer{};
-    clusterRenderer.generateClusters(paperLoader.getClustersFull(), 1.0);
+    // Clusters::ClusterRenderer clusterRenderer{};
+    // clusterRenderer.generateClusters(paperLoader.getClustersFull(), 1.0);
 
     // generate vbo for paper instances
     unsigned int instanceVBO;
@@ -91,6 +91,27 @@ int main()
     const Shader fontShader{"shaders/builtin/fonts.vert", "shaders/builtin/fonts.frag"};
 
     const Shader clusterShader{"shaders/cluster.vert", "shaders/cluster.frag"};
+
+    const Shader modelShader{"shaders/builtin/lighting.vert", "shaders/builtin/lighting.frag"};
+
+    modelShader.setVec3("objectColor", color2vec({182, 207, 142, 255}));
+    modelShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+
+    constexpr glm::vec3 lightPos {1.2f, 1.0f, 1.0f};
+
+    modelShader.setVec3("light.position", lightPos);
+
+    modelShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
+    modelShader.setVec3("light.diffuse", 1.0f, 1.0f, 1.0f);
+    modelShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+
+    modelShader.setFloat("light.constant",  1.0f);
+    modelShader.setFloat("light.linear",    0.09f);
+    modelShader.setFloat("light.quadratic", 0.032f);
+
+    modelShader.setFloat("material.shininess", 32.0f); // pow(shininess)
+
+    const Model* model {app.loadModel("data/cluster_models/cluster_2_0.obj")};
     
     // main loop
     while (!app.shouldClose()) {
@@ -109,7 +130,10 @@ int main()
         // glBindVertexArray(VAO);
         // glDrawArraysInstanced(GL_TRIANGLES, 0, 36, paperData.size());
 
-        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3{0.7, 0.7, 0.7}, CLUSTER_DEPTH, 63);
+        modelShader.use();
+        modelShader.setVec3("lightPos", app.getCameraPosition());
+        app.drawModel(model, modelShader, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f});
+        // clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3{0.7, 0.7, 0.7}, CLUSTER_DEPTH, 63);
         // clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3{1.0, 0.0, 0.0}, CLUSTER_DEPTH, 1);
         // clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3{0.0, 1.0, 0.0}, CLUSTER_DEPTH, 2);
         // clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3{0.0, 0.0, 1.0}, CLUSTER_DEPTH, 3);
@@ -157,6 +181,7 @@ int main()
     }
 
     // clean up
+    app.freeModel(model);
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &instanceVBO);
