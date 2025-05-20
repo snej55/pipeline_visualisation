@@ -12,9 +12,9 @@ namespace Clusters
 {
     struct ConvexHull
     {
-        int numVertices;
+        int numVertices{};
         int* faceIndices{nullptr};
-        int numFaces;
+        int numFaces{};
     };
 
     struct ClusterData
@@ -45,6 +45,27 @@ namespace Clusters
         // contains cluster data for rendering
         std::vector<std::map<int, ClusterData>> m_clusters{};
     };
+
+    struct Vertex
+    {
+        glm::vec3 position;
+        glm::vec3 normal;
+    };
+
+    class ClusterMesh
+    {
+    public:
+        ClusterMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices);
+        void render(const Shader& shader) const;
+
+    private:
+        unsigned int VAO{}, VBO{}, EBO{};
+
+        std::vector<Vertex> m_vertices;
+        std::vector<unsigned int> m_indices;
+
+        void setupMesh();
+    };;
 };
 
 #endif
