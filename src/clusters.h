@@ -32,15 +32,15 @@ namespace Clusters
         ClusterRenderer();
         ~ClusterRenderer();
     
-        int init(const std::vector<std::map<int, Cluster>>& clusters);
+        int init(const std::vector<std::map<int, Cluster>>& clusters, float scale);
         void free();
 
         // not const because std::map[] isn't const
         ClusterData* getClusterData(int depth, int idx);
 
         // same here
-        void renderCluster(const Shader& shader, const glm::mat4& projection, const glm::mat4& view, int depth, int idx);
-        void renderClusterLevel(const Shader& shader, const glm::mat4& projection, const glm::mat4& view, int depth);
+        void renderCluster(const Shader& shader, const glm::mat4& projection, const glm::mat4& view, const glm::vec3& color, int depth, int idx);
+        void renderClusterLevel(const Shader& shader, const glm::mat4& projection, const glm::mat4& view, const glm::vec3& color, int depth);
     
     private:
         // flag to know if we need to free or not

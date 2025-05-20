@@ -13,7 +13,8 @@ constexpr bool DEBUG_INFO_ENABLED {true};
 // animation tweaks
 constexpr float ANIMATION_SPEED {700.f};
 // cluster depth for rendering
-constexpr int CLUSTER_DEPTH {4};
+constexpr int CLUSTER_DEPTH {6};
+constexpr float SCALE {5.0};
 
 int main()
 {
@@ -41,7 +42,7 @@ int main()
 
     // load clusters from papers
     Clusters::ClusterRenderer clusterRenderer{};
-    clusterRenderer.init(paperLoader.getClustersFull());
+    clusterRenderer.init(paperLoader.getClustersFull(), 5.0);
 
     // generate vbo for paper instances
     unsigned int instanceVBO;
@@ -107,7 +108,10 @@ int main()
         glBindVertexArray(VAO);
         glDrawArraysInstanced(GL_TRIANGLES, 0, 36, paperData.size());
 
-        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), CLUSTER_DEPTH, 15);
+        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3{1.0, 0.5, 0.0}, CLUSTER_DEPTH, 0);
+        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3{1.0, 0.0, 0.0}, CLUSTER_DEPTH, 1);
+        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3{0.0, 1.0, 0.0}, CLUSTER_DEPTH, 2);
+        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3{0.0, 0.0, 1.0}, CLUSTER_DEPTH, 3);
 
         fontManager.updateProjection(app.getWidth(), app.getHeight());
 

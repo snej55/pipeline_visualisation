@@ -4,6 +4,8 @@
 #define CONVHULL_3D_ENABLE
 #include <convhull_3d.h>
 
+#include <QuickHull/QuickHull.hpp>
+
 Clusters::ClusterRenderer::ClusterRenderer()
 {
     m_clusters.resize(5);
@@ -15,7 +17,7 @@ Clusters::ClusterRenderer::~ClusterRenderer()
 }
 
 // load convex hull for each cluster
-int Clusters::ClusterRenderer::init(const std::vector<std::map<int, Cluster>>& clusters)
+int Clusters::ClusterRenderer::init(const std::vector<std::map<int, Cluster>>& clusters, const float scale)
 {
     m_loaded = false;
     // iterate over each cluster depth
@@ -36,9 +38,9 @@ int Clusters::ClusterRenderer::init(const std::vector<std::map<int, Cluster>>& c
             // get vertices from cluster
             for (std::size_t v{0}; v < cluster.num_papers; ++v)
             {
-                chVertices[v].x = cluster.vertices[v].x;
-                chVertices[v].y = cluster.vertices[v].y;
-                chVertices[v].z = cluster.vertices[v].z;
+                chVertices[v].x = cluster.vertices[v].x * scale;
+                chVertices[v].y = cluster.vertices[v].y * scale;
+                chVertices[v].z = cluster.vertices[v].z * scale;
             }
 
             // build convex hull
@@ -129,15 +131,16 @@ void Clusters::ClusterRenderer::free()
 
 Clusters::ClusterData* Clusters::ClusterRenderer::getClusterData(int depth, int idx)
 {
-    return &m_clusters[depth][idx];
+    return &m_clusters[depth - 2][idx];
 }
 
-void Clusters::ClusterRenderer::renderCluster(const Shader& shader, const glm::mat4& projection, const glm::mat4& view, int depth, int idx)
+void Clusters::ClusterRenderer::renderCluster(const Shader& shader, const glm::mat4& projection, const glm::mat4& view, const glm::vec3& color, int depth, int idx)
 {
     shader.use();
     shader.setMat4("projection", projection);
     shader.setMat4("view", view);
     shader.setMat4("model", glm::mat4(1.0f));
+    shader.setVec3("color", color);
 
     // get cluster at index idx from depth level
     const ClusterData* cluster {getClusterData(depth, idx)};
