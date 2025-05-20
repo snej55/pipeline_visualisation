@@ -40,8 +40,8 @@ int main()
     paperLoader.getVertices(paperData, 5.0);
 
     // load clusters from papers
-    Clusters::ClusterRenderer renderer{};
-    renderer.init(paperLoader.getClustersFull());
+    Clusters::ClusterRenderer clusterRenderer{};
+    clusterRenderer.init(paperLoader.getClustersFull());
 
     // generate vbo for paper instances
     unsigned int instanceVBO;
@@ -88,6 +88,8 @@ int main()
     fontManager.init("data/fonts/opensans/OpenSans-Light.ttf", FONT_SIZE);
     // load fonts shader
     const Shader fontShader{"shaders/builtin/fonts.vert", "shaders/builtin/fonts.frag"};
+
+    const Shader clusterShader{"shaders/cluster.vert", "shaders/cluster.frag"};
     
     // main loop
     while (!app.shouldClose()) {
@@ -104,6 +106,8 @@ int main()
         shader.setInt("lastIndex", static_cast<int>(paperLoader.getLastIndex()));
         glBindVertexArray(VAO);
         glDrawArraysInstanced(GL_TRIANGLES, 0, 36, paperData.size());
+
+        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), CLUSTER_DEPTH, 15);
 
         fontManager.updateProjection(app.getWidth(), app.getHeight());
 

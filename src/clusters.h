@@ -5,6 +5,7 @@
 #include <glad/glad.h>
 
 #include "paper_loader.h"
+#include "opengl/shader.h"
 
 // namespace for rendering clusters
 namespace Clusters
@@ -34,7 +35,12 @@ namespace Clusters
         int init(const std::vector<std::map<int, Cluster>>& clusters);
         void free();
 
+        // not const because std::map[] isn't const
         ClusterData* getClusterData(int depth, int idx);
+
+        // same here
+        void renderCluster(const Shader& shader, const glm::mat4& projection, const glm::mat4& view, int depth, int idx);
+        void renderClusterLevel(const Shader& shader, const glm::mat4& projection, const glm::mat4& view, int depth);
     
     private:
         // flag to know if we need to free or not

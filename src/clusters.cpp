@@ -131,3 +131,17 @@ Clusters::ClusterData* Clusters::ClusterRenderer::getClusterData(int depth, int 
 {
     return &m_clusters[depth][idx];
 }
+
+void Clusters::ClusterRenderer::renderCluster(const Shader& shader, const glm::mat4& projection, const glm::mat4& view, int depth, int idx)
+{
+    shader.use();
+    shader.setMat4("projection", projection);
+    shader.setMat4("view", view);
+    shader.setMat4("model", glm::mat4(1.0f));
+
+    // get cluster at index idx from depth level
+    const ClusterData* cluster {getClusterData(depth, idx)};
+    
+    glBindVertexArray(cluster->VAO);
+    glDrawElements(GL_TRIANGLES, cluster->hull->numFaces * 3, GL_UNSIGNED_INT, nullptr);
+}
