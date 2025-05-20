@@ -1,3 +1,5 @@
+#include "src/extern/glad.c"
+
 #include "src/opengl/app.h"
 #include "src/opengl/fonts.h"
 

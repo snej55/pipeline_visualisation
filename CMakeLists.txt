@@ -26,9 +26,9 @@ endif()
 
 set(SOURCES main.cpp
         # opengl
+        src/extern/glad.c
         src/opengl/app.cpp
         src/opengl/app.h
-        src/extern/glad.c
         src/opengl/shader.cpp
         src/opengl/shader.h
         src/opengl/texture.cpp
@@ -52,8 +52,8 @@ set(SOURCES main.cpp
         
         src/paper_loader.h
         src/paper_loader.cpp
-        src/clusters.h
-        src/clusters.cpp
+        # src/clusters.h
+        # src/clusters.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
