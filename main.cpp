@@ -40,7 +40,7 @@ int main()
     std::vector<float> paperData;
     paperLoader.getVertices(paperData, 5.0);
 
-    // load clusters from papers
+    // generate convex hull models from clusters
     // Clusters::ClusterRenderer clusterRenderer{};
     // clusterRenderer.generateClusters(paperLoader.getClustersFull(), 1.0);
 
@@ -127,18 +127,14 @@ int main()
         shader.setVec3("camerapos", app.getCameraPosition());
         shader.setFloat("time", static_cast<float>(glfwGetTime() * ANIMATION_SPEED));
         shader.setInt("lastIndex", static_cast<int>(paperLoader.getLastIndex()));
-        // glBindVertexArray(VAO);
-        // glDrawArraysInstanced(GL_TRIANGLES, 0, 36, paperData.size());
+        glBindVertexArray(VAO);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 36, static_cast<int>(paperData.size()));
 
         modelShader.use();
         modelShader.setVec3("lightPos", app.getCameraPosition());
         app.drawModel(model, modelShader, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f});
-        // clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3{0.7, 0.7, 0.7}, CLUSTER_DEPTH, 63);
-        // clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3{1.0, 0.0, 0.0}, CLUSTER_DEPTH, 1);
-        // clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3{0.0, 1.0, 0.0}, CLUSTER_DEPTH, 2);
-        // clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3{0.0, 0.0, 1.0}, CLUSTER_DEPTH, 3);
 
-        fontManager.updateProjection(app.getWidth(), app.getHeight());
+        fontManager.updateProjection(static_cast<float>(app.getWidth()), static_cast<float>(app.getHeight()));
 
         if (DEBUG_INFO_ENABLED)
         {
@@ -146,29 +142,29 @@ int main()
             // average frame time
             float avgTime {static_cast<int>(app.getAvgFrameTime() * 1000) / 1000.0f};
             text << "Avg. frame time: " << avgTime * 1000.0f<< " ms";
-            fontManager.renderText(fontShader, text.str(), 10.0f, app.getHeight() - 20.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+            fontManager.renderText(fontShader, text.str(), 10.0f, static_cast<float>(app.getHeight()) - 20.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
             text.str(""); // clear string stream
             // framebuffer size
-            text << "Framebuffer size: " << app.getWidth() << " * " << app.getHeight();
-            fontManager.renderText(fontShader, text.str(), 10.0f, app.getHeight() - 35.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+            text << "Framebuffer size: " << app.getWidth() << " * " << static_cast<float>(app.getHeight());
+            fontManager.renderText(fontShader, text.str(), 10.0f, static_cast<float>(app.getHeight()) - 35.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
             text.str(""); // clear string stream
             // progress
             int progress {std::min(static_cast<int>(paperLoader.getNumPapers()), static_cast<int>(glfwGetTime() * ANIMATION_SPEED))};
             float percentage {static_cast<float>(glfwGetTime()) * ANIMATION_SPEED / static_cast<float>(paperLoader.getNumPapers())}; // progress as percentage
             percentage = std::min(100.0f, static_cast<float>(static_cast<int>(percentage * 1000.f)) / 10.f); // (n / 10.f = n / 1000.f * 100.f)
             text << "Progress: " << progress << "/" << paperLoader.getNumPapers() << " (" << percentage << "%)";
-            fontManager.renderText(fontShader, text.str(), 10.0f, app.getHeight() - 50.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+            fontManager.renderText(fontShader, text.str(), 10.0f, static_cast<float>(app.getHeight()) - 50.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
             text.str("");
             // animation speed
             text << "Animation speed: " << ANIMATION_SPEED;
-            fontManager.renderText(fontShader, text.str(), 10.0f, app.getHeight() - 65.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+            fontManager.renderText(fontShader, text.str(), 10.0f, static_cast<float>(app.getHeight()) - 65.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
             text.str("");
             // papers size & vertices size
             text << "Paper data size (MB): " << static_cast<int>(paperLoader.getPapersSize()) / 1000000;
-            fontManager.renderText(fontShader, text.str(), 10.0f, app.getHeight() - 80.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+            fontManager.renderText(fontShader, text.str(), 10.0f, static_cast<float>(app.getHeight()) - 80.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
             text.str("");
             text << "Vertex data size (KB): " << static_cast<int>(paperLoader.getVerticesSize() + sizeof(Shapes3D::cubeVerticesNormals)) / 1000;
-            fontManager.renderText(fontShader, text.str(), 10.0f, app.getHeight() - 95.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+            fontManager.renderText(fontShader, text.str(), 10.0f, static_cast<float>(app.getHeight()) - 95.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
             text.str("");
         }
 

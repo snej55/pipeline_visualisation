@@ -209,7 +209,7 @@ void Clusters::ClusterModel::processNode(aiNode* node, const aiScene* scene)
     }
 }
 
-Clusters::ClusterMesh Clusters::ClusterModel::processMesh(aiMesh* mesh, const aiScene* scene)
+Clusters::ClusterMesh Clusters::ClusterModel::processMesh(const aiMesh* mesh)
 {
     std::vector<Vertex> vertices{};
     std::vector<unsigned int> indices{};

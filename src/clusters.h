@@ -87,7 +87,8 @@ namespace Clusters
 
         void loadModel(const std::string& path);
         void processNode(aiNode* node, const aiScene* scene);
-        ClusterMesh processMesh(aiMesh* mesh, const aiScene* scene);
+
+        static ClusterMesh processMesh(const aiMesh* mesh);
     };
 };
 
