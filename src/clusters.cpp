@@ -71,16 +71,6 @@ int Clusters::ClusterRenderer::init(const std::vector<std::map<int, Cluster>>& c
                 indices.push_back(hull->faceIndices[f]);
             }
 
-            for (std::size_t vi{0}; vi < vertices.size(); ++vi)
-            {
-                std::cout << vertices[vi] << " ";
-            }
-            std::cout << '\n';
-            for (std::size_t ii{0}; ii < indices.size(); ++ii)
-            {
-                std::cout << indices[ii] << " ";
-            }
-
             {
                 // generate VAO, VBO & EBO
                 unsigned int VAO, VBO, EBO;
@@ -110,7 +100,6 @@ int Clusters::ClusterRenderer::init(const std::vector<std::map<int, Cluster>>& c
 
             m_clusters[i].insert(std::pair{idx, clusterData});
             delete[] chVertices;
-            return 0;
         }
         std::cout << "Loaded cluster level " << i + 2 << std::endl;
     }
