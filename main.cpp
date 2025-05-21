@@ -128,7 +128,7 @@ int main()
         pointShader.setFloat("time", static_cast<float>(glfwGetTime() * ANIMATION_SPEED));
         pointShader.setInt("lastIndex", static_cast<int>(paperLoader.getLastIndex()));
         glBindVertexArray(VAO);
-        glDrawArraysInstanced(GL_TRIANGLES, 0, 36, static_cast<int>(paperData.size()));
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 36, static_cast<int>(paperData.size() / 5));
 
         // update progress, lastPaperIndex, currentCluster & currentPaper
         const float progress {std::min(static_cast<float>(glfwGetTime() * ANIMATION_SPEED), static_cast<float>(paperLoader.getLastIndex()))};
