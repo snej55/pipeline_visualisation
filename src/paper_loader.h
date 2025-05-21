@@ -64,10 +64,10 @@ public:
     ~PaperLoader() = default;
 
     // load papers data from csv file
-    void loadFromFile(const std::string& filename);
+    void loadFromFile(const std::string& filename, float scale);
 
     // create paper from list of fields
-    void createPaper(const std::vector<std::wstring>& fields, Paper& paper) const;
+    void createPaper(const std::vector<std::wstring>& fields, Paper& paper, float scale) const;
 
     // convert from std::wstring to template type
     template <typename T>

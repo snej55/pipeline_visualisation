@@ -9,7 +9,7 @@ PaperLoader::PaperLoader()
 }
 
 // load papers from csv file
-void PaperLoader::loadFromFile(const std::string& filename)
+void PaperLoader::loadFromFile(const std::string& filename, const float scale)
 {
     // clear previous papers
     m_papers.clear();
@@ -65,7 +65,7 @@ void PaperLoader::loadFromFile(const std::string& filename)
             {
                 // Create the paper
                 Paper paper;
-                createPaper(fields, paper);
+                createPaper(fields, paper, scale);
                 m_papers.push_back(paper);
                 ++count; // update row counter
                 std::cout << "Paper No." << count << " | " << included << " included | " << lastIncluded << " LII" << '\r';
@@ -100,17 +100,22 @@ void PaperLoader::loadFromFile(const std::string& filename)
 }
 
 // create paper from list of fields
-void PaperLoader::createPaper(const std::vector<std::wstring>& fields, Paper& paper) const
+void PaperLoader::createPaper(const std::vector<std::wstring>& fields, Paper& paper, const float scale) const
 {
     paper.title = fields[0]; // paper title
     wstrconv<int>(fields[1], &paper.included); // whether the study is included or not
     // paper 2D space coordinates
     wstrconv<double>(fields[2], &paper.pos2Dx);
+    paper.pos2Dx *= scale;
     wstrconv<double>(fields[3], &paper.pos2Dy);
+    paper.pos2Dy *= scale;
     // paper 3D space coordinates
     wstrconv<double>(fields[4], &paper.pos3Dx);
+    paper.pos3Dx *= scale;
     wstrconv<double>(fields[5], &paper.pos3Dy);
+    paper.pos3Dy *= scale;
     wstrconv<double>(fields[6], &paper.pos3Dz);
+    paper.pos3Dz *= scale;
     // cluster coordinates
     wstrconv<int>(fields[7], &paper.cluster_2_2d); // cluster 2
     wstrconv<int>(fields[8], &paper.cluster_2_3d);
@@ -129,10 +134,10 @@ void PaperLoader::createPaper(const std::vector<std::wstring>& fields, Paper& pa
     paper.cluster_5_2d_label = fields[20];
     paper.cluster_6_2d_label = fields[21];
     paper.cluster_2_3d_label = fields[22]; // 3D labels
-    paper.cluster_2_3d_label = fields[23];
-    paper.cluster_2_3d_label = fields[24];
-    paper.cluster_2_3d_label = fields[25];
-    paper.cluster_2_3d_label = fields[26];
+    paper.cluster_3_3d_label = fields[23];
+    paper.cluster_4_3d_label = fields[24];
+    paper.cluster_5_3d_label = fields[25];
+    paper.cluster_6_3d_label = fields[26];
 }
 
 // scale is double because paper coordinates are double
@@ -223,17 +228,17 @@ int PaperLoader::getClusterID(const Paper& paper, int depth) const
     switch (depth)
     {
         case 2:
-            return paper.cluster_2_2d;
+            return paper.cluster_2_3d;
         case 3:
-            return paper.cluster_3_2d;
+            return paper.cluster_3_3d;
         case 4:
-            return paper.cluster_4_2d;
+            return paper.cluster_4_3d;
         case 5:
-            return paper.cluster_5_2d;
+            return paper.cluster_5_3d;
         case 6:
-            return paper.cluster_6_2d;
+            return paper.cluster_6_3d;
         default:
-            return paper.cluster_2_2d;
+            return paper.cluster_2_3d;
     }
 }
 
@@ -244,17 +249,17 @@ std::wstring PaperLoader::getClusterLabel(const Paper& paper, int depth) const
     switch (depth)
     {
         case 2:
-            return paper.cluster_2_2d_label;
+            return paper.cluster_2_3d_label;
         case 3:
-            return paper.cluster_3_2d_label;
+            return paper.cluster_3_3d_label;
         case 4:
-            return paper.cluster_4_2d_label;
+            return paper.cluster_4_3d_label;
         case 5:
-            return paper.cluster_5_2d_label;
+            return paper.cluster_5_3d_label;
         case 6:
-            return paper.cluster_6_2d_label;
+            return paper.cluster_6_3d_label;
         default:
-            return paper.cluster_2_2d_label;
+            return paper.cluster_2_3d_label;
     }
 }
 

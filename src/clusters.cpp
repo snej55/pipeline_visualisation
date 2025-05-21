@@ -120,7 +120,7 @@ void Clusters::ClusterRenderer::free()
 
 
 
-Clusters::ClusterData* Clusters::ClusterRenderer::getClusterData(int depth, int idx)
+Clusters::ClusterData* Clusters::ClusterRenderer::getClusterData(const int depth, const int idx)
 {
     return &m_clusters[depth - 2][idx];
 }
@@ -136,8 +136,8 @@ void Clusters::ClusterRenderer::renderCluster(const Shader &shader, const glm::m
     const ClusterData* cluster {getClusterData(depth, idx)};
 
     glm::mat4 model{1.0f};
-    model = glm::translate(model, cluster->position * 5.0f);
-    model = glm::scale(model, glm::vec3{1.7f});
+    // model = glm::translate(model, cluster->position);
+    // model = glm::scale(model, glm::vec3{1.7f});
     shader.setMat4("model", model);
     shader.setMat3("normalMat", glm::transpose(glm::inverse(model)));
     // color uniform
@@ -167,8 +167,8 @@ void Clusters::ClusterRenderer::renderClusterText(const Shader& shader, const gl
 
     // render text
     fontManager.updateProjection(width, height);
-    std::string str{"This is a cluster balbalbalbalbalbalblabalblablal"};
-    fontManager.renderText(fontShader, str, width / 2.f, height / 2.f, 1.0f, glm::vec3{1.0f});
+    const std::string str{"This is a cluster"};
+    fontManager.renderText(fontShader, str, viewport.x, viewport.y, 1.0f, glm::vec3{1.0f});
 }
 
 // ------------ Model Loading ------------ //

@@ -26,7 +26,7 @@ int main()
 {
     // load papers
     PaperLoader paperLoader{};
-    paperLoader.loadFromFile("data/papers_with_labels.csv");
+    paperLoader.loadFromFile("data/papers_with_labels.csv", SCALE);
     paperLoader.generateClusters(); // group papers into clusters
 
     std::cout << "Loaded papers!\n";
@@ -46,7 +46,7 @@ int main()
 
     // load coordinates from papers
     std::vector<float> paperData;
-    paperLoader.getVertices(paperData, SCALE);
+    paperLoader.getVertices(paperData);
 
     // generate convex hull models from clusters (saved at data/cluster_models/)
     Clusters::ClusterRenderer clusterRenderer{};
@@ -91,7 +91,7 @@ int main()
     const Shader pointShader{"shaders/pointsLighting.vert", "shaders/pointsLighting.frag"};
     // shader.addGeometryShader("shaders/points.geom");
 
-    // post processing shader
+    // post-processing shader
     const Shader screenShader{"shaders/builtin/screenShader.vert", "shaders/builtin/screenShader.frag"};
     app.initPostProcessing();
 
@@ -236,6 +236,10 @@ int main()
             std::string label;
             wstring2string(clusterLabel, label);
             text << "Current cluster label: " << label;
+            info.emplace_back(text.str());
+            text.str("");
+
+            text << "Current cluster ID: " << paperLoader.getClusterID(currentPaper, CLUSTER_DEPTH);
             info.emplace_back(text.str());
             text.str("");
 
