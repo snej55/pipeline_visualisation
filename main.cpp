@@ -10,14 +10,17 @@
 #include <sstream>
 #include <iomanip>
 #include <algorithm>
+#include <cstdlib>
 
-constexpr unsigned int FONT_SIZE {12};
+constexpr unsigned int FONT_SIZE {14};
 constexpr bool DEBUG_INFO_ENABLED {true};
 // animation tweaks
-constexpr float ANIMATION_SPEED {7.f};
+constexpr float ANIMATION_SPEED {10.f};
 // cluster depth for rendering
 constexpr int CLUSTER_DEPTH {6};
 constexpr float SCALE {5.0};
+
+void wstring2string(std::wstring ws, std::string& s);
 
 int main()
 {
@@ -94,7 +97,7 @@ int main()
 
     // initialize font manager
     FontManager fontManager{};
-    fontManager.init("data/fonts/opensans/OpenSans-Light.ttf", FONT_SIZE);
+    fontManager.init("data/fonts/noto_sans/NotoSans-Regular.ttf", FONT_SIZE);
     // load fonts shader
     const Shader fontShader{"shaders/builtin/fonts.vert", "shaders/builtin/fonts.frag"};
 
@@ -144,7 +147,7 @@ int main()
                 clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(),
                                               color, CLUSTER_DEPTH,
                                               c);
-            } else if (std::ranges::find(passedClusters, c) != passedClusters.end())
+            } else if (std::ranges::find(passedClusters, c) != passedClusters.end() && currentPaper.counter < static_cast<int>(paperLoader.getLastIndex()))
             {
                 glLineWidth(1.0f);
                 glm::vec3 color = {0.0f, 0.6f, 0.0f};
@@ -157,6 +160,11 @@ int main()
             {
                 glLineWidth(2.0f);
                 glm::vec3 color = {0.6f, 0.0f, 0.0f};
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                clusterShader.setInt("lighting", 1);
+                clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(),
+                                              color, CLUSTER_DEPTH,
+                                              c);
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
                 clusterShader.setInt("lighting", 0);
                 clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(),
@@ -175,34 +183,56 @@ int main()
         if (DEBUG_INFO_ENABLED)
         {
             std::stringstream text;
+            std::vector<std::string> info;
             // average frame time
             float avgTime {static_cast<int>(app.getAvgFrameTime() * 1000) / 1000.0f};
             text << "Avg. frame time: " << avgTime * 1000.0f<< " ms";
-            fontManager.renderText(fontShader, text.str(), 10.0f, static_cast<float>(app.getHeight()) - 20.0f, 1.0f,
-                                   glm::vec3(1.0f, 1.0f, 1.0f));
+            info.emplace_back(text.str());
             text.str(""); // clear string stream
             // framebuffer size
             text << "Framebuffer size: " << app.getWidth() << " * " << static_cast<float>(app.getHeight());
-            fontManager.renderText(fontShader, text.str(), 10.0f, static_cast<float>(app.getHeight()) - 35.0f, 1.0f,
-                                   glm::vec3(1.0f, 1.0f, 1.0f));
+            info.emplace_back(text.str());
             text.str(""); // clear string stream
             // progress
-            int progress {std::min(static_cast<int>(paperLoader.getNumPapers()), static_cast<int>(glfwGetTime() * ANIMATION_SPEED))};
+            int prog {std::min(static_cast<int>(paperLoader.getNumPapers()), static_cast<int>(glfwGetTime() * ANIMATION_SPEED))};
             float percentage {static_cast<float>(glfwGetTime()) * ANIMATION_SPEED / static_cast<float>(paperLoader.getNumPapers())}; // progress as percentage
             percentage = std::min(100.0f, static_cast<float>(static_cast<int>(percentage * 1000.f)) / 10.f); // (n / 10.f = n / 1000.f * 100.f)
-            text << "Progress: " << progress << "/" << paperLoader.getNumPapers() << " (" << percentage << "%)";
-            fontManager.renderText(fontShader, text.str(), 10.0f, static_cast<float>(app.getHeight()) - 50.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+            text << "Progress: " << prog << "/" << paperLoader.getNumPapers() << " (" << percentage << "%)";
+            info.emplace_back(text.str());
             text.str("");
             // animation speed
-            text << "Animation speed: " << ANIMATION_SPEED;
-            fontManager.renderText(fontShader, text.str(), 10.0f, static_cast<float>(app.getHeight()) - 65.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+            text << "Animation speed: " << ANIMATION_SPEED << " papers/sec";
+            info.emplace_back(text.str());
             text.str("");
             // papers size & vertices size
             text << "Paper data size (MB): " << static_cast<int>(paperLoader.getPapersSize()) / 1000000;
-            fontManager.renderText(fontShader, text.str(), 10.0f, static_cast<float>(app.getHeight()) - 80.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+            info.emplace_back(text.str());
             text.str("");
             text << "Vertex data size (KB): " << static_cast<int>(paperLoader.getVerticesSize() + sizeof(Shapes3D::cubeVerticesNormals)) / 1000;
-            fontManager.renderText(fontShader, text.str(), 10.0f, static_cast<float>(app.getHeight()) - 95.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+            info.emplace_back(text.str());
+            text.str("");
+
+            text << "Current cluster depth: " << CLUSTER_DEPTH;
+            info.emplace_back(text.str());
+            text.str("");
+
+            std::wstring clusterLabel {paperLoader.getClusterLabel(currentPaper, CLUSTER_DEPTH)};
+            std::string label;
+            wstring2string(clusterLabel, label);
+            text << "Current cluster label: " << label;
+            info.emplace_back(text.str());
+            text.str("");
+
+
+            for (int i {0}; i < info.size(); ++i)
+            {
+                fontManager.renderText(fontShader, info[i], 10.0f, static_cast<float>(app.getHeight() - 25 - 15 * i), 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+            }
+
+            std::string paperTitle;
+            wstring2string(currentPaper.title, paperTitle);
+            text << "Current paper title: " << paperTitle;
+            fontManager.renderText(fontShader, text.str(), 5.0f, 5.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
             text.str("");
         }
 
@@ -219,5 +249,15 @@ int main()
     glDeleteBuffers(1, &instanceVBO);
     app.close();
 
-    return 0;
+    return EXIT_SUCCESS;
+}
+
+void wstring2string(std::wstring ws, std::string& s)
+{
+    std::size_t len {std::wcstombs(nullptr, ws.c_str(), 0) + 1};
+    // buffer to hold multibyte string
+    char* buffer {new char[len]};
+    wcstombs(buffer, ws.c_str(), len);
+    s = buffer;
+    delete[] buffer;
 }
