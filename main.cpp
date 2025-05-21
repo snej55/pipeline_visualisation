@@ -34,13 +34,15 @@ int main()
     app.setCameraEnabled(true);
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glEnable(GL_PROGRAM_POINT_SIZE);
+    glEnable(GL_LINE_SMOOTH);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    // glLineWidth(5.0f);
     // glEnable(GL_CULL_FACE);
 
     // load coordinates from papers
     std::vector<float> paperData;
-    paperLoader.getVertices(paperData, 1.0);
+    paperLoader.getVertices(paperData, SCALE);
 
     // generate convex hull models from clusters (saved at data/cluster_models/)
     Clusters::ClusterRenderer clusterRenderer{};
@@ -125,14 +127,14 @@ int main()
         // clusterShader.setVec3("color", glm::vec3{1.0f, 0.0f, 0.0f});
         // hull.render(clusterShader);
 
-        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3(1.0f, 0.5f, 0.0f), 3, 0);
-        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3(0.0f, 1.0f, 0.0f), 3, 1);
-        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3(1.0f, 0.0f, 0.0f), 3, 2);
-        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3(0.0f, 0.0f, 1.0f), 3, 3);
-        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3(1.0f, 0.5f, 0.0f), 3, 4);
-        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3(0.0f, 1.0f, 0.0f), 3, 5);
-        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3(1.0f, 0.0f, 0.0f), 3, 6);
-        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3(0.0f, 0.0f, 1.0f), 3, 7);
+        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3(1.0f, 0.5f, 0.0f), 2, 0);
+        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3(0.0f, 1.0f, 0.0f), 2, 1);
+        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3(1.0f, 0.0f, 0.0f), 2, 2);
+        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3(0.0f, 0.0f, 1.0f), 2, 3);
+        // clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3(1.0f, 0.5f, 0.0f), 6, 4);
+        // clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3(0.0f, 1.0f, 0.0f), 6, 5);
+        // clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3(1.0f, 0.0f, 0.0f), 6, 6);
+        // clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3(0.0f, 0.0f, 1.0f), 6, 7);
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         // ---- debug info and post-processing ---- //
