@@ -47,7 +47,7 @@ int main()
     // generate convex hull models from clusters (saved at data/cluster_models/)
     Clusters::ClusterRenderer clusterRenderer{};
     // // generates .obj file` of convex hull for each cluster
-    // clusterRenderer.generateClusters(paperLoader.getClustersFull(), 1.0);
+    clusterRenderer.generateClusters(paperLoader.getClustersFull(), SCALE);
     clusterRenderer.loadClusters(paperLoader.getClustersFull());
 
     // generate vbo for paper instances
