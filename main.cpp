@@ -118,6 +118,8 @@ int main()
         // ---- do rendering ---- //
         app.clear();
 
+        // Render the points (cubes)
+        // The cubes are rendered instanced to improve performance
         pointShader.use();
         pointShader.setMat4("projection", app.getPerspectiveMatrix());
         pointShader.setMat4("view", app.getViewMatrix());
@@ -128,15 +130,12 @@ int main()
         glBindVertexArray(VAO);
         glDrawArraysInstanced(GL_TRIANGLES, 0, 36, static_cast<int>(paperData.size()));
 
-        // render clusters
-        clusterShader.use();
-        clusterShader.setVec3("CameraPos", app.getCameraPosition());
-
+        // update progress, lastPaperIndex, currentCluster & currentPaper
         const float progress {std::min(static_cast<float>(glfwGetTime() * ANIMATION_SPEED), static_cast<float>(paperLoader.getLastIndex()))};
         const Paper& currentPaper {paperLoader.getPaper(progress)};
         const int currentCluster {paperLoader.getClusterID(currentPaper, CLUSTER_DEPTH)};
         passedClusters.push_back(currentCluster);
-
+        // update all the clusters animation skipped (animation speed > 1 paper/sec)
         for (int i{lastPaperIndex}; i <= static_cast<int>(progress); ++i)
         {
             const int paperCluster {paperLoader.getClusterID(paperLoader.getPaper(i), CLUSTER_DEPTH)};
@@ -144,45 +143,51 @@ int main()
         }
         lastPaperIndex = static_cast<int>(progress);
 
+        // ---- Render clusters ---- //
+
+
+        /* Clusters are transparent, so order is:
+         * 1. Render opaque objects (points/papers/cubes)
+         * 2. Sort transparent objects (clusters)
+         * 3. Render transparent objects in order (blending works now)
+         */
+
+        clusterShader.use();
+        clusterShader.setVec3("CameraPos", app.getCameraPosition());
+
+        // iterate through clusters (n = 2^CLUSTER_DEPTH)
+        std::map<float, std::pair<int, glm::vec3>> sortedClusters{};
         for (int c {0}; c < std::pow(2, CLUSTER_DEPTH); ++c)
         {
-            std::string clusterLabel{};
-            wstring2string(paperLoader.getCluster(c, CLUSTER_DEPTH)->label, clusterLabel);
+            // color & idx is info needed for rendering
+            glm::vec3 color;
+            float distance; // info needed for sorting
+            // get cluster data for position
+            const Clusters::ClusterData* clusterData {clusterRenderer.getClusterData(CLUSTER_DEPTH, c)};
+            distance = glm::length(app.getCameraPosition() - clusterData->position);
             if (currentCluster == c)
             {
-                glLineWidth(10.0f);
-                glm::vec3 color = {1.0f, 1.0f, 0.0f};
-                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-                clusterShader.setInt("lighting", 1);
-                clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(),
-                                              color, CLUSTER_DEPTH,
-                                              c);
-                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-                clusterShader.setInt("lighting", 0);
+                color = {1.0f, 1.0f, 0.0f};
             } else if (std::ranges::find(passedClusters, c) != passedClusters.end())
             {
-                glLineWidth(3.0f);
-                glm::vec3 color = {0.0f, 0.6f, 0.0f};
-                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-                clusterShader.setInt("lighting", 1);
-                clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(),
-                                              color, CLUSTER_DEPTH,
-                                              c);
+                color = {0.0f, 0.6f, 0.0f};
             } else
             {
-                glLineWidth(2.0f);
-                glm::vec3 color = {0.6f, 0.0f, 0.0f};
-                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-                clusterShader.setInt("lighting", 1);
-                clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(),
-                                              color, CLUSTER_DEPTH,
-                                              c);
-                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-                clusterShader.setInt("lighting", 0);
-                clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(),
-                                              color, CLUSTER_DEPTH,
-                                              c);
+                color = {0.6f, 0.0f, 0.0f};
             }
+            // add to map to be sorted
+            sortedClusters[distance] = std::make_pair(c, color);
+        }
+
+        // sort & render the clusters
+        clusterShader.use();
+        clusterShader.setVec3("CameraPos", app.getCameraPosition());
+        clusterShader.setInt("lighting", 1);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        for (std::map<float, std::pair<int, glm::vec3>>::reverse_iterator it {sortedClusters.rbegin()}; it != sortedClusters.rend(); ++it)
+        {
+            clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(),
+                it->second.second, CLUSTER_DEPTH, it->second.first);
         }
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

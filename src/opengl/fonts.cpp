@@ -93,6 +93,8 @@ void FontManager::free()
 
 void FontManager::renderText(const Shader& shader, const std::string text, float x, float y, const float scale, const glm::vec3&& color)
 {
+    // correct blending function
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     // use shader
     shader.use();
     shader.setVec3("textColor", color);
