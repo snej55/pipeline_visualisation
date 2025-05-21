@@ -128,6 +128,8 @@ int main()
         pointShader.setFloat("time", static_cast<float>(glfwGetTime() * ANIMATION_SPEED));
         pointShader.setInt("lastIndex", static_cast<int>(paperLoader.getLastIndex()));
         glBindVertexArray(VAO);
+        // there are five pieces of data per instance (5 * sizeof(float)), so number of instances = paperData.size() / 5
+        // not paperData.size()
         glDrawArraysInstanced(GL_TRIANGLES, 0, 36, static_cast<int>(paperData.size() / 5));
 
         // update progress, lastPaperIndex, currentCluster & currentPaper
