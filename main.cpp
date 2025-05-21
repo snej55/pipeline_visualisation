@@ -142,6 +142,7 @@ int main()
         clusterShader.setMat4("projection", app.getPerspectiveMatrix());
         clusterShader.setMat4("view", app.getViewMatrix());
         clusterShader.setMat4("model", glm::mat4(1.0));
+        clusterShader.setVec3("color", glm::vec3{1.0f, 0.0f, 0.0f});
         hull.render(clusterShader);
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
