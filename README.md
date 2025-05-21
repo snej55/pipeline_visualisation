@@ -1,3 +1,5 @@
+![screenshot](https://github.com/snej55/pipeline_visualisation/blob/main/screenshot_0.png)
+
 ## Running:
 
 - WASD to move around
