@@ -15,7 +15,7 @@
 constexpr unsigned int FONT_SIZE {14};
 constexpr bool DEBUG_INFO_ENABLED {true};
 // animation tweaks
-constexpr float ANIMATION_SPEED {5.f};
+constexpr float ANIMATION_SPEED {10.f};
 // scalar value to scale raw coordinates from csv by
 constexpr float SCALE {5.0};
 
