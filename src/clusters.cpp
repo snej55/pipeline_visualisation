@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <utility>
+#include <glm/ext/matrix_transform.hpp>
 
 Clusters::ClusterRenderer::ClusterRenderer()
 {
@@ -80,7 +81,7 @@ void Clusters::ClusterRenderer::loadClusters(const std::vector<std::map<int, Clu
 
             // load convex hull model
             std::stringstream filename;
-            filename << "../data/cluster_models/cluster_" << i + 2 << "_" << idx;
+            filename << "../data/cluster_models/cluster_" << i + 2 << "_" << idx << ".obj";
             const std::string name {filename.str()};
             ClusterModel* model {new ClusterModel{name}};
             clusterData.model = model;
@@ -88,7 +89,11 @@ void Clusters::ClusterRenderer::loadClusters(const std::vector<std::map<int, Clu
             // get cluster centroid
             clusterData.position = cluster.pos;
             m_clusters[i].insert(std::pair<int, ClusterData>{idx, clusterData});
+
+            std::cout << "\tLoaded cluster model from `" << name << "`\n";
         }
+
+        std::cout << "Loaded cluster level " << i + 2 << std::endl;
     }
 }
 
@@ -102,6 +107,7 @@ void Clusters::ClusterRenderer::free()
             if (cluster.model != nullptr)
             {
                 cluster.model->free();
+                std::cout << "Freed model " << cluster.model << std::endl;
                 delete cluster.model;
             }
             cluster.model = nullptr;
@@ -119,13 +125,24 @@ Clusters::ClusterData* Clusters::ClusterRenderer::getClusterData(int depth, int 
 void Clusters::ClusterRenderer::renderCluster(const Shader& shader, const glm::mat4& projection, const glm::mat4& view, const glm::vec3& color, int depth, int idx)
 {
     shader.use();
+    // set camera uniforms
     shader.setMat4("projection", projection);
     shader.setMat4("view", view);
-    shader.setMat4("model", glm::mat4(1.0f));
+
+    const ClusterData* cluster {getClusterData(depth, idx)};
+
+    glm::mat4 model{1.0f};
+    // model = glm::scale(model, glm::vec3{5.0f});
+    model = glm::translate(model, cluster->position);
+    shader.setMat4("model", model);
+    // color uniform
     shader.setVec3("color", color);
 
+    if (cluster->model != nullptr)
+    {
+        cluster->model->render(shader);
+    }
     // get cluster at index idx from depth level
-    // const ClusterData* cluster {getClusterData(depth, idx)};
     // glDrawElements(GL_TRIANGLES, cluster->hull->numFaces, GL_UNSIGNED_INT, nullptr);
 }
 
