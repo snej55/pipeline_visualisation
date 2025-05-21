@@ -132,7 +132,7 @@ void Clusters::ClusterRenderer::renderCluster(const Shader& shader, const glm::m
     const ClusterData* cluster {getClusterData(depth, idx)};
 
     glm::mat4 model{1.0f};
-    model = glm::scale(model, glm::vec3{0.75f * 5.0f});
+    model = glm::scale(model, glm::vec3{0.7f * 5.0f});
     model = glm::translate(model, cluster->position * 1.0f);
     shader.setMat4("model", model);
     shader.setMat3("normalMat", glm::transpose(glm::inverse(model)));

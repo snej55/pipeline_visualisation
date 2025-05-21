@@ -94,6 +94,7 @@ public:
 
     // papers getter
     [[nodiscard]] const std::vector<Paper>& getPapers() const {return m_papers;}
+    [[nodiscard]] const Paper& getPaper(float progress) const;
     // clusters getter
     [[nodiscard]] const std::map<int, Cluster>& getClusters(int depth) const;
     [[nodiscard]] const std::vector<std::map<int, Cluster>>& getClustersFull() const {return m_clusters;}

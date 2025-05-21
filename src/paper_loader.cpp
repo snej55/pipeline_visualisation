@@ -271,3 +271,8 @@ const std::map<int, Cluster>& PaperLoader::getClusters(const int depth) const
     const std::size_t index {static_cast<std::size_t>(std::max(2, std::min(6, depth)))};
     return m_clusters[index - 2];
 }
+
+const Paper& PaperLoader::getPaper(float progress) const
+{
+    return m_papers[std::max(static_cast<unsigned int>(0), std::min(static_cast<unsigned int>(m_papers.size() - 1), static_cast<unsigned int>(progress)))];
+}

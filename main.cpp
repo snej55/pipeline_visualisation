@@ -13,9 +13,9 @@
 constexpr unsigned int FONT_SIZE {12};
 constexpr bool DEBUG_INFO_ENABLED {true};
 // animation tweaks
-constexpr float ANIMATION_SPEED {700.f};
+constexpr float ANIMATION_SPEED {7.f};
 // cluster depth for rendering
-constexpr int CLUSTER_DEPTH {4};
+constexpr int CLUSTER_DEPTH {6};
 constexpr float SCALE {5.0};
 
 int main()
@@ -118,7 +118,6 @@ int main()
         glBindVertexArray(VAO);
         glDrawArraysInstanced(GL_TRIANGLES, 0, 36, static_cast<int>(paperData.size()));
 
-        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
         // clusterShader.use();
         // clusterShader.setMat4("projection", app.getPerspectiveMatrix());
@@ -127,15 +126,17 @@ int main()
         // clusterShader.setVec3("color", glm::vec3{1.0f, 0.0f, 0.0f});
         // hull.render(clusterShader);
 
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         clusterShader.use();
         clusterShader.setVec3("CameraPos", app.getCameraPosition());
-        clusterShader.setInt("lighting", 1);
-        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3(1.0f, 0.5f, 0.0f), CLUSTER_DEPTH, 0);
-        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3(0.0f, 1.0f, 0.0f), CLUSTER_DEPTH, 1);
-        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3(1.0f, 0.0f, 0.0f), CLUSTER_DEPTH, 2);
-        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(), glm::vec3(0.0f, 0.0f, 1.0f), CLUSTER_DEPTH, 3);
+        clusterShader.setInt("lighting", 0);
+        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(),
+                                      glm::vec3(1.0f, 0.5f, 0.0f), CLUSTER_DEPTH,
+                                      paperLoader.getClusterID(
+                                          paperLoader.getPaper(static_cast<float>(glfwGetTime()) * ANIMATION_SPEED),
+                                          CLUSTER_DEPTH));
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-        // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         // ---- debug info and post-processing ---- //
 
         fontManager.updateProjection(static_cast<float>(app.getWidth()), static_cast<float>(app.getHeight()));
@@ -146,11 +147,13 @@ int main()
             // average frame time
             float avgTime {static_cast<int>(app.getAvgFrameTime() * 1000) / 1000.0f};
             text << "Avg. frame time: " << avgTime * 1000.0f<< " ms";
-            fontManager.renderText(fontShader, text.str(), 10.0f, static_cast<float>(app.getHeight()) - 20.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+            fontManager.renderText(fontShader, text.str(), 10.0f, static_cast<float>(app.getHeight()) - 20.0f, 1.0f,
+                                   glm::vec3(1.0f, 1.0f, 1.0f));
             text.str(""); // clear string stream
             // framebuffer size
             text << "Framebuffer size: " << app.getWidth() << " * " << static_cast<float>(app.getHeight());
-            fontManager.renderText(fontShader, text.str(), 10.0f, static_cast<float>(app.getHeight()) - 35.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+            fontManager.renderText(fontShader, text.str(), 10.0f, static_cast<float>(app.getHeight()) - 35.0f, 1.0f,
+                                   glm::vec3(1.0f, 1.0f, 1.0f));
             text.str(""); // clear string stream
             // progress
             int progress {std::min(static_cast<int>(paperLoader.getNumPapers()), static_cast<int>(glfwGetTime() * ANIMATION_SPEED))};

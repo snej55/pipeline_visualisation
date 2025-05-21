@@ -15,8 +15,8 @@ const vec3 included = vec3(0.0, 1.0, 0.0);
 const vec3 lightColor = vec3(1.0);
 
 const float lightConstant = 1.0;
-const float lightLinear = 0.0009;
-const float lightQuadratic = 0.00032;
+const float lightLinear = 0.000009;
+const float lightQuadratic = 0.000032;
 
 const float ambientStrength = 0.01;
 
