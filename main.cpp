@@ -9,6 +9,7 @@
 #include <string>
 #include <sstream>
 #include <iomanip>
+#include <algorithm>
 
 constexpr unsigned int FONT_SIZE {12};
 constexpr bool DEBUG_INFO_ENABLED {true};
@@ -99,7 +100,8 @@ int main()
 
     // cluster shader
     const Shader clusterShader{"shaders/cluster.vert", "shaders/cluster.frag"};
-    Clusters::ClusterModel hull {"data/cluster_models/cluster_2_0.obj"};
+
+    std::vector<int> passedClusters{};
 
     // main loop
     while (!app.shouldClose()) {
@@ -118,23 +120,52 @@ int main()
         glBindVertexArray(VAO);
         glDrawArraysInstanced(GL_TRIANGLES, 0, 36, static_cast<int>(paperData.size()));
 
-
-        // clusterShader.use();
-        // clusterShader.setMat4("projection", app.getPerspectiveMatrix());
-        // clusterShader.setMat4("view", app.getViewMatrix());
-        // clusterShader.setMat4("model", glm::mat4(1.0));
-        // clusterShader.setVec3("color", glm::vec3{1.0f, 0.0f, 0.0f});
-        // hull.render(clusterShader);
-
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        // render clusters
         clusterShader.use();
         clusterShader.setVec3("CameraPos", app.getCameraPosition());
-        clusterShader.setInt("lighting", 0);
-        clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(),
-                                      glm::vec3(1.0f, 0.5f, 0.0f), CLUSTER_DEPTH,
-                                      paperLoader.getClusterID(
-                                          paperLoader.getPaper(static_cast<float>(glfwGetTime()) * ANIMATION_SPEED),
-                                          CLUSTER_DEPTH));
+
+        const float progress {static_cast<float>(glfwGetTime() * ANIMATION_SPEED)};
+        const Paper& currentPaper {paperLoader.getPaper(progress)};
+        const int currentCluster {paperLoader.getClusterID(currentPaper, CLUSTER_DEPTH)};
+        passedClusters.push_back(currentCluster);
+        for (int c {0}; c < std::pow(2, CLUSTER_DEPTH); ++c)
+        {
+            if (currentCluster == c)
+            {
+                glLineWidth(10.0f);
+                glm::vec3 color = {1.0f, 1.0f, 0.0f};
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                clusterShader.setInt("lighting", 1);
+                clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(),
+                                              color, CLUSTER_DEPTH,
+                                              c);
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                clusterShader.setInt("lighting", 0);
+                clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(),
+                                              color, CLUSTER_DEPTH,
+                                              c);
+            } else if (std::ranges::find(passedClusters, c) != passedClusters.end())
+            {
+                glLineWidth(1.0f);
+                glm::vec3 color = {0.0f, 0.6f, 0.0f};
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                clusterShader.setInt("lighting", 0);
+                clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(),
+                                              color, CLUSTER_DEPTH,
+                                              c);
+            } else
+            {
+                glLineWidth(2.0f);
+                glm::vec3 color = {0.6f, 0.0f, 0.0f};
+                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                clusterShader.setInt("lighting", 0);
+                clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(),
+                                              color, CLUSTER_DEPTH,
+                                              c);
+            }
+
+        }
+
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
         // ---- debug info and post-processing ---- //

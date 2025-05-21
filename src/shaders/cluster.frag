@@ -38,7 +38,7 @@ void main()
 
     vec3 result = (ambient + diffuse) * color;
     if (lighting == 1)
-        FragColor = vec4(result, 1.0);
+        FragColor = vec4(result, 0.3);
     else
-        FragColor = vec4(color * 1.5, 1.0);
+        FragColor = vec4(color * 1.5 * attenuation, 1.0);
 }

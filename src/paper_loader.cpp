@@ -142,7 +142,8 @@ void PaperLoader::getVertices(std::vector<float>& vertices, const double scale) 
     int not_included{0};
     for (std::size_t i{0}; i < std::size(m_papers); ++i)
     {
-        const Paper* paper {&m_papers[i]};
+        Paper* paper {&m_papers[i]};
+        paper->counter = i; // update counter
         vertices.push_back(static_cast<float>(paper->pos3Dx * scale)); // x
         vertices.push_back(static_cast<float>(paper->pos3Dy * scale)); // y
         vertices.push_back(static_cast<float>(paper->pos3Dz * scale)); // z
@@ -211,7 +212,7 @@ glm::vec3 PaperLoader::getAvgPos(const std::vector<glm::vec3>& papers) const
         avg += pos;
     }
     // convert to int from unsigned int first to avoid *weird* errors
-    avg /= static_cast<float>(static_cast<int>(papers.size()));
+    avg /= static_cast<float>(papers.size());
     return avg;
 }
 
