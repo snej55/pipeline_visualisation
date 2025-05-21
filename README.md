@@ -1,3 +1,9 @@
+## Running:
+
+- WASD to move around
+- Use the mouse to look around
+- ESC to exit
+
 ## Libraries in use:
 
 - GLFW3 & GLAD for OpenGL and rendering.

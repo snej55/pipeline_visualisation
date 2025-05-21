@@ -15,9 +15,9 @@
 constexpr unsigned int FONT_SIZE {14};
 constexpr bool DEBUG_INFO_ENABLED {true};
 // animation tweaks
-constexpr float ANIMATION_SPEED {10.f};
+constexpr float ANIMATION_SPEED {20.f};
 // cluster depth for rendering
-constexpr int CLUSTER_DEPTH {6};
+constexpr int CLUSTER_DEPTH {5};
 constexpr float SCALE {5.0};
 
 void wstring2string(std::wstring ws, std::string& s);
@@ -157,9 +157,6 @@ int main()
                                               c);
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
                 clusterShader.setInt("lighting", 0);
-                clusterRenderer.renderClusterText(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(),
-                                              color, CLUSTER_DEPTH,
-                                              c, fontManager, fontShader, clusterLabel, static_cast<float>(app.getWidth()), static_cast<float>(app.getHeight()));
             } else if (std::ranges::find(passedClusters, c) != passedClusters.end())
             {
                 glLineWidth(3.0f);
