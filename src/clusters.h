@@ -16,6 +16,7 @@
 // namespace for rendering clusters
 namespace Clusters
 {
+    // used to generate convex hull (and export to wavefront)
     struct ConvexHull
     {
         int numVertices{};
@@ -34,9 +35,10 @@ namespace Clusters
     public:
         ClusterRenderer();
         ~ClusterRenderer();
-    
+
+        // generates convex hulls for clusters and saves to wavefront .obj in data/cluster_models
         int generateClusters(const std::vector<std::map<int, Cluster>>& clusters, float scale);
-        void free();
+        void freeHulls();
 
         // not const because std::map[] isn't const
         ClusterData* getClusterData(int depth, int idx);
@@ -52,6 +54,7 @@ namespace Clusters
         std::vector<std::map<int, ClusterData>> m_clusters{};
     };
 
+    // ----- Cluster Models ----- //
     struct Vertex
     {
         glm::vec3 position;

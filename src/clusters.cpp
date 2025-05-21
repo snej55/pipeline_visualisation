@@ -12,9 +12,7 @@ Clusters::ClusterRenderer::ClusterRenderer()
 }
 
 Clusters::ClusterRenderer::~ClusterRenderer()
-{
-    free();
-}
+= default;
 
 // load convex hull for each cluster
 int Clusters::ClusterRenderer::generateClusters(const std::vector<std::map<int, Cluster>>& clusters, const float scale)
@@ -49,11 +47,11 @@ int Clusters::ClusterRenderer::generateClusters(const std::vector<std::map<int, 
             std::stringstream filename;
             filename << "../data/cluster_models/cluster_" << i + 2 << "_" << idx;
             std::string name {filename.str()};
-            convhull_3d_export_obj(chVertices, hull->numVertices, hull->faceIndices, hull->numFaces, 1, (char*)name.c_str());
+            convhull_3d_export_obj(chVertices, hull->numVertices, hull->faceIndices, hull->numFaces, 1, const_cast<char*>(name.c_str()));
             // success check
             if (hull->faceIndices == nullptr)
             {
-                std::cout << "ERROR::CLUSTER_RENDERER::INIT: Failed to create convex hull!" << std::endl;
+                std::cout << "ERROR::CLUSTER_RENDERER::GENERATE_CLUSTERS: Failed to create convex hull!" << std::endl;
                 return -1;
             }
 
@@ -76,17 +74,18 @@ int Clusters::ClusterRenderer::generateClusters(const std::vector<std::map<int, 
             m_clusters[i].insert(std::pair{idx, clusterData});
             delete[] chVertices;
         }
-        std::cout << "Loaded cluster level " << i + 2 << std::endl;
+        std::cout << "Generated cluster level " << i + 2 << std::endl;
     }
 
     // all good
+    std::cout << "Clusters generated!" << std::endl;
+    freeHulls();
     m_loaded = true;
-    std::cout << "Clusters loaded!" << std::endl;
     return 0;
 }
 
 // free memory from cluster data
-void Clusters::ClusterRenderer::free()
+void Clusters::ClusterRenderer::freeHulls()
 {
     if (m_loaded)
     {
