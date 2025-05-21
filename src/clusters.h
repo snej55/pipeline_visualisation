@@ -3,15 +3,14 @@
 #define CLUSTERS_H
 
 // opengl rendering
+#include <glad/glad.h>
 
 // for assimp model loading
 #include <assimp/scene.h>
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
 
 #include "paper_loader.h"
 #include "opengl/shader.h"
-#include <glad/glad.h>
+#include "opengl/fonts.h"
 
 // namespace for rendering clusters
 namespace Clusters
@@ -93,8 +92,13 @@ namespace Clusters
         void free();
 
         // same here
-        void renderCluster(const Shader& shader, const glm::mat4& projection, const glm::mat4& view, const glm::vec3& color, int depth, int idx);
-        void renderClusterLevel(const Shader& shader, const glm::mat4& projection, const glm::mat4& view, const glm::vec3& color, int depth);
+        void renderCluster(const Shader &shader, const glm::mat4 &projection, const glm::mat4 &view,
+                           const glm::vec3 &color, int depth, int idx);
+        void renderClusterText(const Shader &shader, const glm::mat4 &projection, const glm::mat4 &view,
+                               const glm::vec3 &color, int depth, int idx, FontManager &fontManager,
+                               const Shader &fontShader, const std::string& clusterLabel,
+                               float width, float height);
+        // void renderClusterLevel(const Shader& shader, const glm::mat4& projection, const glm::mat4& view, const glm::vec3& color, int depth);
 
     private:
         // flag to know if we need to free or not

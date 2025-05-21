@@ -8,6 +8,9 @@
 #include <utility>
 #include <glm/ext/matrix_transform.hpp>
 
+#include <assimp/postprocess.h>
+#include <assimp/Importer.hpp>
+
 Clusters::ClusterRenderer::ClusterRenderer()
 {
     m_clusters.resize(5);
@@ -122,7 +125,8 @@ Clusters::ClusterData* Clusters::ClusterRenderer::getClusterData(int depth, int 
     return &m_clusters[depth - 2][idx];
 }
 
-void Clusters::ClusterRenderer::renderCluster(const Shader& shader, const glm::mat4& projection, const glm::mat4& view, const glm::vec3& color, int depth, int idx)
+void Clusters::ClusterRenderer::renderCluster(const Shader &shader, const glm::mat4 &projection, const glm::mat4 &view,
+                                              const glm::vec3 &color, const int depth, const int idx)
 {
     shader.use();
     // set camera uniforms
@@ -143,8 +147,27 @@ void Clusters::ClusterRenderer::renderCluster(const Shader& shader, const glm::m
     {
         cluster->model->render(shader);
     }
-    // get cluster at index idx from depth level
-    // glDrawElements(GL_TRIANGLES, cluster->hull->numFaces, GL_UNSIGNED_INT, nullptr);
+}
+
+void Clusters::ClusterRenderer::renderClusterText(const Shader& shader, const glm::mat4& projection,
+                                                  const glm::mat4& view, const glm::vec3& color, const int depth,
+                                                  const int idx, FontManager& fontManager,
+                                                  const Shader& fontShader, const std::string& clusterLabel,
+                                                  const float width, const float height)
+{
+    renderCluster(shader, projection, view, color, depth, idx);
+
+    // calculate view port coordinates
+    const ClusterData* cluster {getClusterData(depth, idx)};
+    glm::mat4 model{1.0f};
+    model = glm::translate(model, cluster->position);
+    const glm::vec4 clip {projection * view * model * glm::vec4{0.0f, 0.0f, 0.0f, 1.0f}};
+    const glm::vec4 NDC {clip / clip.w};
+    const glm::vec2 viewport {glm::vec2{NDC.x + 1.0f, NDC.y + 1.0f} / 2.0f * glm::vec2{width, height}};
+
+    // render text
+    fontManager.updateProjection(width, height);
+    fontManager.renderText(fontShader, clusterLabel, viewport.x, viewport.y, 1.0f, glm::vec3{1.0f});
 }
 
 // ------------ Model Loading ------------ //
