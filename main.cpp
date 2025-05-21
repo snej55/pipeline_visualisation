@@ -15,7 +15,7 @@
 constexpr unsigned int FONT_SIZE {14};
 constexpr bool DEBUG_INFO_ENABLED {true};
 // animation tweaks
-constexpr float ANIMATION_SPEED {20.f};
+constexpr float ANIMATION_SPEED {5.f};
 // scalar value to scale raw coordinates from csv by
 constexpr float SCALE {5.0};
 
@@ -167,13 +167,13 @@ int main()
             distance = glm::length(app.getCameraPosition() - clusterData->position);
             if (currentCluster == c)
             {
-                color = {1.0f, 1.0f, 0.0f};
+                color = {0.9f, 1.0f, 0.0f};
             } else if (std::ranges::find(passedClusters, c) != passedClusters.end())
             {
-                color = {0.0f, 0.6f, 0.0f};
+                color = {0.0f, 0.9f, 1.0f};
             } else
             {
-                color = {0.6f, 0.0f, 0.0f};
+                color = {0.4f, 0.3f, 0.4f};
             }
             // add to map to be sorted
             sortedClusters[distance] = std::make_pair(c, color);
@@ -193,7 +193,6 @@ int main()
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
         // ---- debug info and post-processing ---- //
-
         fontManager.updateProjection(static_cast<float>(app.getWidth()), static_cast<float>(app.getHeight()));
 
         if (DEBUG_INFO_ENABLED)

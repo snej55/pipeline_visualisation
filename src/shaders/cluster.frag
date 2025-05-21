@@ -14,8 +14,8 @@ uniform int lighting;
 const vec3 lightColor = vec3(1.0);
 
 const float lightConstant = 1.0;
-const float lightLinear = 0.0009;
-const float lightQuadratic = 0.00032;
+const float lightLinear = 0.00009;
+const float lightQuadratic = 0.000032;
 
 const float ambientStrength = 0.01;
 
@@ -38,7 +38,7 @@ void main()
 
     vec3 result = (ambient + diffuse) * color;
     if (lighting == 1)
-        FragColor = vec4(result, 0.3);
+        FragColor = vec4(result, 0.1);
     else
         FragColor = vec4(color * 1.5 * attenuation, 1.0);
 }
