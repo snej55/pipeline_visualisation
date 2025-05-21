@@ -16,9 +16,11 @@ constexpr unsigned int FONT_SIZE {14};
 constexpr bool DEBUG_INFO_ENABLED {true};
 // animation tweaks
 constexpr float ANIMATION_SPEED {20.f};
-// cluster depth for rendering
-constexpr int CLUSTER_DEPTH {5};
+// scalar value to scale raw coordinates from csv by
 constexpr float SCALE {5.0};
+
+// cluster depth for rendering
+int CLUSTER_DEPTH {6};
 
 void wstring2string(std::wstring ws, std::string& s);
 
@@ -161,8 +163,8 @@ int main()
             {
                 glLineWidth(3.0f);
                 glm::vec3 color = {0.0f, 0.6f, 0.0f};
-                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-                clusterShader.setInt("lighting", 0);
+                glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                clusterShader.setInt("lighting", 1);
                 clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(),
                                               color, CLUSTER_DEPTH,
                                               c);
