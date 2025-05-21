@@ -158,7 +158,7 @@ int main()
                                               c);
             } else if (std::ranges::find(passedClusters, c) != passedClusters.end())
             {
-                glLineWidth(1.0f);
+                glLineWidth(3.0f);
                 glm::vec3 color = {0.0f, 0.6f, 0.0f};
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
                 clusterShader.setInt("lighting", 0);
