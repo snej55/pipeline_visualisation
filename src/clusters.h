@@ -27,6 +27,9 @@ namespace Clusters
     {
     public:
         ClusterMesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices);
+
+        void free() const;
+
         void render(const Shader& shader) const;
 
     private:
@@ -42,6 +45,8 @@ namespace Clusters
     {
     public:
         explicit ClusterModel(const std::string& path);
+
+        void free();
 
         void render(const Shader& shader);
 

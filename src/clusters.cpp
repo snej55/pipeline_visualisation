@@ -13,7 +13,9 @@ Clusters::ClusterRenderer::ClusterRenderer()
 }
 
 Clusters::ClusterRenderer::~ClusterRenderer()
-= default;
+{
+    free();
+}
 
 // load convex hull for each cluster
 int Clusters::ClusterRenderer::generateClusters(const std::vector<std::map<int, Cluster>>& clusters, const float scale)
@@ -94,9 +96,15 @@ void Clusters::ClusterRenderer::free()
 {
     for (std::size_t i{0}; i < m_clusters.size(); ++i)
     {
-        for (const auto&[idx, cluster] : m_clusters[i])
+        for (std::pair<const int, ClusterData>& clusterPair: m_clusters[i])
         {
-            cluster.model->~ClusterModel();
+            ClusterData& cluster {clusterPair.second};
+            if (cluster.model != nullptr)
+            {
+                cluster.model->free();
+                delete cluster.model;
+            }
+            cluster.model = nullptr;
         }
     }
 }
@@ -152,6 +160,14 @@ void Clusters::ClusterMesh::setupMesh()
     glBindVertexArray(0);
 }
 
+void Clusters::ClusterMesh::free() const
+{
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+    glDeleteVertexArrays(1, &VAO);
+}
+
+
 void Clusters::ClusterMesh::render(const Shader& shader) const
 {
     shader.use();
@@ -168,6 +184,15 @@ Clusters::ClusterModel::ClusterModel(const std::string& path)
     std::cout << "Created cluster model at path: `" << path <<"`\n";
     loadModel(path);
 }
+
+void Clusters::ClusterModel::free()
+{
+    for (ClusterMesh& mesh : m_meshes)
+    {
+        mesh.free();
+    }
+}
+
 
 // render all the model meshes
 void Clusters::ClusterModel::render(const Shader& shader)
