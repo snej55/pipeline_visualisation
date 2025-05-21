@@ -76,7 +76,7 @@ namespace Clusters
     class ClusterModel
     {
     public:
-        explicit ClusterModel(std::string  path);
+        explicit ClusterModel(const std::string& path);
 
         void render(const Shader& shader);
 

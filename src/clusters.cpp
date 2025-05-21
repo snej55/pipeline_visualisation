@@ -163,9 +163,10 @@ void Clusters::ClusterMesh::render(const Shader& shader) const
 
 // Convex Hull model
 // use assimp to load model meshes from path
-Clusters::ClusterModel::ClusterModel(std::string path)
-    : m_path{std::move(path)}
+Clusters::ClusterModel::ClusterModel(const std::string& path)
+    : m_path{path}
 {
+    std::cout << "Created cluster model at path: `" << path <<"`\n";
     loadModel(path);
 }
 
@@ -181,6 +182,7 @@ void Clusters::ClusterModel::render(const Shader& shader)
 // load meshes from path
 void Clusters::ClusterModel::loadModel(const std::string& path)
 {
+    std::cout << "Loading cluster model from path: `" << path << "`... ";
     Assimp::Importer importer;
     const aiScene* scene {importer.ReadFile(path.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace)};
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
@@ -190,6 +192,7 @@ void Clusters::ClusterModel::loadModel(const std::string& path)
     }
     m_directory = path.substr(0, path.find_last_of('/'));
     processNode(scene->mRootNode, scene);
+    std::cout << "Loaded cluster model from path: `" << path << "`!\n";
 }
 
 // recursively load meshes from root node and children

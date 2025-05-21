@@ -92,49 +92,61 @@ int main()
     // load fonts shader
     const Shader fontShader{"shaders/builtin/fonts.vert", "shaders/builtin/fonts.frag"};
 
+    
+    // const Shader modelShader{"shaders/builtin/lighting.vert", "shaders/builtin/lighting.frag"};
+    
+    // modelShader.setVec3("objectColor", color2vec({182, 207, 142, 255}));
+    // modelShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+    
+    // constexpr glm::vec3 lightPos {1.2f, 1.0f, 1.0f};
+    
+    // modelShader.setVec3("light.position", lightPos);
+    
+    // modelShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
+    // modelShader.setVec3("light.diffuse", 1.0f, 1.0f, 1.0f);
+    // modelShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+    
+    // modelShader.setFloat("light.constant",  1.0f);
+    // modelShader.setFloat("light.linear",    0.09f);
+    // modelShader.setFloat("light.quadratic", 0.032f);
+    
+    // modelShader.setFloat("material.shininess", 32.0f); // pow(shininess)
+    
     const Shader clusterShader{"shaders/cluster.vert", "shaders/cluster.frag"};
-
-    const Shader modelShader{"shaders/builtin/lighting.vert", "shaders/builtin/lighting.frag"};
-
-    modelShader.setVec3("objectColor", color2vec({182, 207, 142, 255}));
-    modelShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-
-    constexpr glm::vec3 lightPos {1.2f, 1.0f, 1.0f};
-
-    modelShader.setVec3("light.position", lightPos);
-
-    modelShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f);
-    modelShader.setVec3("light.diffuse", 1.0f, 1.0f, 1.0f);
-    modelShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
-
-    modelShader.setFloat("light.constant",  1.0f);
-    modelShader.setFloat("light.linear",    0.09f);
-    modelShader.setFloat("light.quadratic", 0.032f);
-
-    modelShader.setFloat("material.shininess", 32.0f); // pow(shininess)
-
-    const Model* model {app.loadModel("data/cluster_models/cluster_2_0.obj")};
+    Clusters::ClusterModel hull {"data/cluster_models/cluster_2_0.obj"};
+    // const Model* model {app.loadModel("data/cluster_models/cluster_2_0.obj")};
     
     // main loop
     while (!app.shouldClose()) {
         app.handleInput();
         app.enablePostProcessing();
+        // ---- do rendering ---- //
         app.clear();
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         
-        shader.use();
-        shader.setMat4("projection", app.getPerspectiveMatrix());
-        shader.setMat4("view", app.getViewMatrix());
-        shader.setMat4("model", glm::mat4(1.0f));
-        shader.setVec3("camerapos", app.getCameraPosition());
-        shader.setFloat("time", static_cast<float>(glfwGetTime() * ANIMATION_SPEED));
-        shader.setInt("lastIndex", static_cast<int>(paperLoader.getLastIndex()));
-        glBindVertexArray(VAO);
-        glDrawArraysInstanced(GL_TRIANGLES, 0, 36, static_cast<int>(paperData.size()));
+        // shader.use();
+        // shader.setMat4("projection", app.getPerspectiveMatrix());
+        // shader.setMat4("view", app.getViewMatrix());
+        // shader.setMat4("model", glm::mat4(1.0f));
+        // shader.setVec3("camerapos", app.getCameraPosition());
+        // shader.setFloat("time", static_cast<float>(glfwGetTime() * ANIMATION_SPEED));
+        // shader.setInt("lastIndex", static_cast<int>(paperLoader.getLastIndex()));
+        // glBindVertexArray(VAO);
+        // glDrawArraysInstanced(GL_TRIANGLES, 0, 36, static_cast<int>(paperData.size()));
 
-        modelShader.use();
-        modelShader.setVec3("lightPos", app.getCameraPosition());
-        app.drawModel(model, modelShader, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f});
+        // modelShader.use();
+        // modelShader.setVec3("lightPos", app.getCameraPosition());
+        // app.drawModel(model, modelShader, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f});
+
+        clusterShader.use();
+        clusterShader.setMat4("projection", app.getPerspectiveMatrix());
+        clusterShader.setMat4("view", app.getViewMatrix());
+        clusterShader.setMat4("model", glm::mat4(1.0));
+        hull.render(clusterShader);
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+        // ---- debug info and post-processing ---- //
 
         fontManager.updateProjection(static_cast<float>(app.getWidth()), static_cast<float>(app.getHeight()));
 
@@ -170,7 +182,6 @@ int main()
             text.str("");
         }
 
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         app.disablePostProcessing();
 
         app.getPostProcessor()->render(screenShader);
@@ -179,7 +190,7 @@ int main()
     }
 
     // clean up
-    app.freeModel(model);
+    // app.freeModel(model);
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &instanceVBO);
