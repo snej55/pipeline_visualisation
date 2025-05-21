@@ -135,6 +135,7 @@ void Clusters::ClusterRenderer::renderCluster(const Shader& shader, const glm::m
     model = glm::scale(model, glm::vec3{0.75f * 5.0f});
     model = glm::translate(model, cluster->position * 1.0f);
     shader.setMat4("model", model);
+    shader.setMat3("normalMat", glm::transpose(glm::inverse(model)));
     // color uniform
     shader.setVec3("color", color);
 
