@@ -105,6 +105,7 @@ int main()
     const Shader clusterShader{"shaders/cluster.vert", "shaders/cluster.frag"};
 
     std::vector<int> passedClusters{};
+    int lastPaperIndex{0};
 
     // main loop
     while (!app.shouldClose()) {
@@ -127,10 +128,18 @@ int main()
         clusterShader.use();
         clusterShader.setVec3("CameraPos", app.getCameraPosition());
 
-        const float progress {static_cast<float>(glfwGetTime() * ANIMATION_SPEED)};
+        const float progress {std::min(static_cast<float>(glfwGetTime() * ANIMATION_SPEED), static_cast<float>(paperLoader.getLastIndex()))};
         const Paper& currentPaper {paperLoader.getPaper(progress)};
         const int currentCluster {paperLoader.getClusterID(currentPaper, CLUSTER_DEPTH)};
         passedClusters.push_back(currentCluster);
+
+        for (int i{lastPaperIndex}; i <= static_cast<int>(progress); ++i)
+        {
+            const int paperCluster {paperLoader.getClusterID(paperLoader.getPaper(i), CLUSTER_DEPTH)};
+            passedClusters.push_back(paperCluster);
+        }
+        lastPaperIndex = static_cast<int>(progress);
+
         for (int c {0}; c < std::pow(2, CLUSTER_DEPTH); ++c)
         {
             if (currentCluster == c)
@@ -147,7 +156,7 @@ int main()
                 clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(),
                                               color, CLUSTER_DEPTH,
                                               c);
-            } else if (std::ranges::find(passedClusters, c) != passedClusters.end() && currentPaper.counter < static_cast<int>(paperLoader.getLastIndex()))
+            } else if (std::ranges::find(passedClusters, c) != passedClusters.end())
             {
                 glLineWidth(1.0f);
                 glm::vec3 color = {0.0f, 0.6f, 0.0f};
@@ -171,7 +180,6 @@ int main()
                                               color, CLUSTER_DEPTH,
                                               c);
             }
-
         }
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -209,6 +217,13 @@ int main()
             info.emplace_back(text.str());
             text.str("");
             text << "Vertex data size (KB): " << static_cast<int>(paperLoader.getVerticesSize() + sizeof(Shapes3D::cubeVerticesNormals)) / 1000;
+            info.emplace_back(text.str());
+            text.str("");
+
+            text << "Num. papers explored: " << paperLoader.getLastIndex();
+            info.emplace_back(text.str());
+            text.str("");
+            text << "Num. papers unexplored: " << paperLoader.getNumPapers() - paperLoader.getLastIndex();
             info.emplace_back(text.str());
             text.str("");
 
