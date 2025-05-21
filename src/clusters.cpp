@@ -4,6 +4,7 @@
 #define CONVHULL_3D_ENABLE
 #include <convhull_3d.h>
 
+#include <iostream>
 #include <utility>
 
 Clusters::ClusterRenderer::ClusterRenderer()
@@ -66,6 +67,41 @@ int Clusters::ClusterRenderer::generateClusters(const std::vector<std::map<int, 
     m_loaded = true;
     return 0;
 }
+
+void Clusters::ClusterRenderer::loadClusters(const std::vector<std::map<int, Cluster>>& clusters)
+{
+    for (std::size_t i{0}; i < clusters.size(); ++i)
+    {
+        for (const auto&[idx, cluster] : clusters[i])
+        {
+            ClusterData clusterData{};
+
+            // load convex hull model
+            std::stringstream filename;
+            filename << "../data/cluster_models/cluster_" << i + 2 << "_" << idx;
+            const std::string name {filename.str()};
+            ClusterModel* model {new ClusterModel{name}};
+            clusterData.model = model;
+
+            // get cluster centroid
+            clusterData.position = cluster.pos;
+            m_clusters[i].insert(std::pair<int, ClusterData>{idx, clusterData});
+        }
+    }
+}
+
+void Clusters::ClusterRenderer::free()
+{
+    for (std::size_t i{0}; i < m_clusters.size(); ++i)
+    {
+        for (const auto&[idx, cluster] : m_clusters[i])
+        {
+            cluster.model->~ClusterModel();
+        }
+    }
+}
+
+
 
 Clusters::ClusterData* Clusters::ClusterRenderer::getClusterData(int depth, int idx)
 {

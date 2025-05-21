@@ -5,8 +5,6 @@
 #ifndef PAPER_LOADER_H
 #define PAPER_LOADER_H
 
-#include <iostream>
-#include <fstream>
 #include <sstream>
 #include <vector>
 #include <string>
@@ -55,6 +53,7 @@ struct Cluster
     int num_papers{0};
     std::wstring label;
     std::vector<glm::vec3> vertices;
+    glm::vec3 pos;
 };
 
 class PaperLoader
@@ -84,6 +83,8 @@ public:
     void generateClusters();
     // generate single cluster level
     void generateClusterLevel(int idx);
+
+    [[nodiscard]] glm::vec3 getAvgPos(const std::vector<glm::vec3>& papers) const;
 
     // get cluster info from papers at a specific depth
     [[nodiscard]] int getClusterID(const Paper& paper, int depth) const;

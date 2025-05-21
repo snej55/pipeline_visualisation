@@ -1,5 +1,8 @@
 #include "paper_loader.h"
 
+#include <iostream>
+#include <fstream>
+
 PaperLoader::PaperLoader()
 {
     m_clusters.resize(5);
@@ -179,21 +182,37 @@ void PaperLoader::generateClusterLevel(const int idx)
         if (!m_clusters[idx].contains(clusterID))
         {
             // create new cluster
-            m_clusters[idx].insert(std::pair<int, Cluster>{clusterID, Cluster{}});
+            m_clusters[idx].insert(std::pair{clusterID, Cluster{}});
             // set correct label
             m_clusters[idx][getClusterID(paper, idx + 2)].label = getClusterLabel(paper, idx + 2);
         }
         // add another paper to cluster
         ++m_clusters[idx][clusterID].num_papers;
         // add paper vertices
-        m_clusters[idx][clusterID].vertices.push_back(glm::vec3(paper.pos3Dx, paper.pos3Dy, paper.pos3Dz));
+        m_clusters[idx][clusterID].vertices.emplace_back(paper.pos3Dx, paper.pos3Dy, paper.pos3Dz);
     }
     // print clusters at level idx + 2
     std::cout << "--- Level " << idx + 2 << " Clusters ---\n";
-    for (const std::pair<int, Cluster>& cluster : m_clusters[idx])
+    // const int since keys cannot be changed
+    for (std::pair<const int, Cluster>& cluster : m_clusters[idx])
     {
+        // calculate cluster centroid
+        cluster.second.pos = getAvgPos(cluster.second.vertices);
         std::wcout << "\tCluster No." << cluster.first << " (" << cluster.second.num_papers << " papers, under `" << cluster.second.label << "`)\n";
+        std::cout << "\tCluster centroid: " << cluster.second.pos.x << " " << cluster.second.pos.y << " " << cluster.second.pos.z << "\n";
     }
+}
+
+glm::vec3 PaperLoader::getAvgPos(const std::vector<glm::vec3>& papers) const
+{
+    glm::vec3 avg{0.0f};
+    for (const glm::vec3& pos : papers)
+    {
+        avg += pos;
+    }
+    // convert to int from unsigned int first to avoid *weird* errors
+    avg /= static_cast<float>(static_cast<int>(papers.size()));
+    return avg;
 }
 
 // return cluster id for paper at given depth (2-6) default depth is 2
@@ -249,6 +268,6 @@ Cluster* PaperLoader::getCluster(int id, int depth)
 // return map of clusters for given depth (2-6)
 const std::map<int, Cluster>& PaperLoader::getClusters(const int depth) const
 {
-    const std::size_t index {std::max(2, std::min(6, depth))};
+    const std::size_t index {static_cast<std::size_t>(std::max(2, std::min(6, depth)))};
     return m_clusters[index - 2];
 }
