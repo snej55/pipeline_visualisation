@@ -25,9 +25,7 @@ int Clusters::ClusterRenderer::generateClusters(const std::vector<std::map<int, 
         for (const auto&[idx, cluster] : clusters[i])
         {
             // cluster rendering data
-            ClusterData clusterData{};
             ConvexHull* hull {new ConvexHull};
-            clusterData.hull = hull;
 
             // allocate memory for papers
             auto* chVertices = new ch_vertex[cluster.num_papers];
@@ -55,52 +53,18 @@ int Clusters::ClusterRenderer::generateClusters(const std::vector<std::map<int, 
                 return -1;
             }
 
-            // generate vector of floats to copy into vertex buffer
-            std::vector<float> vertices;
-            for (std::size_t j{0}; j < hull->numVertices; ++j)
-            {
-                // CH_FLOAT -> float
-                vertices.push_back(static_cast<float>(chVertices[j].x));
-                vertices.push_back(static_cast<float>(chVertices[j].y));
-                vertices.push_back(static_cast<float>(chVertices[j].z));
-            }
-
-            std::vector<unsigned int> indices;
-            for (std::size_t f{0}; f < hull->numFaces; ++f)
-            {
-                indices.push_back(hull->faceIndices[f]);
-            }
-
-            m_clusters[i].insert(std::pair{idx, clusterData});
+            // free memory
             delete[] chVertices;
+            delete[] hull->faceIndices;
+            delete hull;
         }
         std::cout << "Generated cluster level " << i + 2 << std::endl;
     }
 
     // all good
     std::cout << "Clusters generated!" << std::endl;
-    freeHulls();
     m_loaded = true;
     return 0;
-}
-
-// free memory from cluster data
-void Clusters::ClusterRenderer::freeHulls()
-{
-    if (m_loaded)
-    {
-        for (std::size_t i{0}; i < m_clusters.size(); ++i)
-        {
-            for (const auto&[idx, cluster] : m_clusters[i])
-            {
-                delete[] cluster.hull->faceIndices;
-                delete cluster.hull;
-            }
-            m_clusters[i].clear();
-        }
-        m_clusters.clear();
-        m_loaded = false;
-    }
 }
 
 Clusters::ClusterData* Clusters::ClusterRenderer::getClusterData(int depth, int idx)

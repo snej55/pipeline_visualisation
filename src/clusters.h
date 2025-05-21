@@ -38,7 +38,6 @@ namespace Clusters
 
         // generates convex hulls for clusters and saves to wavefront .obj in data/cluster_models
         int generateClusters(const std::vector<std::map<int, Cluster>>& clusters, float scale);
-        void freeHulls();
 
         // not const because std::map[] isn't const
         ClusterData* getClusterData(int depth, int idx);
