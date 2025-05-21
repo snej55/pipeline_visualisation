@@ -107,6 +107,8 @@ int main()
     std::vector<int> passedClusters{};
     int lastPaperIndex{0};
 
+    std::cout << "Successfully initialized!\n";
+
     // main loop
     while (!app.shouldClose()) {
         app.handleInput();
@@ -142,6 +144,8 @@ int main()
 
         for (int c {0}; c < std::pow(2, CLUSTER_DEPTH); ++c)
         {
+            std::string clusterLabel{};
+            wstring2string(paperLoader.getCluster(c, CLUSTER_DEPTH)->label, clusterLabel);
             if (currentCluster == c)
             {
                 glLineWidth(10.0f);
@@ -153,9 +157,9 @@ int main()
                                               c);
                 glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
                 clusterShader.setInt("lighting", 0);
-                clusterRenderer.renderCluster(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(),
+                clusterRenderer.renderClusterText(clusterShader, app.getPerspectiveMatrix(), app.getViewMatrix(),
                                               color, CLUSTER_DEPTH,
-                                              c);
+                                              c, fontManager, fontShader, clusterLabel, static_cast<float>(app.getWidth()), static_cast<float>(app.getHeight()));
             } else if (std::ranges::find(passedClusters, c) != passedClusters.end())
             {
                 glLineWidth(3.0f);

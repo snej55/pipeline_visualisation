@@ -167,7 +167,8 @@ void Clusters::ClusterRenderer::renderClusterText(const Shader& shader, const gl
 
     // render text
     fontManager.updateProjection(width, height);
-    fontManager.renderText(fontShader, clusterLabel, viewport.x, viewport.y, 1.0f, glm::vec3{1.0f});
+    std::string str{"This is a cluster balbalbalbalbalbalblabalblablal"};
+    fontManager.renderText(fontShader, str, width / 2.f, height / 2.f, 1.0f, glm::vec3{1.0f});
 }
 
 // ------------ Model Loading ------------ //

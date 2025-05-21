@@ -262,7 +262,7 @@ Cluster* PaperLoader::getCluster(int id, int depth)
 {
     depth = std::max(2, std::min(6, depth));
     // avoid copying large cluster
-    std::map<int, Cluster>* cluster {&m_clusters[depth]};
+    std::map<int, Cluster>* cluster {&m_clusters[depth - 2]};
     return &(*cluster)[id];
 }
 

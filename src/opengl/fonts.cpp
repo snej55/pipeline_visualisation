@@ -91,7 +91,7 @@ void FontManager::free()
     }
 }
 
-void FontManager::renderText(const Shader& shader, const std::string& text, float x, float y, const float scale, const glm::vec3&& color)
+void FontManager::renderText(const Shader& shader, const std::string text, float x, float y, const float scale, const glm::vec3&& color)
 {
     // use shader
     shader.use();

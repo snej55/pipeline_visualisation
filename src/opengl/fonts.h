@@ -33,7 +33,7 @@ public:
     void free();
 
     // render text
-    void renderText(const Shader& shader, const std::string& text, float x, float y, float scale, const glm::vec3&& color);
+    void renderText(const Shader& shader, std::string text, float x, float y, float scale, const glm::vec3&& color);
 
     // update projection matrix with framebuffer dimensions on resize
     void updateProjection(float width, float height);
