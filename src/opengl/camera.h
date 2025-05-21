@@ -22,7 +22,7 @@ namespace CameraN
     // defaults
     constexpr float YAW{-90.0f};
     constexpr float PITCH{0.0f};
-    constexpr float SPEED{50.0f};
+    constexpr float SPEED{100.0f};
     constexpr float SENSITIVITY{0.05f};
     constexpr float ZOOM{45.0f};
 }

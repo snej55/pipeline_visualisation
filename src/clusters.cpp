@@ -19,7 +19,7 @@ Clusters::ClusterRenderer::~ClusterRenderer()
 }
 
 // load convex hull for each cluster
-int Clusters::ClusterRenderer::generateClusters(const std::vector<std::map<int, Cluster>>& clusters, const float scale)
+int Clusters::ClusterRenderer::generateClusters(const std::vector<std::map<int, Cluster>> &clusters)
 {
     m_loaded = false;
     // iterate over each cluster depth
@@ -38,9 +38,9 @@ int Clusters::ClusterRenderer::generateClusters(const std::vector<std::map<int, 
             // get vertices from cluster
             for (std::size_t v{0}; v < cluster.num_papers; ++v)
             {
-                chVertices[v].x = cluster.vertices[v].x * scale;
-                chVertices[v].y = cluster.vertices[v].y * scale;
-                chVertices[v].z = cluster.vertices[v].z * scale;
+                chVertices[v].x = cluster.vertices[v].x;
+                chVertices[v].y = cluster.vertices[v].y;
+                chVertices[v].z = cluster.vertices[v].z;
             }
 
             // build convex hull
@@ -132,8 +132,8 @@ void Clusters::ClusterRenderer::renderCluster(const Shader& shader, const glm::m
     const ClusterData* cluster {getClusterData(depth, idx)};
 
     glm::mat4 model{1.0f};
-    // model = glm::scale(model, glm::vec3{0.5f});
-    model = glm::translate(model, cluster->position );
+    model = glm::scale(model, glm::vec3{0.75f * 5.0f});
+    model = glm::translate(model, cluster->position * 1.0f);
     shader.setMat4("model", model);
     // color uniform
     shader.setVec3("color", color);

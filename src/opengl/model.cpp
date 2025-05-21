@@ -35,7 +35,7 @@ void Model::loadModel(const std::string &path)
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
         // if it isn't zero
-        std::cout << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
+        std::cout << "ERROR::ASSIMP:" << importer.GetErrorString() << std::endl;
         return;
     }
 
@@ -149,7 +149,7 @@ std::vector<MeshN::Tex> Model::loadMaterialTextures(aiMaterial *mat, aiTextureTy
         {
             // some string manip witchcraft
             std::string filename{str.C_Str()};
-            filename = directory + '/' + filename;
+            filename += directory + '/' + filename;
             // temporary *other* texture to loadFromFile (called in constructor)
             const Texture temp{filename.c_str()};
             // convert back to Mesh namespace Tex struct
