@@ -22,7 +22,7 @@ constexpr float SCALE {5.0};
 // cluster depth for rendering
 int CLUSTER_DEPTH {6};
 // max amount of bars to display
-constexpr unsigned int MAX_BARS{64};
+constexpr unsigned int MAX_BARS{32};
 
 enum VIEW_MODE
 {
