@@ -5,6 +5,7 @@
 
 #include "src/paper_loader.h"
 #include "src/clusters.h"
+#include "src/bar_chart.h"
 
 #include <string>
 #include <sstream>
@@ -203,6 +204,8 @@ int main()
         }
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+        // Calculate bar chart of percentages to render //
 
         // ------------------------ //
 

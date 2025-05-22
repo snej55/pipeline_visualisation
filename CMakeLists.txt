@@ -65,6 +65,7 @@ set(SOURCES main.cpp
         src/paper_loader.cpp
         src/clusters.h
         src/clusters.cpp
+        src/bar_chart.h
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
