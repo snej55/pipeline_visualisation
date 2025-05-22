@@ -22,7 +22,7 @@ constexpr float SCALE {5.0};
 // cluster depth for rendering
 int CLUSTER_DEPTH {6};
 
-void wstring2string(std::wstring ws, std::string& s);
+void wstring2string(const std::wstring& ws, std::string& s);
 
 int main()
 {
@@ -280,9 +280,9 @@ int main()
     return EXIT_SUCCESS;
 }
 
-void wstring2string(std::wstring ws, std::string& s)
+void wstring2string(const std::wstring& ws, std::string& s)
 {
-    std::size_t len {std::wcstombs(nullptr, ws.c_str(), 0) + 1};
+    const std::size_t len {std::wcstombs(nullptr, ws.c_str(), 0) + 1};
     // buffer to hold multibyte string
     char* buffer {new char[len]};
     wcstombs(buffer, ws.c_str(), len);
