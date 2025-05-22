@@ -287,10 +287,15 @@ int main()
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+        app.disablePostProcessing();
+
+        app.getPostProcessor()->render(screenShader);
         
         // ------------------------ //
         
         // ---- debug info and post-processing ---- //
+        
+        app.enablePostProcessing(); // write to framebuffer
         
         if (DEBUG_INFO_ENABLED)
         {
