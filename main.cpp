@@ -16,7 +16,7 @@
 constexpr unsigned int FONT_SIZE {14};
 constexpr bool DEBUG_INFO_ENABLED {true};
 // animation tweaks
-constexpr float ANIMATION_SPEED {10.f};
+constexpr float ANIMATION_SPEED {700.f};
 // scalar value to scale raw coordinates from csv by
 constexpr float SCALE {5.0};
 
@@ -112,8 +112,12 @@ int main()
 
     std::cout << "Successfully initialized!\n";
 
+    std::map<int, Bar> bars{};
+    int numPapers{0};
+
     // main loop
-    while (!app.shouldClose()) {
+    while (!app.shouldClose())
+    {
         app.handleInput();
         app.enablePostProcessing();
         // ---- do rendering ---- //
@@ -146,13 +150,26 @@ int main()
             passedClusters.push_back(currentCluster);
         }
         // update all the clusters animation skipped (animation speed > 1 paper/sec)
-        for (int i{lastPaperIndex}; i <= static_cast<int>(progress); ++i)
+        for (int i{lastPaperIndex}; i < static_cast<int>(progress); ++i)
         {
-            const int paperCluster {paperLoader.getClusterID(paperLoader.getPaper(static_cast<float>(i)), CLUSTER_DEPTH)};
+            const Paper& paperTemp {paperLoader.getPaper(static_cast<float>(i))};
+            const int paperCluster {paperLoader.getClusterID(paperTemp, CLUSTER_DEPTH)};
             if (std::ranges::find(passedClusters, paperCluster) == passedClusters.end())
             {
                 passedClusters.push_back(paperCluster);
             }
+            ++numPapers;
+
+            if (!bars.contains(paperCluster))
+            {
+                bars.insert(std::pair<int, Bar>(paperCluster, Bar{}));
+                std::string name;
+                wstring2string(paperLoader.getClusterLabel(paperTemp, CLUSTER_DEPTH), name);
+                bars[paperCluster].name = std::move(name);
+                bars[paperCluster].numPapers = 0;
+                bars[paperCluster].clusterIdx = paperCluster;
+            }
+            bars[paperCluster].numPapers++;
         }
         lastPaperIndex = static_cast<int>(progress);
 
@@ -206,6 +223,24 @@ int main()
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
         // Calculate bar chart of percentages to render //
+
+        std::map<float, std::pair<int, Bar>> sortedBars{};
+        for (const std::pair<const int, Bar>& bar : bars)
+        {
+            float percentage = static_cast<float>(bar.second.numPapers) / progress;
+            sortedBars.insert(std::pair<float, std::pair<int, Bar>>(percentage, bar));
+        }
+
+        int numBars{0};
+        for (std::map<float, std::pair<int, Bar>>::reverse_iterator iter {sortedBars.rbegin()}; iter != sortedBars.rend(); ++iter)
+        {
+            FRect rect {10.f, 140.f + static_cast<float>(numBars * 15), 100.f * iter->first, 10.f};
+            app.drawRect({
+                             rect.x / static_cast<float>(app.getWidth()), rect.y / static_cast<float>(app.getHeight()),
+                             rect.w / static_cast<float>(app.getWidth()), rect.h / static_cast<float>(app.getHeight())
+                         }, {255, 255, 255});
+            ++numBars;
+        }
 
         // ------------------------ //
 
@@ -262,7 +297,7 @@ int main()
             info.emplace_back(text.str());
             text.str("");
 
-            text << "Current cluster ID: " << paperLoader.getClusterID(currentPaper, CLUSTER_DEPTH);
+            text << "Current cluster ID: " << paperLoader.getClusterID(currentPaper, CLUSTER_DEPTH) << " " << numPapers;
             info.emplace_back(text.str());
             text.str("");
 
