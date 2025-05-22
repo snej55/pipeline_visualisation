@@ -27,8 +27,18 @@ void main()
     vs_out.Counter = aCounter;
     vs_out.Included = aIncluded;
     vs_out.CameraPos = camerapos;
-    vs_out.Normal = aNormal;
     vec3 uv = aPos; // can be modified
+//    float angle = aCounter;
+//    mat3 rotmat = mat3 (
+//            0.0, 0.0, 0.0,
+//            0.0, cos(angle), sin(angle),
+//            0.0, -sin(angle), cos(angle)
+//    ) * mat3(
+//            cos(angle * 1.5), 0.0, sin(angle * 1.5),
+//            0.0, 1.0, 0.0,
+//            -sin(angle * 1.5), 0.0, cos(angle * 1.5)
+//    );
+    vs_out.Normal = aNormal;
     vs_out.FragPos = vec3(model * vec4(uv + aOffset, 1.0));
     vs_out.Time = time;
     gl_Position = projection * view * model * vec4(uv + aOffset, 1.0);
