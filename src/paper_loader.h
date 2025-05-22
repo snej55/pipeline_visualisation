@@ -95,7 +95,7 @@ public:
 
     // papers getter
     [[nodiscard]] const std::vector<Paper>& getPapers() const {return m_papers;}
-    [[nodiscard]] const Paper& getPaper(float progress) const;
+    [[nodiscard]] const Paper& getPaper(float progress) const;  // TODO: Add clamp to account for negative animation_speed
     // clusters getter
     [[nodiscard]] std::map<int, Cluster> getClusters(int depth) const;
     [[nodiscard]] const std::vector<std::map<int, Cluster>>& getClustersFull() const {return m_clusters;}

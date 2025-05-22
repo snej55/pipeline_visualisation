@@ -22,7 +22,7 @@ constexpr float SCALE {5.0};
 // cluster depth for rendering
 int CLUSTER_DEPTH {6};
 // max amount of bars to display
-constexpr unsigned int MAX_BARS{32};
+constexpr unsigned int MAX_BARS{64};
 
 enum VIEW_MODE
 {
@@ -125,6 +125,7 @@ int main()
 
     std::cout << "Successfully initialized!\n";
 
+    // data for bar chart
     std::map<int, Bar> bars{};
     std::map paperClusters{paperLoader.getClusters(CLUSTER_DEPTH)};
     // create a bar for each cluster
@@ -139,8 +140,10 @@ int main()
             std::move(name)
         };
     }
-    int numPapers{0};
 
+    // counter to keep track of num. papers
+    int numPapers{0};
+    float animationProgress{0.f};
 
     // main loop
     while (!app.shouldClose())
@@ -320,7 +323,7 @@ int main()
             prog = std::min(static_cast<int>(paperLoader.getLastIndex()), prog);
             percentage = static_cast<float>(glfwGetTime()) * ANIMATION_SPEED / static_cast<float>(paperLoader.getLastIndex()); // progress as percentage
             percentage = std::min(100.0f, static_cast<float>(static_cast<int>(percentage * 1000.f)) / 10.f); // (n / 10.f = n / 1000.f * 100.f)
-            text << "Progress: " << prog << "/" << paperLoader.getLastIndex() << " (" << percentage << "%)";
+            text << "Progress: " << prog << "/" << paperLoader.getLastIndex() << " (" << percentage << "%)";// n." << animationProgress;
             info.emplace_back(text.str());
             text.str("");
             // animation speed
@@ -353,7 +356,7 @@ int main()
             info.emplace_back(text.str());
             text.str("");
 
-            text << "Current cluster ID: " << paperLoader.getClusterID(currentPaper, CLUSTER_DEPTH) << " " << std::size(sortedBars);
+            text << "Current cluster ID: " << paperLoader.getClusterID(currentPaper, CLUSTER_DEPTH);
             info.emplace_back(text.str());
             text.str("");
 
@@ -386,6 +389,7 @@ int main()
         app.getPostProcessor()->render(screenShader);
 
         app.tick();
+        animationProgress += ANIMATION_SPEED * app.getDeltaTime();
     }
 
     // clean up
