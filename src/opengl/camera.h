@@ -32,7 +32,7 @@ class Camera
 public:
     Camera()
     {
-        _position = glm::vec3(0.0f, 0.0f, 100.0f);
+        _position = glm::vec3(-36.0f, 0.0f, 500.0f);
         _front = glm::vec3(0.0f, 0.0f, -1.0f);
         _up = glm::vec3(0.0f, 1.0f, 0.0f);
         _worldUp = glm::vec3(0.0f, 1.0f, 0.0f);

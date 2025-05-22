@@ -372,6 +372,11 @@ int main()
             text << "View mode: " << getViewMode();
             fontManager.renderText(fontShader, text.str(), 5.0f, 20.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
             text.str("");
+
+            glm::vec3 cameraPos {app.getCameraPosition()};
+            text << "Camera Position: " << cameraPos.x << ", " << cameraPos.y << ", " << cameraPos.z;
+            fontManager.renderText(fontShader, text.str(), 5.0f, 35.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+            text.str("");
         }
 
         // ------------------------ //
