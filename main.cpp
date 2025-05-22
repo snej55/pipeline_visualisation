@@ -24,7 +24,18 @@ int CLUSTER_DEPTH {6};
 // max amount of bars to display
 constexpr unsigned int MAX_BARS{32};
 
+enum VIEW_MODE
+{
+    CLUSTERS_DEFAULT,
+    CLUSTERS_UNSEEN_HIDDEN,
+    CLUSTERS_HIDDEN,
+};
+// view mode
+int viewMode{CLUSTERS_DEFAULT};
+
 void wstring2string(const std::wstring& ws, std::string& s);
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+std::string getViewMode();
 
 int main()
 {
@@ -38,6 +49,7 @@ int main()
     // ---- OpenGL ---- //
     // initialization
     App app{640, 640, "OpenGL window"};
+    glfwSetKeyCallback(app.getWindow(), key_callback);
     app.enableDepthTesting();
     app.setCameraEnabled(true);
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -129,6 +141,7 @@ int main()
     }
     int numPapers{0};
 
+
     // main loop
     while (!app.shouldClose())
     {
@@ -207,7 +220,17 @@ int main()
                 color = {0.0f, 0.9f, 1.0f};
             } else
             {
-                color = {0.4f, 0.3f, 0.4f};
+                if (viewMode == CLUSTERS_DEFAULT)
+                {
+                    color = {0.4f, 0.3f, 0.4f};
+                } else
+                {
+                    color = {0.0f, 0.0f, 0.0f};
+                }
+            }
+            if (viewMode == CLUSTERS_HIDDEN)
+            {
+                color = {0.0f, 0.0f, 0.0f};
             }
             // add to map to be sorted
             sortedClusters[distance] = std::make_pair(c, color);
@@ -345,6 +368,10 @@ int main()
             text << "Current paper title: " << paperTitle;
             fontManager.renderText(fontShader, text.str(), 5.0f, 5.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
             text.str("");
+
+            text << "View mode: " << getViewMode();
+            fontManager.renderText(fontShader, text.str(), 5.0f, 20.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+            text.str("");
         }
 
         // ------------------------ //
@@ -373,4 +400,27 @@ void wstring2string(const std::wstring& ws, std::string& s)
     wcstombs(buffer, ws.c_str(), len);
     s = buffer;
     delete[] buffer;
+}
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_C && action == GLFW_PRESS)
+    {
+        viewMode = (viewMode + 1) % 3;
+    }
+}
+
+std::string getViewMode()
+{
+    switch (viewMode)
+    {
+        case CLUSTERS_DEFAULT:
+            return "CLUSTERS_DEFAULT";
+        case CLUSTERS_UNSEEN_HIDDEN:
+            return "CLUSTERS_UNSEEN_HIDDEN";
+        case CLUSTERS_HIDDEN:
+            return "CLUSTERS_HIDDEN";
+        default:
+            return "CLUSTERS_DEFAULT";
+    };
 }
