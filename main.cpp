@@ -24,9 +24,9 @@ constexpr bool DEBUG_INFO_ENABLED {true}; // flag to toggle whether to show text
 constexpr float ANIMATION_SENSITIVITY{1.f}; // amount to change animation speed by on key press
 constexpr float SCALE {5.0}; // scalar value to scale raw coordinates from csv by
 constexpr unsigned int MAX_BARS{32}; // maximum amount of bars to display
-
 // cluster depth for rendering
-int CLUSTER_DEPTH {6}; // amount of clusters is 2^CLUSTER_DEPTH, so 2:4, 3:8, 4:16, 5:32, 6:64
+constexpr int CLUSTER_DEPTH {6}; // amount of clusters is 2^CLUSTER_DEPTH, so 2:4, 3:8, 4:16, 5:32, 6:64
+
 // animation tweaks
 float ANIMATION_SPEED {10.f};
 
@@ -39,6 +39,14 @@ enum VIEW_MODE
 };
 // view mode (global for callbacks)
 int viewMode{CLUSTERS_DEFAULT};
+
+enum BAR_MODE
+{
+    BARS_FULL, // show proportion of papers across clusters
+    BARS_INDIVIDUAL // show proportion of explored/unexplored papers inside clusters
+};
+// bar mode (global for callbacks)
+int barMode{BARS_FULL};
 
 // convert from wstring (wide-string) to regular standard string
 void wstring2string(const std::wstring& ws, std::string& s);
@@ -149,7 +157,8 @@ int main()
             0.0f,
             0,
             b,
-            std::move(name)
+            std::move(name),
+            paperClusters[b].num_papers
         };
     }
 
@@ -274,43 +283,49 @@ int main()
         // update font manager first
         fontManager.updateProjection(static_cast<float>(app.getWidth()), static_cast<float>(app.getHeight()));
 
+        // set up bars to sort
         std::vector<std::pair<int, Bar>> sortedBars{};
         for (const std::pair<const int, Bar>& bar : bars)
         {
             sortedBars.emplace_back(bar);
         }
 
+        // sort bars
         std::ranges::sort(sortedBars, [](const std::pair<int, Bar>& bar1, const std::pair<int, Bar>& bar2)
         {
             return bar1.second.numPapers > bar2.second.numPapers;
         });
 
+        // render bars
         int numBars{0};
         std::stringstream ss; // for percentages & cluster labesl
         for (const std::pair<int, Bar>& bar : sortedBars)
         {
-            // render bar
-            const float percentage {static_cast<float>(bar.second.numPapers) / progress};
-            FRect rect {40.f, static_cast<float>(app.getHeight() - 205 - numBars * 17), 1.f + 200.f * percentage, 14.f};
-            app.drawRect({
-                             rect.x * 2.f / static_cast<float>(app.getWidth()) - 1.f, rect.y * 2.f / static_cast<float>(app.getHeight()) - 1.f,
-                             rect.w * 2.f / static_cast<float>(app.getWidth()), rect.h * 2.f / static_cast<float>(app.getHeight())
-                         }, {255, 255, 255});
-
-            // render text
-            ss << static_cast<int>(percentage * 100.f) << "%";
-            fontManager.renderText(fontShader, ss.str(), 5.f, static_cast<float>(app.getHeight() - 217 - numBars * 17), 1.0f, glm::vec3{1.0f});
-            ss.str("");
-
-            ss << bar.second.name;
-            fontManager.renderText(fontShader, ss.str(), 45.f + 200.f * percentage, static_cast<float>(app.getHeight() - 217 - numBars * 17), 1.0f, glm::vec3{1.0f});
-            ss.str("");
-
-            // cap number of bars
-            ++numBars;
-            if (numBars > MAX_BARS)
+            if (barMode == BARS_FULL)
             {
-                break;
+                // render bar
+                const float percentage {static_cast<float>(bar.second.numPapers) / progress};
+                FRect rect {50.f, static_cast<float>(app.getHeight() - 205 - numBars * 17), 1.f + 200.f * percentage, 14.f};
+                app.drawRect({
+                                 rect.x * 2.f / static_cast<float>(app.getWidth()) - 1.f, rect.y * 2.f / static_cast<float>(app.getHeight()) - 1.f,
+                                 rect.w * 2.f / static_cast<float>(app.getWidth()), rect.h * 2.f / static_cast<float>(app.getHeight())
+                             }, {255, 255, 255});
+    
+                // render text
+                ss << static_cast<float>(static_cast<int>(percentage * 1000.f)) / 10.f << "%";
+                fontManager.renderText(fontShader, ss.str(), 3.f, static_cast<float>(app.getHeight() - 217 - numBars * 17), 1.0f, glm::vec3{1.0f});
+                ss.str("");
+    
+                ss << bar.second.name;
+                fontManager.renderText(fontShader, ss.str(), 55.f + 200.f * percentage, static_cast<float>(app.getHeight() - 217 - numBars * 17), 1.0f, glm::vec3{1.0f});
+                ss.str("");
+    
+                // cap number of bars
+                ++numBars;
+                if (numBars > MAX_BARS)
+                {
+                    break;
+                }
             }
         }
 
@@ -435,10 +450,17 @@ void wstring2string(const std::wstring& ws, std::string& s)
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+    // switch between different view modes
     if (key == GLFW_KEY_C && action == GLFW_PRESS)
     {
         viewMode = (viewMode + 1) % 3;
     }
+    // toggle bar mode
+    if (key == GLFW_KEY_B && action == GLFW_PRESS)
+    {
+        barMode = (barMode + 1) % 2;
+    }
+
     // increase animation speed
     if (key == GLFW_KEY_UP && (action == GLFW_REPEAT || action == GLFW_PRESS))
     {
