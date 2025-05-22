@@ -1,0 +1,10 @@
+Info,  T0: Load dae.dae
+Debug, T0: Assimp 5.4.3558150591 amd64 gcc singlethreadedsingle : 
+Info,  T0: Found a matching importer for this file format: Collada Importer.
+Info,  T0: Import root directory is './'
+Debug, T0: Collada schema version is 1.4.n
+Debug, T0: UpdateImporterScale scale set: 1
+Debug, T0: ValidateDataStructureProcess begin
+Debug, T0: ValidateDataStructureProcess end
+Debug, T0: START `t1`
+Debug, T0: END   `t1`, dt= 1.9778e-05 s
