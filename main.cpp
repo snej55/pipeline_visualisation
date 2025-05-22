@@ -113,7 +113,7 @@ int main()
 
     // initialize font manager
     FontManager fontManager{};
-    fontManager.init("data/fonts/Acme 9 Regular Xtnd.ttf", FONT_SIZE);
+    fontManager.init("data/fonts/Acme 9 Regular Bold Xtnd.ttf", FONT_SIZE);
     // load fonts shader
     const Shader fontShader{"shaders/builtin/fonts.vert", "shaders/builtin/fonts.frag"};
 
