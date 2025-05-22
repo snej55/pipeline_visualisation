@@ -118,6 +118,8 @@ int main()
         // ---- do rendering ---- //
         app.clear();
 
+        // ------------------------ //
+
         // Render the points (cubes)
         // The cubes are rendered instanced to improve performance
         pointShader.use();
@@ -132,16 +134,24 @@ int main()
         // not paperData.size()
         glDrawArraysInstanced(GL_TRIANGLES, 0, 36, static_cast<int>(paperData.size() / 5));
 
+        // ------------------------ //
+
         // update progress, lastPaperIndex, currentCluster & currentPaper
         const float progress {std::min(static_cast<float>(glfwGetTime() * ANIMATION_SPEED), static_cast<float>(paperLoader.getLastIndex()))};
         const Paper& currentPaper {paperLoader.getPaper(progress)};
         const int currentCluster {paperLoader.getClusterID(currentPaper, CLUSTER_DEPTH)};
-        passedClusters.push_back(currentCluster);
+        if (std::ranges::find(passedClusters, currentCluster) == passedClusters.end())
+        {
+            passedClusters.push_back(currentCluster);
+        }
         // update all the clusters animation skipped (animation speed > 1 paper/sec)
         for (int i{lastPaperIndex}; i <= static_cast<int>(progress); ++i)
         {
-            const int paperCluster {paperLoader.getClusterID(paperLoader.getPaper(i), CLUSTER_DEPTH)};
-            passedClusters.push_back(paperCluster);
+            const int paperCluster {paperLoader.getClusterID(paperLoader.getPaper(static_cast<float>(i)), CLUSTER_DEPTH)};
+            if (std::ranges::find(passedClusters, paperCluster) == passedClusters.end())
+            {
+                passedClusters.push_back(paperCluster);
+            }
         }
         lastPaperIndex = static_cast<int>(progress);
 
@@ -193,6 +203,8 @@ int main()
         }
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+        // ------------------------ //
 
         // ---- debug info and post-processing ---- //
         fontManager.updateProjection(static_cast<float>(app.getWidth()), static_cast<float>(app.getHeight()));
@@ -263,6 +275,8 @@ int main()
             fontManager.renderText(fontShader, text.str(), 5.0f, 5.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
             text.str("");
         }
+
+        // ------------------------ //
 
         app.disablePostProcessing();
 
