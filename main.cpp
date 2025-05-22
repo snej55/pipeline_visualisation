@@ -1,28 +1,34 @@
+// absolve some linking errors with glad
 #include "src/extern/glad.c"
 
-#include "src/opengl/app.h"
-#include "src/opengl/fonts.h"
+// for rendering
+#include "src/opengl/app.h" // window management, events, etc
+#include "src/opengl/fonts.h" // text rendering
 
-#include "src/paper_loader.h"
-#include "src/clusters.h"
+// cluster and paper management
+#include "src/paper_loader.h" // loading papers & clusters
+#include "src/clusters.h" // rendering clusters
+// small struct for bar charts
 #include "src/bar_chart.h"
 
+// standard library stuff
 #include <string>
 #include <sstream>
 #include <iomanip>
 #include <algorithm>
 #include <cstdlib>
 
-constexpr unsigned int FONT_SIZE {8};
-constexpr bool DEBUG_INFO_ENABLED {true};
-// scalar value to scale raw coordinates from csv by
-constexpr float SCALE {5.0};
+// constants
+constexpr unsigned int FONT_SIZE {8}; // font size of text on screen
+constexpr bool DEBUG_INFO_ENABLED {true}; // flag to toggle whether to show text on screen or not
+constexpr float ANIMATION_SENSITIVITY{1.f}; // amount to change animation speed by on key press
+constexpr float SCALE {5.0}; // scalar value to scale raw coordinates from csv by
+constexpr unsigned int MAX_BARS{32}; // maximum amount of bars to display
+
 // cluster depth for rendering
 int CLUSTER_DEPTH {6}; // amount of clusters is 2^CLUSTER_DEPTH, so 2:4, 3:8, 4:16, 5:32, 6:64
 // animation tweaks
 float ANIMATION_SPEED {10.f};
-// max amount of bars to display
-constexpr unsigned int MAX_BARS{32};
 
 // view mode: default is all shown, unseen hidden is unexplored clusters hidden, and hidden is no clusters
 enum VIEW_MODE
@@ -34,8 +40,11 @@ enum VIEW_MODE
 // view mode (global for callbacks)
 int viewMode{CLUSTERS_DEFAULT};
 
+// convert from wstring (wide-string) to regular standard string
 void wstring2string(const std::wstring& ws, std::string& s);
+// glfw keycallback to handle interactivity
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+// gets string format for VIEW_MODe enum
 std::string getViewMode();
 
 int main()
@@ -48,16 +57,18 @@ int main()
     std::cout << "Loaded papers!\n";
 
     // ---- OpenGL ---- //
-    // initialization
+    // initialize opengl wrapper
     App app{640, 640, "OpenGL window"};
+    // for keyboard interactivity
     glfwSetKeyCallback(app.getWindow(), key_callback);
-    app.enableDepthTesting();
+    app.enableDepthTesting(); // IMPORTANT
+    // first person camera
     app.setCameraEnabled(true);
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    // configure global opengl state
     glEnable(GL_PROGRAM_POINT_SIZE);
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // for text & cluster rendering
     // glLineWidth(5.0f);
     // glEnable(GL_CULL_FACE);
 
@@ -67,18 +78,18 @@ int main()
 
     // generate convex hull models from clusters (saved at data/cluster_models/)
     Clusters::ClusterRenderer clusterRenderer{};
-    // // generates .obj file` of convex hull for each cluster
+    // // generates .obj file of convex hull for each cluster
     // clusterRenderer.generateClusters(paperLoader.getClustersFull());
-    clusterRenderer.loadClusters(paperLoader.getClustersFull());
+    clusterRenderer.loadClusters(paperLoader.getClustersFull()); // load convex hulls
 
-    // generate vbo for paper instances
+    // generate vbo for paper instances (offset xyz, included flag, counter)
     unsigned int instanceVBO;
     glGenBuffers(1, &instanceVBO);
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(paperData.size() * sizeof(paperData[0])), paperData.data(), GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    // create vertex array and vertex buffer for vertices
+    // create vertex array and vertex buffer for paper cubes
     unsigned int VAO, VBO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -149,10 +160,11 @@ int main()
     // main loop
     while (!app.shouldClose())
     {
+        // refresh keyboard events
         app.handleInput();
-        app.enablePostProcessing();
+        app.enablePostProcessing(); // write to framebuffer
         // ---- do rendering ---- //
-        app.clear();
+        app.clear(); // clear depth and color buffers (+stencil but that's not used)
 
         // ------------------------ //
 
@@ -173,9 +185,13 @@ int main()
         // ------------------------ //
 
         // update progress, lastPaperIndex, currentCluster & currentPaper
+        // progress of animation
         const float progress {std::min(animationProgress, static_cast<float>(paperLoader.getLastIndex()))};
+        // current paper animation is at
         const Paper& currentPaper {paperLoader.getPaper(progress)};
+        // current cluster the current paper is located in
         const int currentCluster {paperLoader.getClusterID(currentPaper, CLUSTER_DEPTH)};
+        // update passed clusters
         if (std::ranges::find(passedClusters, currentCluster) == passedClusters.end())
         {
             passedClusters.push_back(currentCluster);
@@ -189,6 +205,7 @@ int main()
             {
                 passedClusters.push_back(paperCluster);
             }
+            // add clusters to bar chart
             ++bars[paperCluster].numPapers;
             ++numPapers;
         }
@@ -389,8 +406,12 @@ int main()
 
         app.getPostProcessor()->render(screenShader);
 
+        // update buffers and stuff
         app.tick();
+        // animation is updated at constant speed
         animationProgress += ANIMATION_SPEED * app.getDeltaTime();
+        // clamp animation progress to avoid user messing it up
+        animationProgress = std::max(0.0f, std::min(static_cast<float>(paperLoader.getNumPapers() - 1), animationProgress));
     }
 
     // clean up
@@ -417,6 +438,19 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     if (key == GLFW_KEY_C && action == GLFW_PRESS)
     {
         viewMode = (viewMode + 1) % 3;
+    }
+    // increase animation speed
+    if (key == GLFW_KEY_UP && (action == GLFW_REPEAT || action == GLFW_PRESS))
+    {
+        ANIMATION_SPEED += ANIMATION_SENSITIVITY;
+    }
+
+    // decrease animation speed
+    if (key == GLFW_KEY_DOWN && (action == GLFW_REPEAT || action == GLFW_PRESS))
+    {
+        ANIMATION_SPEED -= ANIMATION_SENSITIVITY;
+        // limit to positive values for now
+        ANIMATION_SPEED = std::max(0.f, ANIMATION_SPEED); // TODO: Fix this
     }
 }
 
