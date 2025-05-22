@@ -272,7 +272,7 @@ Cluster* PaperLoader::getCluster(int id, int depth)
 }
 
 // return map of clusters for given depth (2-6)
-const std::map<int, Cluster>& PaperLoader::getClusters(const int depth) const
+std::map<int, Cluster> PaperLoader::getClusters(const int depth) const
 {
     const std::size_t index {static_cast<std::size_t>(std::max(2, std::min(6, depth)))};
     return m_clusters[index - 2];

@@ -13,15 +13,16 @@
 #include <algorithm>
 #include <cstdlib>
 
-constexpr unsigned int FONT_SIZE {14};
+constexpr unsigned int FONT_SIZE {8};
 constexpr bool DEBUG_INFO_ENABLED {true};
 // animation tweaks
-constexpr float ANIMATION_SPEED {700.f};
+constexpr float ANIMATION_SPEED {10.f};
 // scalar value to scale raw coordinates from csv by
 constexpr float SCALE {5.0};
-
 // cluster depth for rendering
 int CLUSTER_DEPTH {6};
+// max amount of bars to display
+constexpr unsigned int MAX_BARS{32};
 
 void wstring2string(const std::wstring& ws, std::string& s);
 
@@ -100,7 +101,7 @@ int main()
 
     // initialize font manager
     FontManager fontManager{};
-    fontManager.init("data/fonts/noto_sans/NotoSans-Regular.ttf", FONT_SIZE);
+    fontManager.init("data/fonts/Acme 9 Regular Xtnd.ttf", FONT_SIZE);
     // load fonts shader
     const Shader fontShader{"shaders/builtin/fonts.vert", "shaders/builtin/fonts.frag"};
 
@@ -113,6 +114,19 @@ int main()
     std::cout << "Successfully initialized!\n";
 
     std::map<int, Bar> bars{};
+    std::map paperClusters{paperLoader.getClusters(CLUSTER_DEPTH)};
+    // create a bar for each cluster
+    for (int b {0}; b < std::pow(2, CLUSTER_DEPTH); ++b)
+    {
+        std::string name;
+        wstring2string(paperClusters[b].label, name);
+        bars[b] = Bar{
+            0.0f,
+            0,
+            b,
+            std::move(name)
+        };
+    }
     int numPapers{0};
 
     // main loop
@@ -158,18 +172,8 @@ int main()
             {
                 passedClusters.push_back(paperCluster);
             }
+            ++bars[paperCluster].numPapers;
             ++numPapers;
-
-            if (!bars.contains(paperCluster))
-            {
-                bars.insert(std::pair<int, Bar>(paperCluster, Bar{}));
-                std::string name;
-                wstring2string(paperLoader.getClusterLabel(paperTemp, CLUSTER_DEPTH), name);
-                bars[paperCluster].name = std::move(name);
-                bars[paperCluster].numPapers = 0;
-                bars[paperCluster].clusterIdx = paperCluster;
-            }
-            bars[paperCluster].numPapers++;
         }
         lastPaperIndex = static_cast<int>(progress);
 
@@ -223,29 +227,52 @@ int main()
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
         // Calculate bar chart of percentages to render //
+        // update font manager first
+        fontManager.updateProjection(static_cast<float>(app.getWidth()), static_cast<float>(app.getHeight()));
 
-        std::map<float, std::pair<int, Bar>> sortedBars{};
+        std::vector<std::pair<int, Bar>> sortedBars{};
         for (const std::pair<const int, Bar>& bar : bars)
         {
-            float percentage = static_cast<float>(bar.second.numPapers) / progress;
-            sortedBars.insert(std::pair<float, std::pair<int, Bar>>(percentage, bar));
+            sortedBars.emplace_back(bar);
         }
 
-        int numBars{0};
-        for (std::map<float, std::pair<int, Bar>>::reverse_iterator iter {sortedBars.rbegin()}; iter != sortedBars.rend(); ++iter)
+        std::ranges::sort(sortedBars, [](const std::pair<int, Bar>& bar1, const std::pair<int, Bar>& bar2)
         {
-            FRect rect {10.f, 140.f + static_cast<float>(numBars * 15), 100.f * iter->first, 10.f};
+            return bar1.second.numPapers > bar2.second.numPapers;
+        });
+
+        int numBars{0};
+        std::stringstream ss; // for percentages & cluster labesl
+        for (const std::pair<int, Bar>& bar : sortedBars)
+        {
+            // render bar
+            const float percentage {static_cast<float>(bar.second.numPapers) / progress};
+            FRect rect {40.f, static_cast<float>(app.getHeight() - 205 - numBars * 17), 1.f + 200.f * percentage, 14.f};
             app.drawRect({
-                             rect.x / static_cast<float>(app.getWidth()), rect.y / static_cast<float>(app.getHeight()),
-                             rect.w / static_cast<float>(app.getWidth()), rect.h / static_cast<float>(app.getHeight())
+                             rect.x * 2.f / static_cast<float>(app.getWidth()) - 1.f, rect.y * 2.f / static_cast<float>(app.getHeight()) - 1.f,
+                             rect.w * 2.f / static_cast<float>(app.getWidth()), rect.h * 2.f / static_cast<float>(app.getHeight())
                          }, {255, 255, 255});
+
+            // render text
+            ss << static_cast<int>(percentage * 100.f) << "%";
+            fontManager.renderText(fontShader, ss.str(), 5.f, static_cast<float>(app.getHeight() - 217 - numBars * 17), 1.0f, glm::vec3{1.0f});
+            ss.str("");
+
+            ss << bar.second.name;
+            fontManager.renderText(fontShader, ss.str(), 45.f + 200.f * percentage, static_cast<float>(app.getHeight() - 217 - numBars * 17), 1.0f, glm::vec3{1.0f});
+            ss.str("");
+
+            // cap number of bars
             ++numBars;
+            if (numBars > MAX_BARS)
+            {
+                break;
+            }
         }
 
         // ------------------------ //
 
         // ---- debug info and post-processing ---- //
-        fontManager.updateProjection(static_cast<float>(app.getWidth()), static_cast<float>(app.getHeight()));
 
         if (DEBUG_INFO_ENABLED)
         {
@@ -264,7 +291,13 @@ int main()
             int prog {std::min(static_cast<int>(paperLoader.getNumPapers()), static_cast<int>(glfwGetTime() * ANIMATION_SPEED))};
             float percentage {static_cast<float>(glfwGetTime()) * ANIMATION_SPEED / static_cast<float>(paperLoader.getNumPapers())}; // progress as percentage
             percentage = std::min(100.0f, static_cast<float>(static_cast<int>(percentage * 1000.f)) / 10.f); // (n / 10.f = n / 1000.f * 100.f)
-            text << "Progress: " << prog << "/" << paperLoader.getNumPapers() << " (" << percentage << "%)";
+            text << "Raw Progress: " << prog << "/" << paperLoader.getNumPapers() << " (" << percentage << "%)";
+            info.emplace_back(text.str());
+            text.str("");
+            prog = std::min(static_cast<int>(paperLoader.getLastIndex()), prog);
+            percentage = static_cast<float>(glfwGetTime()) * ANIMATION_SPEED / static_cast<float>(paperLoader.getLastIndex()); // progress as percentage
+            percentage = std::min(100.0f, static_cast<float>(static_cast<int>(percentage * 1000.f)) / 10.f); // (n / 10.f = n / 1000.f * 100.f)
+            text << "Progress: " << prog << "/" << paperLoader.getLastIndex() << " (" << percentage << "%)";
             info.emplace_back(text.str());
             text.str("");
             // animation speed
@@ -297,7 +330,7 @@ int main()
             info.emplace_back(text.str());
             text.str("");
 
-            text << "Current cluster ID: " << paperLoader.getClusterID(currentPaper, CLUSTER_DEPTH) << " " << numPapers;
+            text << "Current cluster ID: " << paperLoader.getClusterID(currentPaper, CLUSTER_DEPTH) << " " << std::size(sortedBars);
             info.emplace_back(text.str());
             text.str("");
 
