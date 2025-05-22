@@ -5,6 +5,7 @@
 - WASD to move around
 - Use the mouse to look around
 - ESC to exit
+- C to change the viewing mode
 
 ## Libraries in use:
 
