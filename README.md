@@ -1,10 +1,11 @@
-![screenshot](https://github.com/snej55/pipeline_visualisation/blob/main/screenshot_0.png)
+![screenshot](https://github.com/snej55/pipeline_visualisation/blob/main/screenshots/screenshot_1.png)
 
 ## Running:
 
 - WASD to move around
 - Use the mouse to look around
 - ESC to exit
+- C to change the viewing mode
 
 ## Libraries in use:
 
