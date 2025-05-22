@@ -5,7 +5,10 @@
 - WASD to move around
 - Use the mouse to look around
 - ESC to exit
+- Up arrow / down arrow to change animation speed
 - C to change the viewing mode
+- B to toggle the bar chart mode
+- M/N to change the max amount of bars in the bar chart
 
 ## Libraries in use:
 
