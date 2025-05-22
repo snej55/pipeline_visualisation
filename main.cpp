@@ -22,6 +22,7 @@
 constexpr unsigned int FONT_SIZE {8}; // font size of text on screen
 constexpr bool DEBUG_INFO_ENABLED {true}; // flag to toggle whether to show text on screen or not
 constexpr float ANIMATION_SENSITIVITY{1.f}; // amount to change animation speed by on key press
+// (NOTE: Changing the scale requires the convex hull models for the clusters to be regenerated)
 constexpr float SCALE {5.0}; // scalar value to scale raw coordinates from csv by
 int MAX_BARS{40}; // maximum amount of bars to display
 // cluster depth for rendering
@@ -338,7 +339,7 @@ int main()
                 app.drawRect({
                                 urect.x * 2.f / static_cast<float>(app.getWidth()) - 1.f, urect.y * 2.f / static_cast<float>(app.getHeight()) - 1.f,
                                 urect.w * 2.f / static_cast<float>(app.getWidth()), urect.h * 2.f / static_cast<float>(app.getHeight())
-                            }, {10, 10, 10, 150});
+                            }, {5, 5, 5, 120});
                 const float percentIncluded {static_cast<float>(bar.second.numIncluded) / static_cast<float>(bar.second.numPapers)};
                 const float percentNotIncluded {static_cast<float>(bar.second.numNotIncluded) / static_cast<float>(bar.second.numPapers)};
                 const FRect irect {erect.x, erect.y, erect.w * percentIncluded, erect.h};
