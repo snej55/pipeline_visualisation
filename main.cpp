@@ -23,7 +23,7 @@ constexpr unsigned int FONT_SIZE {8}; // font size of text on screen
 constexpr bool DEBUG_INFO_ENABLED {true}; // flag to toggle whether to show text on screen or not
 constexpr float ANIMATION_SENSITIVITY{1.f}; // amount to change animation speed by on key press
 constexpr float SCALE {5.0}; // scalar value to scale raw coordinates from csv by
-constexpr unsigned int MAX_BARS{32}; // maximum amount of bars to display
+constexpr unsigned int MAX_BARS{40}; // maximum amount of bars to display
 // cluster depth for rendering
 constexpr int CLUSTER_DEPTH {6}; // amount of clusters is 2^CLUSTER_DEPTH, so 2:4, 3:8, 4:16, 5:32, 6:64
 
@@ -319,13 +319,34 @@ int main()
                 ss << bar.second.name;
                 fontManager.renderText(fontShader, ss.str(), 55.f + 200.f * percentage, static_cast<float>(app.getHeight() - 217 - numBars * 17), 1.0f, glm::vec3{1.0f});
                 ss.str("");
-    
-                // cap number of bars
-                ++numBars;
-                if (numBars > MAX_BARS)
-                {
-                    break;
-                }
+            } else {
+                const float percentExplored {static_cast<float>(bar.second.numPapers) / static_cast<float>(bar.second.totalPapers)};
+                FRect erect {50.f, static_cast<float>(app.getHeight() - 205 - numBars * 17), 1.f + 200.f * percentExplored, 14.f};
+                app.drawRect({
+                                erect.x * 2.f / static_cast<float>(app.getWidth()) - 1.f, erect.y * 2.f / static_cast<float>(app.getHeight()) - 1.f,
+                                erect.w * 2.f / static_cast<float>(app.getWidth()), erect.h * 2.f / static_cast<float>(app.getHeight())
+                            }, {255, 255, 255});
+                const float percentUnexplored {1.f - percentExplored};
+                const FRect urect = {erect.x + erect.w, erect.y, 201.f - erect.w, erect.h};
+                app.drawRect({
+                                urect.x * 2.f / static_cast<float>(app.getWidth()) - 1.f, urect.y * 2.f / static_cast<float>(app.getHeight()) - 1.f,
+                                urect.w * 2.f / static_cast<float>(app.getWidth()), urect.h * 2.f / static_cast<float>(app.getHeight())
+                            }, {10, 10, 10});
+                
+                // render text
+                ss << static_cast<float>(static_cast<int>(percentExplored * 1000.f)) / 10.f << "%";
+                fontManager.renderText(fontShader, ss.str(), 3.f, static_cast<float>(app.getHeight() - 217 - numBars * 17), 1.0f, glm::vec3{1.0f});
+                ss.str("");
+
+                ss << bar.second.name;
+                fontManager.renderText(fontShader, ss.str(), 55.f + 200.f, static_cast<float>(app.getHeight() - 217 - numBars * 17), 1.0f, glm::vec3{1.0f});
+                ss.str("");
+            }
+            // cap number of bars
+            ++numBars;
+            if (numBars > MAX_BARS)
+            {
+                break;
             }
         }
 
