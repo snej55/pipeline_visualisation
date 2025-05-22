@@ -10,10 +10,12 @@
 typedef struct Bar
 {
     float pos{0.0f}; // y position
-    int numPapers{0};
-    int clusterIdx{0};
-    std::string name;
-    int totalPapers{0};
+    int numPapers{0}; // number of papers found in cluster
+    int clusterIdx{0}; // cluster index
+    std::string name; // cluster label
+    int totalPapers{0}; // total number of papers in cluster
+    int numIncluded{0}; // number of included papers found in cluster
+    int numNotIncluded{0}; // number of not included papers found in cluster
 } Bar;
 
 #endif // BAR_CHART_H

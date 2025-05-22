@@ -42,10 +42,10 @@ struct Color
     int a{255};
 };
 
-inline glm::vec3 color2vec(const Color color)
+inline glm::vec4 color2vec(const Color color)
 {
     return {
-        static_cast<float>(color.r) / 255.0f, static_cast<float>(color.g) / 255.0f, static_cast<float>(color.b) / 255.0f
+        static_cast<float>(color.r) / 255.0f, static_cast<float>(color.g) / 255.0f, static_cast<float>(color.b) / 255.0f, static_cast<float>(color.a) / 255.0f
     };
 }
 
@@ -108,7 +108,7 @@ public:
 
         colorShader->use();
         colorShader->setMat4("model", model);
-        colorShader->setVec3("shapeColor", color2vec(color));
+        colorShader->setVec4("shapeColor", color2vec(color));
         glBindVertexArray(rectVAO);
         // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rectEBO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
@@ -123,7 +123,7 @@ public:
 
         colorShader->use();
         colorShader->setMat4("model", model);
-        colorShader->setVec3("shapeColor", color2vec(color));
+        colorShader->setVec4("shapeColor", color2vec(color));
         glBindVertexArray(rectVAO);
         // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rectEBO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
@@ -141,10 +141,10 @@ private:
 
     const char *fragShaderSource = "#version 330 core\n"
             "out vec4 FragColor;\n"
-            "uniform vec3 shapeColor;"
+            "uniform vec4 shapeColor;"
             "void main()\n"
             "{\n"
-            "   FragColor = vec4(shapeColor, 1.0f);\n"
+            "   FragColor = vec4(shapeColor);\n"
             "}\n\0";
 
     unsigned int rectVBO{}, rectVAO{}, rectEBO{};

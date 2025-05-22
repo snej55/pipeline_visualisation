@@ -23,7 +23,7 @@ constexpr unsigned int FONT_SIZE {8}; // font size of text on screen
 constexpr bool DEBUG_INFO_ENABLED {true}; // flag to toggle whether to show text on screen or not
 constexpr float ANIMATION_SENSITIVITY{1.f}; // amount to change animation speed by on key press
 constexpr float SCALE {5.0}; // scalar value to scale raw coordinates from csv by
-constexpr unsigned int MAX_BARS{40}; // maximum amount of bars to display
+int MAX_BARS{40}; // maximum amount of bars to display
 // cluster depth for rendering
 constexpr int CLUSTER_DEPTH {6}; // amount of clusters is 2^CLUSTER_DEPTH, so 2:4, 3:8, 4:16, 5:32, 6:64
 
@@ -216,6 +216,13 @@ int main()
             }
             // add clusters to bar chart
             ++bars[paperCluster].numPapers;
+            if (paperTemp.included)
+            {
+                ++bars[paperCluster].numIncluded;
+            } else {
+                ++bars[paperCluster].numNotIncluded;
+            }
+            // increment total
             ++numPapers;
         }
         lastPaperIndex = static_cast<int>(progress);
@@ -322,16 +329,28 @@ int main()
             } else {
                 const float percentExplored {static_cast<float>(bar.second.numPapers) / static_cast<float>(bar.second.totalPapers)};
                 FRect erect {50.f, static_cast<float>(app.getHeight() - 205 - numBars * 17), 1.f + 200.f * percentExplored, 14.f};
-                app.drawRect({
-                                erect.x * 2.f / static_cast<float>(app.getWidth()) - 1.f, erect.y * 2.f / static_cast<float>(app.getHeight()) - 1.f,
-                                erect.w * 2.f / static_cast<float>(app.getWidth()), erect.h * 2.f / static_cast<float>(app.getHeight())
-                            }, {255, 255, 255});
+                // app.drawRect({
+                //                 erect.x * 2.f / static_cast<float>(app.getWidth()) - 1.f, erect.y * 2.f / static_cast<float>(app.getHeight()) - 1.f,
+                //                 erect.w * 2.f / static_cast<float>(app.getWidth()), erect.h * 2.f / static_cast<float>(app.getHeight())
+                //             }, {255, 255, 255});
                 const float percentUnexplored {1.f - percentExplored};
                 const FRect urect = {erect.x + erect.w, erect.y, 201.f - erect.w, erect.h};
                 app.drawRect({
                                 urect.x * 2.f / static_cast<float>(app.getWidth()) - 1.f, urect.y * 2.f / static_cast<float>(app.getHeight()) - 1.f,
                                 urect.w * 2.f / static_cast<float>(app.getWidth()), urect.h * 2.f / static_cast<float>(app.getHeight())
-                            }, {10, 10, 10});
+                            }, {10, 10, 10, 150});
+                const float percentIncluded {static_cast<float>(bar.second.numIncluded) / static_cast<float>(bar.second.numPapers)};
+                const float percentNotIncluded {static_cast<float>(bar.second.numNotIncluded) / static_cast<float>(bar.second.numPapers)};
+                const FRect irect {erect.x, erect.y, erect.w * percentIncluded, erect.h};
+                app.drawRect({
+                                irect.x * 2.f / static_cast<float>(app.getWidth()) - 1.f, irect.y * 2.f / static_cast<float>(app.getHeight()) - 1.f,
+                                irect.w * 2.f / static_cast<float>(app.getWidth()), irect.h * 2.f / static_cast<float>(app.getHeight())
+                            }, {0, 255, 10});
+                const FRect nrect {erect.x + irect.w, erect.y, erect.w * percentNotIncluded, erect.h};
+                app.drawRect({
+                                nrect.x * 2.f / static_cast<float>(app.getWidth()) - 1.f, nrect.y * 2.f / static_cast<float>(app.getHeight()) - 1.f,
+                                nrect.w * 2.f / static_cast<float>(app.getWidth()), nrect.h * 2.f / static_cast<float>(app.getHeight())
+                            }, {255, 10, 10});
                 
                 // render text
                 ss << static_cast<float>(static_cast<int>(percentExplored * 1000.f)) / 10.f << "%";
@@ -348,6 +367,16 @@ int main()
             {
                 break;
             }
+        }
+
+        if (barMode == BARS_FULL) {
+            ss << "% = Percent of total papers in cluster";
+            fontManager.renderText(fontShader, ss.str(), 5.f, static_cast<float>(app.getHeight() - 217 - numBars * 17), 1.0f, glm::vec3{1.0f});
+            ss.str("");
+        } else {
+            ss << "% = Percent of papers within cluster explored";
+            fontManager.renderText(fontShader, ss.str(), 5.f, static_cast<float>(app.getHeight() - 217 - numBars * 17), 1.0f, glm::vec3{1.0f});
+            ss.str("");
         }
 
         // ------------------------ //
@@ -480,6 +509,16 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     if (key == GLFW_KEY_B && action == GLFW_PRESS)
     {
         barMode = (barMode + 1) % 2;
+    }
+
+    if (key == GLFW_KEY_M && (action == GLFW_REPEAT || action == GLFW_PRESS))
+    {
+        MAX_BARS = std::max(0, std::min(static_cast<int>(std::pow(2, CLUSTER_DEPTH)), ++MAX_BARS));
+    }
+
+    if (key == GLFW_KEY_N && (action == GLFW_REPEAT || action == GLFW_PRESS))
+    {
+        MAX_BARS = std::max(0, std::min(static_cast<int>(std::pow(2, CLUSTER_DEPTH)), --MAX_BARS));
     }
 
     // increase animation speed
