@@ -81,3 +81,8 @@ add_custom_target(copy_shaders
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/src/shaders ${CMAKE_CURRENT_BINARY_DIR}/shaders
 )
 add_dependencies(${PROJECT_NAME} copy_shaders)
+
+# add_custom_target(copy_libs
+#         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/libs/linux ${CMAKE_CURRENT_BINARY_DIR}/libs
+# )
+# add_dependencies(${PROJECT_NAME} copy_libs)
