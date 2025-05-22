@@ -1,4 +1,4 @@
-![screenshot](https://github.com/snej55/pipeline_visualisation/blob/main/screenshot_0.png)
+![screenshot](https://github.com/snej55/pipeline_visualisation/blob/main/screenshots/screenshot_1.png)
 
 ## Running:
 
