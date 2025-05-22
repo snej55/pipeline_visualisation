@@ -9,9 +9,10 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -lassimp")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+set(CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath lib/linux -lassimp")
 
 include(CMakePrintHelpers)
 cmake_print_variables(CMAKE_BUILD_TYPE)
