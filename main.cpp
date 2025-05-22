@@ -15,22 +15,23 @@
 
 constexpr unsigned int FONT_SIZE {8};
 constexpr bool DEBUG_INFO_ENABLED {true};
-// animation tweaks
-constexpr float ANIMATION_SPEED {10.f};
 // scalar value to scale raw coordinates from csv by
 constexpr float SCALE {5.0};
 // cluster depth for rendering
-int CLUSTER_DEPTH {6};
+int CLUSTER_DEPTH {6}; // amount of clusters is 2^CLUSTER_DEPTH, so 2:4, 3:8, 4:16, 5:32, 6:64
+// animation tweaks
+float ANIMATION_SPEED {10.f};
 // max amount of bars to display
 constexpr unsigned int MAX_BARS{32};
 
+// view mode: default is all shown, unseen hidden is unexplored clusters hidden, and hidden is no clusters
 enum VIEW_MODE
 {
     CLUSTERS_DEFAULT,
     CLUSTERS_UNSEEN_HIDDEN,
     CLUSTERS_HIDDEN,
 };
-// view mode
+// view mode (global for callbacks)
 int viewMode{CLUSTERS_DEFAULT};
 
 void wstring2string(const std::wstring& ws, std::string& s);
@@ -162,7 +163,7 @@ int main()
         pointShader.setMat4("view", app.getViewMatrix());
         pointShader.setMat4("model", glm::mat4(1.0f));
         pointShader.setVec3("camerapos", app.getCameraPosition());
-        pointShader.setFloat("time", static_cast<float>(glfwGetTime() * ANIMATION_SPEED));
+        pointShader.setFloat("time", animationProgress);
         pointShader.setInt("lastIndex", static_cast<int>(paperLoader.getLastIndex()));
         glBindVertexArray(VAO);
         // there are five pieces of data per instance (5 * sizeof(float)), so number of instances = paperData.size() / 5
@@ -172,7 +173,7 @@ int main()
         // ------------------------ //
 
         // update progress, lastPaperIndex, currentCluster & currentPaper
-        const float progress {std::min(static_cast<float>(glfwGetTime() * ANIMATION_SPEED), static_cast<float>(paperLoader.getLastIndex()))};
+        const float progress {std::min(animationProgress, static_cast<float>(paperLoader.getLastIndex()))};
         const Paper& currentPaper {paperLoader.getPaper(progress)};
         const int currentCluster {paperLoader.getClusterID(currentPaper, CLUSTER_DEPTH)};
         if (std::ranges::find(passedClusters, currentCluster) == passedClusters.end())
@@ -314,14 +315,14 @@ int main()
             info.emplace_back(text.str());
             text.str(""); // clear string stream
             // progress
-            int prog {std::min(static_cast<int>(paperLoader.getNumPapers()), static_cast<int>(glfwGetTime() * ANIMATION_SPEED))};
-            float percentage {static_cast<float>(glfwGetTime()) * ANIMATION_SPEED / static_cast<float>(paperLoader.getNumPapers())}; // progress as percentage
+            int prog {std::min(static_cast<int>(paperLoader.getNumPapers()), static_cast<int>(animationProgress))};
+            float percentage {animationProgress / static_cast<float>(paperLoader.getNumPapers())}; // progress as percentage
             percentage = std::min(100.0f, static_cast<float>(static_cast<int>(percentage * 1000.f)) / 10.f); // (n / 10.f = n / 1000.f * 100.f)
             text << "Raw Progress: " << prog << "/" << paperLoader.getNumPapers() << " (" << percentage << "%)";
             info.emplace_back(text.str());
             text.str("");
             prog = std::min(static_cast<int>(paperLoader.getLastIndex()), prog);
-            percentage = static_cast<float>(glfwGetTime()) * ANIMATION_SPEED / static_cast<float>(paperLoader.getLastIndex()); // progress as percentage
+            percentage = animationProgress / static_cast<float>(paperLoader.getLastIndex()); // progress as percentage
             percentage = std::min(100.0f, static_cast<float>(static_cast<int>(percentage * 1000.f)) / 10.f); // (n / 10.f = n / 1000.f * 100.f)
             text << "Progress: " << prog << "/" << paperLoader.getLastIndex() << " (" << percentage << "%)";// n." << animationProgress;
             info.emplace_back(text.str());
