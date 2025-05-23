@@ -342,11 +342,6 @@ int main()
                 } else {
                     const float percentExplored {static_cast<float>(bar.second.numPapers) / static_cast<float>(bar.second.totalPapers)};
                     FRect erect {50.f, static_cast<float>(app.getHeight() - 205 - numBars * 17), 1.f + 200.f * percentExplored, 14.f};
-                    // app.drawRect({
-                    //                 erect.x * 2.f / static_cast<float>(app.getWidth()) - 1.f, erect.y * 2.f / static_cast<float>(app.getHeight()) - 1.f,
-                    //                 erect.w * 2.f / static_cast<float>(app.getWidth()), erect.h * 2.f / static_cast<float>(app.getHeight())
-                    //             }, {255, 255, 255});
-                    const float percentUnexplored {1.f - percentExplored};
                     const FRect urect = {erect.x + erect.w, erect.y, 201.f - erect.w, erect.h};
                     app.drawRect({
                                     urect.x * 2.f / static_cast<float>(app.getWidth()) - 1.f, urect.y * 2.f / static_cast<float>(app.getHeight()) - 1.f,
