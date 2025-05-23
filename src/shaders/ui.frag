@@ -13,7 +13,7 @@ void main() {
     vec3 color = vec3(texture(screenTexture, TexCoords));
 
     // subtle vignette
-    float centerDis = pow(distance(vec2(0.5, 0.5), TexCoords), 3) * 0.08;
+    float centerDis = pow(distance(vec2(0.5, 0.5), TexCoords), 6) * 0.2;
     color -= centerDis;
 
     // exposure tone mapping (hdr)
