@@ -12,7 +12,7 @@ endif()
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
-set(CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath lib/linux -lassimp")
+set(CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath lib/linux -lassimp -lGL -lGLU -lfreetype -lglfw3")
 
 include(CMakePrintHelpers)
 cmake_print_variables(CMAKE_BUILD_TYPE)
@@ -30,7 +30,7 @@ elseif (CMAKE_SYSTEM MATCHES Linux)
     message(STATUS "Target system is Linux")
     # link/include for linux x86
     # required packages:
-    # mesa-libGL-devel mesa-libGLU-devel minizip
+    # mesa-libGL-devel mesa-libGLU-devel minizip freetype-devel bzip2
     include_directories(${CMAKE_SOURCE_DIR}/include/linux ${CMAKE_SOURCE_DIR}/src/extern/glad)
     link_directories(${CMAKE_SOURCE_DIR}/lib/linux)
     set(GL_LIBS GL GLU glfw3 assimp freetype)
