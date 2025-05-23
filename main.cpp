@@ -288,35 +288,32 @@ int main()
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-        app.disablePostProcessing();
-
-        app.getPostProcessor()->render(screenShader);
         
         // ------------------------ //
         
         // ---- debug info and post-processing ---- //
         
-        app.enablePostProcessing(); // write to framebuffer
+        // app.enablePostProcessing(); // write to framebuffer
         
         if (DEBUG_INFO_ENABLED)
         {
             // Calculate bar chart of percentages to render //
             // update font manager first
             fontManager.updateProjection(static_cast<float>(app.getWidth()), static_cast<float>(app.getHeight()));
-    
+            
             // set up bars to sort
             std::vector<std::pair<int, Bar>> sortedBars{};
             for (const std::pair<const int, Bar>& bar : bars)
             {
                 sortedBars.emplace_back(bar);
             }
-    
+            
             // sort bars
             std::ranges::sort(sortedBars, [](const std::pair<int, Bar>& bar1, const std::pair<int, Bar>& bar2)
             {
                 return bar1.second.numPapers > bar2.second.numPapers;
             });
-    
+            
             // render bars
             int numBars{0};
             std::stringstream ss; // for percentages & cluster labesl
@@ -328,15 +325,15 @@ int main()
                     const float percentage {static_cast<float>(bar.second.numPapers) / progress};
                     FRect rect {50.f, static_cast<float>(app.getHeight() - 205 - numBars * 17), 1.f + 200.f * percentage, 14.f};
                     app.drawRect({
-                                     rect.x * 2.f / static_cast<float>(app.getWidth()) - 1.f, rect.y * 2.f / static_cast<float>(app.getHeight()) - 1.f,
-                                     rect.w * 2.f / static_cast<float>(app.getWidth()), rect.h * 2.f / static_cast<float>(app.getHeight())
-                                 }, {255, 255, 255});
-        
+                        rect.x * 2.f / static_cast<float>(app.getWidth()) - 1.f, rect.y * 2.f / static_cast<float>(app.getHeight()) - 1.f,
+                        rect.w * 2.f / static_cast<float>(app.getWidth()), rect.h * 2.f / static_cast<float>(app.getHeight())
+                    }, {255, 255, 255});
+                    
                     // render text
                     ss << static_cast<float>(static_cast<int>(percentage * 1000.f)) / 10.f << "%";
                     fontManager.renderText(fontShader, ss.str(), 3.f, static_cast<float>(app.getHeight() - 217 - numBars * 17), 1.0f, glm::vec3{1.0f});
                     ss.str("");
-        
+                    
                     ss << bar.second.name;
                     fontManager.renderText(fontShader, ss.str(), 55.f + 200.f * percentage, static_cast<float>(app.getHeight() - 217 - numBars * 17), 1.0f, glm::vec3{1.0f});
                     ss.str("");
@@ -345,27 +342,27 @@ int main()
                     FRect erect {50.f, static_cast<float>(app.getHeight() - 205 - numBars * 17), 1.f + 200.f * percentExplored, 14.f};
                     const FRect urect = {erect.x + erect.w, erect.y, 201.f - erect.w, erect.h};
                     app.drawRect({
-                                    urect.x * 2.f / static_cast<float>(app.getWidth()) - 1.f, urect.y * 2.f / static_cast<float>(app.getHeight()) - 1.f,
-                                    urect.w * 2.f / static_cast<float>(app.getWidth()), urect.h * 2.f / static_cast<float>(app.getHeight())
-                                }, {5, 5, 5, 120});
+                        urect.x * 2.f / static_cast<float>(app.getWidth()) - 1.f, urect.y * 2.f / static_cast<float>(app.getHeight()) - 1.f,
+                        urect.w * 2.f / static_cast<float>(app.getWidth()), urect.h * 2.f / static_cast<float>(app.getHeight())
+                    }, {5, 5, 5, 120});
                     const float percentIncluded {static_cast<float>(bar.second.numIncluded) / static_cast<float>(bar.second.numPapers)};
                     const float percentNotIncluded {static_cast<float>(bar.second.numNotIncluded) / static_cast<float>(bar.second.numPapers)};
                     const FRect irect {erect.x, erect.y, erect.w * percentIncluded, erect.h};
                     app.drawRect({
-                                    irect.x * 2.f / static_cast<float>(app.getWidth()) - 1.f, irect.y * 2.f / static_cast<float>(app.getHeight()) - 1.f,
-                                    irect.w * 2.f / static_cast<float>(app.getWidth()), irect.h * 2.f / static_cast<float>(app.getHeight())
-                                }, {0, 255, 10});
+                        irect.x * 2.f / static_cast<float>(app.getWidth()) - 1.f, irect.y * 2.f / static_cast<float>(app.getHeight()) - 1.f,
+                        irect.w * 2.f / static_cast<float>(app.getWidth()), irect.h * 2.f / static_cast<float>(app.getHeight())
+                    }, {0, 255, 10});
                     const FRect nrect {erect.x + irect.w, erect.y, erect.w * percentNotIncluded, erect.h};
                     app.drawRect({
-                                    nrect.x * 2.f / static_cast<float>(app.getWidth()) - 1.f, nrect.y * 2.f / static_cast<float>(app.getHeight()) - 1.f,
-                                    nrect.w * 2.f / static_cast<float>(app.getWidth()), nrect.h * 2.f / static_cast<float>(app.getHeight())
-                                }, {255, 10, 10});
+                        nrect.x * 2.f / static_cast<float>(app.getWidth()) - 1.f, nrect.y * 2.f / static_cast<float>(app.getHeight()) - 1.f,
+                        nrect.w * 2.f / static_cast<float>(app.getWidth()), nrect.h * 2.f / static_cast<float>(app.getHeight())
+                    }, {255, 10, 10});
                     
                     // render text
                     ss << static_cast<float>(static_cast<int>(percentExplored * 1000.f)) / 10.f << "%";
                     fontManager.renderText(fontShader, ss.str(), 3.f, static_cast<float>(app.getHeight() - 217 - numBars * 17), 1.0f, glm::vec3{1.0f});
                     ss.str("");
-    
+                    
                     ss << bar.second.name;
                     fontManager.renderText(fontShader, ss.str(), 55.f + 200.f, static_cast<float>(app.getHeight() - 217 - numBars * 17), 1.0f, glm::vec3{1.0f});
                     ss.str("");
@@ -377,7 +374,7 @@ int main()
                     break;
                 }
             }
-    
+            
             if (barMode == BARS_FULL) {
                 ss << "% = Percent of total papers in cluster";
                 fontManager.renderText(fontShader, ss.str(), 5.f, static_cast<float>(app.getHeight() - 217 - numBars * 17), 1.0f, glm::vec3{1.0f});
@@ -423,58 +420,59 @@ int main()
             text << "Vertex data size (KB): " << static_cast<int>(paperLoader.getVerticesSize() + sizeof(Shapes3D::cubeVerticesNormals)) / 1000;
             info.emplace_back(text.str());
             text.str("");
-
+            
             text << "Num. papers explored: " << paperLoader.getLastIndex();
             info.emplace_back(text.str());
             text.str("");
             text << "Num. papers unexplored: " << paperLoader.getNumPapers() - paperLoader.getLastIndex();
             info.emplace_back(text.str());
             text.str("");
-
+            
             text << "Current cluster depth: " << CLUSTER_DEPTH;
             info.emplace_back(text.str());
             text.str("");
-
+            
             std::wstring clusterLabel {paperLoader.getClusterLabel(currentPaper, CLUSTER_DEPTH)};
             std::string label;
             wstring2string(clusterLabel, label);
             text << "Current cluster label: " << label;
             info.emplace_back(text.str());
             text.str("");
-
+            
             text << "Current cluster ID: " << paperLoader.getClusterID(currentPaper, CLUSTER_DEPTH);
             info.emplace_back(text.str());
             text.str("");
-
-
+            
+            
             for (int i {0}; i < info.size(); ++i)
             {
                 fontManager.renderText(fontShader, info[i], 10.0f, static_cast<float>(app.getHeight() - 25 - 15 * i), 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
             }
-
+            
             std::string paperTitle;
             wstring2string(currentPaper.title, paperTitle);
             text << "Current paper title: " << paperTitle;
             fontManager.renderText(fontShader, text.str(), 5.0f, 5.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
             text.str("");
-
+            
             text << "View mode: " << getViewMode();
             fontManager.renderText(fontShader, text.str(), 5.0f, 20.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
             text.str("");
-
+            
             glm::vec3 cameraPos {app.getCameraPosition()};
             text << "Camera Position: " << cameraPos.x << ", " << cameraPos.y << ", " << cameraPos.z;
             fontManager.renderText(fontShader, text.str(), 5.0f, 35.0f, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
             text.str("");
         }
-
+        
         // ------------------------ //
-
+        
+        // update buffers and stuff
         app.disablePostProcessing();
 
         app.getPostProcessor()->render(uiShader);
-
-        // update buffers and stuff
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        
         app.tick();
         // animation is updated at constant speed
         animationProgress += ANIMATION_SPEED * app.getDeltaTime();
