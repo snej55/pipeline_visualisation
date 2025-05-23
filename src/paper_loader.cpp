@@ -19,7 +19,7 @@ void PaperLoader::loadFromFile(const std::string& filename, const float scale)
     // file.imbue(std::locale("en-GB"));
 
     // handle exceptions
-    file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    file.exceptions(std::ifstream::badbit);
     try
     {
         file.open(filename);
@@ -32,7 +32,6 @@ void PaperLoader::loadFromFile(const std::string& filename, const float scale)
         while (std::getline(file, line))
         {
             // read the next line from the file
-            ;
             if (firstRow)
             {
                 firstRow = false;
@@ -74,6 +73,12 @@ void PaperLoader::loadFromFile(const std::string& filename, const float scale)
                     ++included;
                     lastIncluded = count;
                 }
+
+                // early exit for faster debugging
+               /* if (count > 20000)
+                {
+                    break;
+                }*/
             }
         } // loop until we reach end of file
 
