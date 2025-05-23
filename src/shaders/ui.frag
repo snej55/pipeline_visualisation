@@ -12,6 +12,9 @@ const float gamma = 2.2;
 void main() {
     vec3 color = vec3(texture(screenTexture, TexCoords));
 
+    float centerDis = pow(distance(vec2(0.5, 0.5), TexCoords), 3) * 0.08;
+    color -= centerDis;
+
     // exposure tone mapping (hdr)
     vec3 mapped = vec3(1.0) - exp(-color * 5.0);
     // gamma correction
