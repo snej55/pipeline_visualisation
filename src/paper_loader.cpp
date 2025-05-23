@@ -16,7 +16,7 @@ void PaperLoader::loadFromFile(const std::string& filename, const float scale)
     // wifstream for "wide" character encoding
     std::wifstream file;
     // set locale
-    // file.imbue(std::locale("en-GB"));
+    file.imbue(std::locale("en-GB.UTF8"));
 
     // handle exceptions
     file.exceptions(std::ifstream::badbit);
