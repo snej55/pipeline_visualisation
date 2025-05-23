@@ -29,7 +29,7 @@ int MAX_BARS{40}; // maximum amount of bars to display
 constexpr int CLUSTER_DEPTH {6}; // amount of clusters is 2^CLUSTER_DEPTH, so 2:4, 3:8, 4:16, 5:32, 6:64
 
 // animation tweaks
-float ANIMATION_SPEED {10.f};
+float ANIMATION_SPEED {0.f};
 
 // view mode: default is all shown, unseen hidden is unexplored clusters hidden, and hidden is no clusters
 enum VIEW_MODE
@@ -472,7 +472,7 @@ int main()
 
         app.getPostProcessor()->render(uiShader);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        
+
         app.tick();
         // animation is updated at constant speed
         animationProgress += ANIMATION_SPEED * app.getDeltaTime();
