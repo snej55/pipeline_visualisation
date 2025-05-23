@@ -471,7 +471,6 @@ int main()
         app.disablePostProcessing();
 
         app.getPostProcessor()->render(uiShader);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         app.tick();
         // animation is updated at constant speed
