@@ -10,7 +10,6 @@ const float gamma = 2.2;
 
 void main() {
     vec3 color = vec3(texture(screenTexture, TexCoords));
-    color.rg *= 1.0;
 
     // exposure tone mapping (hdr)
     vec3 mapped = vec3(1.0) - exp(-color * 5.0);
