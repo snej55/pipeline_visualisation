@@ -130,6 +130,7 @@ int main()
 
     // post-processing shader
     const Shader screenShader{"shaders/builtin/screenShader.vert", "shaders/builtin/screenShader.frag"};
+    const Shader uiShader {"shaders/builtin/screenShader.vert", "shaders/ui.frag"};
     app.initPostProcessing();
 
     // initialize font manager
@@ -471,7 +472,7 @@ int main()
 
         app.disablePostProcessing();
 
-        app.getPostProcessor()->render(screenShader);
+        app.getPostProcessor()->render(uiShader);
 
         // update buffers and stuff
         app.tick();
