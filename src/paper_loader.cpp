@@ -16,7 +16,7 @@ void PaperLoader::loadFromFile(const std::string& filename, const float scale)
     // wifstream for "wide" character encoding
     std::wifstream file;
     // set locale
-    file.imbue(std::locale("en_GB.UTF-8"));
+    // file.imbue(std::locale("en-GB"));
 
     // handle exceptions
     file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -29,10 +29,10 @@ void PaperLoader::loadFromFile(const std::string& filename, const float scale)
         int included{0}; // num papers included
         int lastIncluded{0}; // index of last paper included
         std::wstring line; // the current row
-        do
+        while (std::getline(file, line))
         {
             // read the next line from the file
-            std::getline(file, line);
+            ;
             if (firstRow)
             {
                 firstRow = false;
@@ -75,7 +75,7 @@ void PaperLoader::loadFromFile(const std::string& filename, const float scale)
                     lastIncluded = count;
                 }
             }
-        } while (file.peek() != EOF); // loop until we reach end of file
+        } // loop until we reach end of file
 
         std::cout << std::endl;
         std::cout << "Loaded csv from `" << filename << "`. Rows: " << count << " (" << std::size(m_papers) * sizeof(Paper) / 1000000 << " MB)" << '\n';
@@ -89,7 +89,7 @@ void PaperLoader::loadFromFile(const std::string& filename, const float scale)
         // clear data and return it (nothing)
         std::cout << "Error: " << e.what() << '\n';
         std::cerr << "Error: Failed to read file from path: `" << filename << "`" << std::endl;
-        m_papers.clear(); // clear papers
+        // m_papers.clear(); // clear papers
         if (file.is_open()) {
             file.close();
         }

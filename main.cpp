@@ -400,7 +400,7 @@ int main()
             int prog {std::min(static_cast<int>(paperLoader.getNumPapers()), static_cast<int>(animationProgress))};
             float percentage {animationProgress / static_cast<float>(paperLoader.getNumPapers())}; // progress as percentage
             percentage = std::min(100.0f, static_cast<float>(static_cast<int>(percentage * 1000.f)) / 10.f); // (n / 10.f = n / 1000.f * 100.f)
-            text << "Raw Progress: " << prog << "/" << paperLoader.getNumPapers() << " (" << percentage << "%)";
+            text << "Raw Progress: " << prog << "/" << paperLoader.getNumPapers() << " (" << percentage << "%) " << animationProgress;
             info.emplace_back(text.str());
             text.str("");
             prog = std::min(static_cast<int>(paperLoader.getLastIndex()), prog);

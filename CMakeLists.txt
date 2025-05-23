@@ -12,19 +12,25 @@ endif()
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
-set(CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath lib/linux -lassimp -lGL -lGLU -lfreetype -lglfw3")
 
 include(CMakePrintHelpers)
 cmake_print_variables(CMAKE_BUILD_TYPE)
 
 set(CMAKE_SYSTEM_NAME Windows)
 
+if (CMAKE_SYSTEM MATCHES Linux)
+    set(CMAKE_EXE_LINKER_FLAGS "-Wl,-rpath lib/linux -lassimp -lGL -lGLU -lfreetype -lglfw3")
+endif()
+
 set(GL_LIBS glfw3 assimp freetype)
 
 if (CMAKE_SYSTEM MATCHES Windows)
     message(STATUS "Target system is Windows")
+    set(FREETYPE_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/include/windows/freetype)
+    message(STATUS "Found Freetype in ${FREETYPE_INCLUDE_DIRS}")
     # link/include for Windows x86
     include_directories(${CMAKE_SOURCE_DIR}/include/windows)
+    include_directories(${CMAKE_SOURCE_DIR}/include/windows/freetype)
     link_directories(${CMAKE_SOURCE_DIR}/lib/windows)
 elseif (CMAKE_SYSTEM MATCHES Linux)
     message(STATUS "Target system is Linux")

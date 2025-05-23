@@ -30,9 +30,10 @@ cd build; ./main
 
 Create an issue or contact me directly if you encounter any problems during the build process.
 
-## Running:
+## Controls:
 
 - WASD to move around
+- Mouse/trackpad to look around
 - Use the mouse to look around
 - ESC to exit
 - Up arrow / down arrow to change animation speed
