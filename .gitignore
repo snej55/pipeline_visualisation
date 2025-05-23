@@ -9,3 +9,5 @@ data/.~lock.papers_with_labels.csv#
 *.kdev4
 /cluster_models/
 /cmake-build-release
+/.vs/
+/out/
