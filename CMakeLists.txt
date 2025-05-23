@@ -31,6 +31,8 @@ elseif (CMAKE_SYSTEM MATCHES Linux)
     # link/include for linux x86
     # required packages:
     # mesa-libGL-devel mesa-libGLU-devel minizip freetype-devel bzip2
+    # for issues loading shared library bzip2 try:
+    # sudo ln -s /usr/lib64/libbz2.so.1.0.8 /usr/lib64/libbz2.so.1.0
     include_directories(${CMAKE_SOURCE_DIR}/include/linux ${CMAKE_SOURCE_DIR}/src/extern/glad)
     link_directories(${CMAKE_SOURCE_DIR}/lib/linux)
     set(GL_LIBS GL GLU glfw3 assimp freetype)
