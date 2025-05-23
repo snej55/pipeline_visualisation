@@ -2,7 +2,13 @@
 
 ## Building:
 
-The project is currently only set up to build on Linux (Windows build is faulty), with OpenGL v4.1. It has been tested on Arch Linux and Ubuntu. To build it, install GLFW3, GLAD, GLU, Assimp, and Freetype (v2) from your distro's package manager. CMake and CXX compiler are required. The recommended generator is Ninja, but ordinary Makefile should suffice fine.
+The project is currently only set up to build on Linux (Windows build is faulty), with OpenGL v4.1. It has been tested on Arch Linux, Fedora and Ubuntu. To build it, install GLFW3, GLAD, GLU, Assimp, and Freetype (v2) from your distro's package manager. CMake and CXX compiler are required. The recommended generator is Ninja, but ordinary Makefile should suffice fine.
+
+### Required packages:
+#### Ubuntu:
+```
+sudo apt install libglu1-mesa-dev libgl-dev libfreetype-dev libassimp5 libglfw3-dev cmake ninja-build
+```
 
 Then run:
 ```
