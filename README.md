@@ -1,5 +1,15 @@
 ![screenshot](https://github.com/snej55/pipeline_visualisation/blob/main/screenshots/screenshot_1.png)
 
+## Running:
+
+- WASD to move around
+- Use the mouse to look around
+- ESC to exit
+- Up arrow / down arrow to change animation speed
+- C to change the viewing mode
+- B to toggle the bar chart mode
+- M/N to change the max amount of bars in the bar chart
+
 ## Building:
 
 The project is currently only set up to build on Linux (Windows build is faulty), with OpenGL v4.1. It has been tested on Arch Linux, Fedora and Ubuntu. To build it, install GLFW3, GLAD, GLU, Assimp, and Freetype (v2) from your distro's package manager. CMake and CXX compiler are required. The recommended generator is Ninja, but ordinary Makefile should suffice fine.
@@ -29,16 +39,6 @@ cd build; ./main
 >Please make sure to run the compiled binary from the build folder, so it has access to the required assets (shaders, models, etc).
 
 Create an issue or contact me directly if you encounter any problems during the build process.
-
-## Running:
-
-- WASD to move around
-- Use the mouse to look around
-- ESC to exit
-- Up arrow / down arrow to change animation speed
-- C to change the viewing mode
-- B to toggle the bar chart mode
-- M/N to change the max amount of bars in the bar chart
 
 ## How does it work?
 
