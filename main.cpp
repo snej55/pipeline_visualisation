@@ -29,7 +29,8 @@ int MAX_BARS{40}; // maximum amount of bars to display
 constexpr int CLUSTER_DEPTH {6}; // amount of clusters is 2^CLUSTER_DEPTH, so 2:4, 3:8, 4:16, 5:32, 6:64
 
 // animation tweaks
-float ANIMATION_SPEED {0.f};
+float ANIMATION_SPEED {1.f};
+bool RESET{false};
 
 // view mode: default is all shown, unseen hidden is unexplored clusters hidden, and hidden is no clusters
 enum VIEW_MODE
@@ -62,9 +63,9 @@ int main()
     PaperLoader paperLoader{};
     paperLoader.loadFromFile("data/papers_with_labels.csv", SCALE);
     paperLoader.generateClusters(); // group papers into clusters
-
+    
     std::cout << "Loaded papers!\n";
-
+    
     // ---- OpenGL ---- //
     // initialize opengl wrapper
     App app{640, 640, "OpenGL window"};
@@ -80,34 +81,34 @@ int main()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // for text & cluster rendering
     // glLineWidth(5.0f);
     // glEnable(GL_CULL_FACE);
-
+    
     // load coordinates from papers
     std::vector<float> paperData;
     paperLoader.getVertices(paperData);
-
+    
     // generate convex hull models from clusters (saved at data/cluster_models/)
     Clusters::ClusterRenderer clusterRenderer{};
     // // generates .obj file of convex hull for each cluster
     // clusterRenderer.generateClusters(paperLoader.getClustersFull());
     clusterRenderer.loadClusters(paperLoader.getClustersFull()); // load convex hulls
-
+    
     // generate vbo for paper instances (offset xyz, included flag, counter)
     unsigned int instanceVBO;
     glGenBuffers(1, &instanceVBO);
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(paperData.size() * sizeof(paperData[0])), paperData.data(), GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-
+    
     // create vertex array and vertex buffer for paper cubes
     unsigned int VAO, VBO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
-
+    
     glBindVertexArray(VAO);
-
+    
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(sizeof(Shapes3D::cubeVerticesNormals)), Shapes3D::cubeVerticesNormals, GL_STATIC_DRAW);
-
+    
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(0));
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
@@ -123,30 +124,30 @@ int main()
     glVertexAttribDivisor(2, 1); // update this index every 1th instance
     glVertexAttribDivisor(3, 1); // "" ""
     glVertexAttribDivisor(4, 1); // "" ""
-
+    
     // load papers shader
     const Shader pointShader{"shaders/pointsLighting.vert", "shaders/pointsLighting.frag"};
     // shader.addGeometryShader("shaders/points.geom");
-
+    
     // post-processing shader
     const Shader screenShader{"shaders/builtin/screenShader.vert", "shaders/builtin/screenShader.frag"};
     const Shader uiShader {"shaders/builtin/screenShader.vert", "shaders/ui.frag"};
     app.initPostProcessing();
-
+    
     // initialize font manager
     FontManager fontManager{};
     fontManager.init("data/fonts/Acme 9 Regular Bold Xtnd.ttf", FONT_SIZE);
     // load fonts shader
     const Shader fontShader{"shaders/builtin/fonts.vert", "shaders/builtin/fonts.frag"};
-
+    
     // cluster shader
     const Shader clusterShader{"shaders/cluster.vert", "shaders/cluster.frag"};
-
+    
     std::vector<int> passedClusters{};
     int lastPaperIndex{0};
-
+    
     std::cout << "Successfully initialized!\n";
-
+    
     // data for bar chart
     std::map<int, Bar> bars{};
     std::map paperClusters{paperLoader.getClusters(CLUSTER_DEPTH)};
@@ -163,9 +164,10 @@ int main()
             paperClusters[b].num_papers
         };
     }
-
+    
     // counter to keep track of num. papers
     int numPapers{0};
+    // animation progress
     float animationProgress{0.f};
 
     // main loop
@@ -176,6 +178,19 @@ int main()
         app.enablePostProcessing(); // write to framebuffer
         // ---- do rendering ---- //
         app.clear(); // clear depth and color buffers (+stencil but that's not used)
+
+        if (RESET)
+        {
+            // reset bars
+            for (int b {0}; b < std::pow(2, CLUSTER_DEPTH); ++b)
+            {
+                bars[b].numPapers = 0;
+                bars[b].numIncluded = 0;
+                bars[b].numNotIncluded = 0;
+            }
+            animationProgress = 0.0f;
+            RESET = false;
+        }
 
         // ------------------------ //
 
@@ -322,7 +337,7 @@ int main()
                 if (barMode == BARS_FULL)
                 {
                     // render bar
-                    const float percentage {static_cast<float>(bar.second.numPapers) / progress};
+                    const float percentage {static_cast<float>(bar.second.numPapers) / std::max(0.001f, static_cast<float>(lastPaperIndex))};
                     FRect rect {50.f, static_cast<float>(app.getHeight() - 205 - numBars * 17), 1.f + 200.f * percentage, 14.f};
                     app.drawRect({
                         rect.x * 2.f / static_cast<float>(app.getWidth()) - 1.f, rect.y * 2.f / static_cast<float>(app.getHeight()) - 1.f,
@@ -534,6 +549,12 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         ANIMATION_SPEED -= ANIMATION_SENSITIVITY;
         // limit to positive values for now
         ANIMATION_SPEED = std::max(0.f, ANIMATION_SPEED); // TODO: Fix this
+    }
+
+    // reset animation
+    if (key == GLFW_KEY_0 && (action == GLFW_PRESS))
+    {
+        RESET = true;
     }
 }
 

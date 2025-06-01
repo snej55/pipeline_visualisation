@@ -50,7 +50,7 @@ int Clusters::ClusterRenderer::generateClusters(const std::vector<std::map<int, 
             convhull_3d_build(chVertices, hull->numVertices, &hull->faceIndices, &hull->numFaces);
             // export for testing
             std::stringstream filename;
-            filename << "../data/cluster_models/cluster_" << i + 2 << "_" << idx;
+            filename << "data/cluster_models/cluster_" << i + 2 << "_" << idx;
             std::string name {filename.str()};
             convhull_3d_export_obj(chVertices, hull->numVertices, hull->faceIndices, hull->numFaces, 1, const_cast<char*>(name.c_str()));
             // success check
@@ -84,7 +84,7 @@ void Clusters::ClusterRenderer::loadClusters(const std::vector<std::map<int, Clu
 
             // load convex hull model
             std::stringstream filename;
-            filename << "../data/cluster_models/cluster_" << i + 2 << "_" << idx << ".obj";
+            filename << "data/cluster_models/cluster_" << i + 2 << "_" << idx << ".obj";
             const std::string name {filename.str()};
             ClusterModel* model {new ClusterModel{name}};
             clusterData.model = model;
