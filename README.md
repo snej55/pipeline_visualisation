@@ -9,6 +9,7 @@
 - C to change the viewing mode
 - B to toggle the bar chart mode
 - M/N to change the max amount of bars in the bar chart
+- 0 to reset the animation.
 
 ## Building:
 
