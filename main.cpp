@@ -143,6 +143,7 @@ int main()
     // cluster shader
     const Shader clusterShader{"shaders/cluster.vert", "shaders/cluster.frag"};
     
+    // keep track of passed clusters
     std::vector<int> passedClusters{};
     int lastPaperIndex{0};
     
@@ -188,6 +189,9 @@ int main()
                 bars[b].numIncluded = 0;
                 bars[b].numNotIncluded = 0;
             }
+            // reset clusters
+            passedClusters.clear();
+
             animationProgress = 0.0f;
             RESET = false;
         }
