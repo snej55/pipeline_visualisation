@@ -416,14 +416,14 @@ int main()
             info.emplace_back(text.str());
             text.str(""); // clear string stream
             // progress
-            int prog {std::min(static_cast<int>(paperLoader.getNumPapers()), static_cast<int>(animationProgress))};
-            float percentage {animationProgress / static_cast<float>(paperLoader.getNumPapers())}; // progress as percentage
+            int prog {std::min(static_cast<int>(paperLoader.getNumPapers()), static_cast<int>(animationProgress + 1.f))};
+            float percentage {(animationProgress + 1.f) / static_cast<float>(paperLoader.getNumPapers())}; // progress as percentage
             percentage = std::min(100.0f, static_cast<float>(static_cast<int>(percentage * 1000.f)) / 10.f); // (n / 10.f = n / 1000.f * 100.f)
             text << "Raw Progress: " << prog << "/" << paperLoader.getNumPapers() << " (" << percentage << "%)";
             info.emplace_back(text.str());
             text.str("");
             prog = std::min(static_cast<int>(paperLoader.getLastIndex()), prog);
-            percentage = animationProgress / static_cast<float>(paperLoader.getLastIndex()); // progress as percentage
+            percentage = (animationProgress + 1.f) / static_cast<float>(paperLoader.getLastIndex()); // progress as percentage
             percentage = std::min(100.0f, static_cast<float>(static_cast<int>(percentage * 1000.f)) / 10.f); // (n / 10.f = n / 1000.f * 100.f)
             text << "Progress: " << prog << "/" << paperLoader.getLastIndex() << " (" << percentage << "%)";// n." << animationProgress;
             info.emplace_back(text.str());
